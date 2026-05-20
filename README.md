@@ -24,6 +24,8 @@
 - `versions/index_v0.17.html`：舊版保留
 - `versions/index_v0.18.html`：舊版保留
 - `versions/index_v0.19.html`：舊版保留
+- `versions/index_v0.20.html`：舊版保留
+- `versions/index_v0.21.html`：舊版保留
 - `核心資料/核心咒語規範.md`：專案核心規則來源
 - `核心資料/風格範例.md`：大型風格範例資料來源
 - `docs/`：文件中心
@@ -43,3 +45,5 @@
 - `docs/development-log/V1.00.md`
 - `docs/development-log/V1.07.md`
 - `docs/development-log/V1.08.md`
+- `docs/development-log/V1.09.md`
+- `docs/development-log/V1.10.md`

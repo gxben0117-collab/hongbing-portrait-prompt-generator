@@ -328,7 +328,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 <div class="footer">
   <div class="footer-divider"></div>
   紅兵風格寫真咒語產生器 · 風格範例庫 · 核心咒語規範
-  <div style="margin-top:10px;font-size:10px;opacity:.6">紅兵開發 · v0.22</div>
+  <div style="margin-top:10px;font-size:10px;opacity:.6">紅兵開發 · v0.21</div>
 </div>
 
 </div>
@@ -346,10 +346,10 @@ const CORE_STRUCTURE = `PROMPT STRUCTURING: Compose from environment → lightin
 const ANCIENT_BOOST = `Ancient Chinese costume photoshoot styling (professional cinematic level while preserving uploaded person's exact identity): hair must be styled in traditional Chinese fashion with elaborate updos or cascading pinned sections. Hair accessories are mandatory and abundant: hairpins, step-shake ornaments, jade combs, floral hair clusters, tasseled ornaments, hair crowns, phoenix accessories, bead strands throughout the hair. Costume layering is required: inner robe, outer robe, wide flowing sleeves, decorative sash, embroidered waist ornament with jade pendants, and era-appropriate accessories. Hand props as contextually appropriate: folding fan, silk ribbons, ancient lamp, flower branch, jade flute, or sword hilt. The environment must match the era: ancient Chinese architecture with carved pillars and tile roofs, classical gardens, misty mountain temples, bamboo groves, or mythological celestial settings.`;
 const AVOID_LOCK = `identity drift, replaced face, different person, beauty-filter appearance, plastic skin, over-smoothed skin, generic influencer face, AI beauty template, V-shaped face, doll face, altered facial proportions, anatomy distortion, deformed hands, fused fingers, extra fingers, hidden face, props covering face, particles covering facial features, disconnected arms, floating limbs, low quality, watermark, anachronistic modern elements`;
 const QUALITY_BASE = `cinematic epic quality, dramatic film lighting, detailed costume fabric and environmental texture, high dynamic range, photorealistic rendering, period-authentic atmosphere, no AI look, 8K HDR`;
+const SUCCUBUS_FEATURE_BASE = `clearly visible small demon horns or short curved ram-like demon horns above the hairline, integrated as real supernatural anatomy rather than a hair ornament or crown`;
 const SUCCUBUS_FEATURE_VARIANTS = [
-  `small black bat-like demon wings visible behind the shoulders, readable as costume-safe supernatural wings, kept behind the body and never covering the face; no horns, no tail.`,
-  `small folded black membrane demon wings emerging behind the upper back, subtle and elegant, clearly separate from the hair and face; no horns, no tail.`,
-  `small dark imp-like bat wings behind the shoulders with soft violet rim light, placed away from the head and facial outline; no horns, no tail.`
+  `${SUCCUBUS_FEATURE_BASE}; black bat-like membrane wings spread behind the shoulders, readable as real wings, kept behind the body and never covering the face.`,
+  `${SUCCUBUS_FEATURE_BASE}; a slim demon tail visible beside the body with a heart-shaped or arrow-shaped tip, not hidden by the dress and not cropped by the frame.`
 ];
 
 // ═══════════════════════════════════════════
