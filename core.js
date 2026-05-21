@@ -13,11 +13,6 @@ const CORE_BEAUTY_SAFETY = `[CRITICAL BEAUTY SAFETY RULE] The styling keywords (
 const ANCIENT_BOOST = `Ancient Chinese costume photoshoot styling (professional cinematic level while preserving uploaded person's exact identity): hair must be styled in traditional Chinese fashion with elaborate updos or cascading pinned sections. Hair accessories are mandatory and abundant: hairpins, step-shake ornaments, jade combs, floral hair clusters, tasseled ornaments, hair crowns, phoenix accessories, bead strands throughout the hair. Costume layering is required: inner robe, outer robe, wide flowing sleeves, decorative sash, embroidered waist ornament with jade pendants, and era-appropriate accessories. Hand props as contextually appropriate: folding fan, silk ribbons, ancient lamp, flower branch, jade flute, or sword hilt. The environment must match the era: ancient Chinese architecture with carved pillars and tile roofs, classical gardens, misty mountain temples, bamboo groves, or mythological celestial settings.`;
 const AVOID_LOCK = `identity drift, replaced face, different person, beauty-filter appearance, plastic skin, over-smoothed skin, generic influencer face, AI beauty template, V-shaped face, doll face, altered facial proportions, idealized bone structure, perfect face, refined features, flawless skin, luminous skin overlay, celestial radiance effect, editorial perfection filter, ultra glamorous face treatment, luxury beauty enhancement, cat-eye liner reshaping, heavy eyeliner distortion, intense dramatic smoky eye restructuring, dangerous beauty filter, mannequin-like posing, artificial symmetry, frozen expressions, anatomy distortion, deformed hands, fused fingers, extra fingers, disconnected arms, floating limbs, excessive glamour filtering, repetitive static composition, low quality, watermark, anachronistic modern elements`;
 const QUALITY_BASE = `cinematic epic quality, dramatic film lighting, detailed costume fabric and environmental texture, high dynamic range, photorealistic rendering, period-authentic atmosphere, no AI look, 8K HDR`;
-const SUCCUBUS_FEATURE_VARIANTS = [
-  `small black bat-like demon wings visible behind the shoulders, readable as costume-safe supernatural wings, kept behind the body and never covering the face; no horns, no tail.`,
-  `small folded black membrane demon wings emerging behind the upper back, subtle and elegant, clearly separate from the hair and face; no horns, no tail.`,
-  `small dark imp-like bat wings behind the shoulders with soft violet rim light, placed away from the head and facial outline; no horns, no tail.`
-];
 
 // ═══════════════════════════════════════════
 // 圖片規格控制
@@ -157,13 +152,13 @@ const MK = [
 // 鏡頭角度庫
 // ═══════════════════════════════════════════
 const ANG = [
-  {id:'sanfen',  name:'三分側面', desc:'three-quarter angle, slight natural head turn, most flattering for face and costume'},
-  {id:'zheng',   name:'正面人像', desc:'front-facing portrait, face directly toward camera, symmetrical framing'},
-  {id:'banshen', name:'半身人像', desc:'half-body portrait from waist up, showing face, upper costume details, and hand props'},
-  {id:'quan',    name:'全身人像', desc:'full body shot head to feet, complete costume visible from crown to hem'},
-  {id:'yang',    name:'仰拍氣勢', desc:'low angle upward shot, subject appears imposing and powerful against sky or architectural backdrop'},
-  {id:'huanjing',name:'環境人像', desc:'environmental portrait, person within larger scene context, showing relationship between subject and full setting'},
-  {id:'huimou',  name:'回眸一望', desc:'looking back over shoulder, three-quarter rear pose, face turned to camera over shoulder'},
+  {id:'sanfen',  name:'三分側面', zh:'臉微側45°，最顯臉型', desc:'three-quarter angle, slight natural head turn, most flattering for face and costume'},
+  {id:'zheng',   name:'正面人像', zh:'臉正對鏡頭，對稱感強', desc:'front-facing portrait, face directly toward camera, symmetrical framing'},
+  {id:'banshen', name:'半身人像', zh:'腰部以上，服裝道具清楚', desc:'half-body portrait from waist up, showing face, upper costume details, and hand props'},
+  {id:'quan',    name:'全身人像', zh:'頭到腳，完整服裝剪裁', desc:'full body shot head to feet, complete costume visible from crown to hem'},
+  {id:'yang',    name:'仰拍氣勢', zh:'由下往上拍，人物顯高大', desc:'low angle upward shot, subject appears imposing and powerful against sky or architectural backdrop'},
+  {id:'huanjing',name:'環境人像', zh:'融入大場景，強調地點感', desc:'environmental portrait, person within larger scene context, showing relationship between subject and full setting'},
+  {id:'huimou',  name:'回眸一望', zh:'回頭看鏡頭，電影故事感', desc:'looking back over shoulder, three-quarter rear pose, face turned to camera over shoulder'},
 ];
 
 // ═══════════════════════════════════════════
@@ -595,7 +590,10 @@ function renderMK(){
 
 function renderAng(){
   document.getElementById('angChips').innerHTML = ANG.map(a=>`
-    <div class="chip${a.id===curAngID?' active':''}" onclick="selAng('${a.id}')">${a.name}</div>`).join('');
+    <div class="chip${a.id===curAngID?' active':''}" onclick="selAng('${a.id}')">
+      <span>${a.name}</span>
+      <span class="chip-sub">${a.zh}</span>
+    </div>`).join('');
 }
 
 function renderBadge(){
@@ -822,7 +820,6 @@ function buildPrompt(){
     CORE_REALISM,
     proParts.join(' '),
     `[${cat.name} — ${entry.name}${entry.sub?' · '+entry.sub:''}]: ${entry.name} style, ${cat.name} aesthetic, strong authentic period or fantasy character styling, photorealistic cinematic editorial image.`,
-    cat.tpl === 'succubus_demon' ? `Succubus visual identity lock: ${SUCCUBUS_FEATURE_VARIANTS[Math.floor(Math.random()*SUCCUBUS_FEATURE_VARIANTS.length)]}` : '',
     sceneDesc ? `Scene: ${sceneDesc}.` : '',
     f('light') ? `Lighting: ${f('light')}.` : '',
     f('char') ? `Character atmosphere (costume and mood only — does not affect face): ${f('char')}.` : '',

@@ -74,6 +74,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .chip{padding:6px 14px;font-size:12px;letter-spacing:.3px;color:var(--text-2);border:1px solid var(--border);border-radius:24px;background:var(--surface-0);cursor:pointer;user-select:none;white-space:nowrap;transition:var(--transition);}
 .chip:hover{border-color:rgba(201,146,42,.4);color:var(--text);background:var(--surface-1)}
 .chip.active{background:rgba(201,146,42,.12);border-color:var(--gold);color:var(--gold-bright);box-shadow:0 0 10px rgba(201,146,42,.1);}
+#angChips .chip{white-space:normal;display:flex;flex-direction:column;align-items:center;text-align:center;padding:7px 12px;gap:2px;}
+#angChips .chip-sub{font-size:9.5px;opacity:.6;letter-spacing:.2px;font-weight:400;line-height:1.3;}
 
 /* ─── Form Fields ─── */
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -2221,7 +2223,7 @@ const CATS = [
      outfit:'powerful dark divine armor, massive black wings fully spread, commanding fallen power'},
     {id:'fl_16', name:'魅魔墮翼',   sub:'誘惑深淵', icon:'💋',
      scene:'dark obsidian palace with infernal roses, sinister red candlelight, seductive supernatural throne room',
-     outfit:'dark fallen angel attire fused with succubus elements — torn divine robes with dark seductive elegance, demon horns replacing halo, dark wing and tail motif'},
+     outfit:'dark fallen angel attire fused with succubus elements — torn divine robes with dark seductive elegance, demon horns replacing halo'},
     {id:'fl_17', name:'暗靈信使',   sub:'死亡預言', icon:'🌙',
      scene:'fog-covered bridge between life and death, pale light from one side, absolute darkness on other',
      outfit:'ethereal messenger robes in grey and shadow, dark feather motif, pale death beauty'},
@@ -3113,7 +3115,7 @@ const CATS = [
   {id:'succubus_demon', name:'魅魔魔王', icon:'😈', tpl:'succubus_demon', entries:[
     {id:'sd_01', name:'魅魔·地獄誘惑', sub:'魔界女神', icon:'😈',
      scene:'infernal palace with obsidian columns and dark rose gardens, crimson torch flames, supernatural elegance',
-     outfit:'dark wing succubus attire — elegant dark corset gown with bat-wing motif, dark gemstone accessories', mk:'succubus_alluring'},
+     outfit:'elegant dark corset gown, dark gemstone accessories', mk:'succubus_alluring'},
     {id:'sd_02', name:'魅魔·月下誘眠', sub:'夢境魅惑', icon:'🌙',
      scene:'dream realm at midnight, floating dark rose petals, violet and black dream world atmosphere',
      outfit:'dream succubus flowing dress in dark violet and black, translucent overlay, dream-magic accessories', mk:'succubus_alluring'},
@@ -3146,10 +3148,10 @@ const CATS = [
      outfit:'cosmos-dark succubus attire with star-dust embroidery, translucent dark veil with glowing star points, otherworldly cosmic allure', mk:'succubus_alluring'},
     {id:'sd_12', name:'魅魔·冰晶魔后', sub:'永恆冰封', icon:'🧊',
      scene:'frozen supernatural palace, crystalline ice towers, eternal cold mist, arctic demonic domain',
-     outfit:'ice-crystal succubus gown with frost embellishment, blue-white dark wings, crown of frozen darkness, cold supernatural elegance', mk:'succubus_alluring'},
+     outfit:'ice-crystal succubus gown with frost embellishment, crown of frozen darkness, cold supernatural elegance', mk:'succubus_alluring'},
     {id:'sd_13', name:'魅魔·紫電幻蝶', sub:'幻蝶魅舞', icon:'🦋',
      scene:'surreal butterfly realm at dusk, giant phantom butterfly wings as backdrop, electric violet mist, enchanted twilight domain',
-     outfit:'butterfly-wing succubus dark gown in violet and black, iridescent dark butterfly wing motif accessories, bewitching dance styling', mk:'succubus_alluring'},
+     outfit:'succubus dark gown in violet and black, iridescent accessories, bewitching dance styling', mk:'succubus_alluring'},
     {id:'sd_14', name:'魔王·黃金帝國', sub:'財富征服', icon:'👑',
      scene:'opulent dark golden demon palace, mountains of treasure, obsidian throne room, sinister luxury beyond mortal reach',
      outfit:'golden demon sovereign gown with obsidian detail, crown of dark gold and gemstones, supreme dark wealth aesthetic', mk:'demon_lord'},
@@ -3166,7 +3168,7 @@ const CATS = [
      mk:'succubus_alluring', ratio:'r_916', lens:'l_85', ang:'sanfen', atm:'at_dark', camLang:'cl_fashion'},
     {id:'sd_17', name:'魅魔·深淵詠嘆', sub:'裂谷祭歌', icon:'🎼',
      scene:'vast abyss cathedral suspended over a bottomless chasm, broken stone bridges, dark choir balconies, red-violet light rising from below',
-     outfit:'black and deep violet opera-demon gown with sculptural shoulder pieces, jeweled waist chain, long trailing sleeves shaped like shadow wings',
+     outfit:'black and deep violet opera-demon gown with sculptural shoulder pieces, jeweled waist chain, long dramatic trailing sleeves',
      prop:'standing on a cracked bridge as if singing a silent aria, one hand lifted toward the abyss light, costume train flowing backward',
      fx:'abyss glow, floating music-like energy ribbons without readable notes, falling ash, cathedral dust beams, slow fabric motion',
      tone:'deep violet, abyss black, crimson glow, antique silver, smoky blue shadow',
@@ -3198,7 +3200,7 @@ const CATS = [
      mk:'succubus_alluring', ratio:'r_34', lens:'l_85', ang:'sanfen', atm:'at_ethereal', camLang:'cl_fashion'},
     {id:'sd_21', name:'魅魔·極光流瑩', sub:'寒夜流光', icon:'🌌',
      scene:'arctic night crystal field under vivid aurora, dark frozen lake, glowing ice flowers, firefly-like light drifting around the subject',
-     outfit:'black teal and aurora-green succubus couture gown with translucent wing-like cape, crystal beadwork, iridescent hair ornaments',
+     outfit:'black teal and aurora-green succubus couture gown with translucent layered cape, crystal beadwork, iridescent hair ornaments',
      prop:'standing on the frozen lake with cape spread by cold wind, one hand catching a glowing aurora firefly, face clear in the cool light',
      fx:'aurora curtains, tiny luminous fireflies, ice sparkle, cold breath mist, flowing cape motion',
      tone:'aurora green, teal blue, black ice, violet night, crystal white',
@@ -3289,7 +3291,7 @@ const CATS = [
     {id:'sd_36', name:'魅魔·夢境入侵', sub:'夢中迷宮', icon:'💤',
      scene:'ethereal dreamscape with floating staircases and melting clocks, illusory fog and soft violet light, dream-invasion atmosphere',
      prop:'reaching out from dream fog toward the viewer, seductive dream-predator pose',
-     outfit:'translucent violet and black silk succubus gown with floating hem, dark wing silhouette shadow, dream-illusion accessories', mk:'gothic'},
+     outfit:'translucent violet and black silk succubus gown with floating hem, dream-illusion accessories', mk:'gothic'},
     {id:'sd_37', name:'魔王·地獄法庭', sub:'冥界裁判', icon:'⚖️',
      scene:'underworld judgment hall with floating black scales, river of souls below, obsidian throne and dark gothic architecture',
      prop:'presiding over the judgment, hand raised with dark magic emanating, sovereign authority over life and death',
