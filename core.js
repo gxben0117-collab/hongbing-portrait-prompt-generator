@@ -759,6 +759,65 @@ function doRandom(){
 }
 
 // ═══════════════════════════════════════════
+// Search
+// ═══════════════════════════════════════════
+function doSearch(q){
+  const box = document.getElementById('searchResults');
+  if(!q||!q.trim()){ box.innerHTML=''; box.style.display='none'; return; }
+  const kw = q.trim().toLowerCase();
+  const results = [];
+  for(const cat of CATS){
+    for(const entry of cat.entries){
+      if(cat.name.includes(kw)||entry.name.toLowerCase().includes(kw)||(entry.sub&&entry.sub.toLowerCase().includes(kw))){
+        results.push({cat,entry});
+        if(results.length>=20) break;
+      }
+    }
+    if(results.length>=20) break;
+  }
+  if(!results.length){
+    box.innerHTML='<div class="search-empty">無結果</div>';
+    box.style.display='block';
+    return;
+  }
+  box.innerHTML = results.map(({cat,entry})=>
+    `<div class="search-item" onclick="selectEntry('${cat.id}','${entry.id}')">
+      <span class="si-cat">${cat.icon||''} ${cat.name}</span>
+      <span class="si-name">${entry.icon||''} ${entry.name}${entry.sub?' · '+entry.sub:''}</span>
+    </div>`
+  ).join('');
+  box.style.display='block';
+}
+function selectEntry(catId,entryId){
+  const cat=CATS.find(c=>c.id===catId);
+  if(!cat) return;
+  const entry=cat.entries.find(e=>e.id===entryId);
+  if(!entry) return;
+  curCatID=catId; curEntryID=entryId;
+  const tpl=TPLS[cat.tpl]||TPLS.xianxia;
+  curMKID=entry.mk||tpl.mk||'xianxia';
+  applyDefs(entry,cat.tpl);
+  renderAll();
+  const inp=document.getElementById('searchInput');
+  const box=document.getElementById('searchResults');
+  if(inp) inp.value='';
+  if(box){box.innerHTML='';box.style.display='none';}
+  const labelText='🔍 搜尋選到：'+cat.name+'　·　'+entry.name+(entry.sub?'　—　'+entry.sub:'');
+  ['randomTag','randomTag2'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.textContent=labelText;el.style.display='block';}
+  });
+  generate(true);
+  setTimeout(()=>{document.getElementById('outputShell').scrollIntoView({behavior:'smooth',block:'start'});},80);
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.search-wrap')){
+    const box=document.getElementById('searchResults');
+    if(box){box.innerHTML='';box.style.display='none';}
+  }
+});
+
+// ═══════════════════════════════════════════
 // Pro Panel
 // ═══════════════════════════════════════════
 function togglePro(){
