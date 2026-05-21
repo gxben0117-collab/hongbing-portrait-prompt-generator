@@ -26,6 +26,14 @@
 - `versions/index_v0.19.html`：舊版保留
 - `versions/index_v0.20.html`：舊版保留
 - `versions/index_v0.21.html`：舊版保留
+- `versions/index_v0.22.html`：舊版保留
+- `versions/index_v0.23.html`：舊版保留
+- `versions/index_v0.24.html`：舊版保留
+- `versions/index_v0.25.html`：舊版保留
+- `versions/index_v0.26.html`：舊版保留
+- `versions/index_v0.27.html`：舊版保留
+- `versions/index_v0.28.html`：舊版保留
+- `versions/index_v0.30.html`：舊版保留
 - `核心資料/核心咒語規範.md`：專案核心規則來源
 - `核心資料/風格範例.md`：大型風格範例資料來源
 - `docs/`：文件中心
@@ -47,3 +55,7 @@
 - `docs/development-log/V1.08.md`
 - `docs/development-log/V1.09.md`
 - `docs/development-log/V1.10.md`
+- `docs/development-log/V1.11.md`
+- `docs/development-log/V1.12.md`
+- `docs/development-log/V1.13.md`
+- `docs/development-log/V1.14.md`

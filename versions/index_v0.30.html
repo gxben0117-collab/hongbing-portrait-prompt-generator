@@ -167,9 +167,9 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
   <!-- 快速隨機 -->
   <div class="sec">
-    <button class="rand-btn" onclick="doRandomAndCopy()">
+    <button class="rand-btn" onclick="doRandom()">
       <span class="rand-icon">🎲</span>
-      快速隨機風格咒語複製
+      快速隨機
       <span style="font-size:11px;opacity:.7;margin-left:2px">從全庫隨機挑選</span>
     </button>
   </div>
@@ -319,7 +319,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       <div class="char-count" id="charCount"></div>
       <div class="out-actions" id="outActions" style="display:none">
         <button class="copy-btn" id="copyBtn" onclick="doCopy()">📋 複製咒語</button>
-        <button class="copy-btn" id="copyRandomBtn" onclick="doRandomAndCopy()">🎲 快速隨機風格咒語複製</button>
         <button class="clr-btn" onclick="doClear()">清除</button>
         <button class="clr-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆ 回首頁</button>
       </div>
@@ -332,7 +331,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 <div class="footer">
   <div class="footer-divider"></div>
   紅兵風格寫真咒語產生器 · 風格範例庫 · 核心咒語規範
-  <div style="margin-top:10px;font-size:10px;opacity:.6">紅兵開發 · v0.31 · 核心規範 v1.2</div>
+  <div style="margin-top:10px;font-size:10px;opacity:.6">紅兵開發 · v0.30 · 核心規範 v1.2</div>
 </div>
 
 </div>

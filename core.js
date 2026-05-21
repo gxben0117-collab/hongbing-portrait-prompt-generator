@@ -758,6 +758,11 @@ function doRandom(){
   setTimeout(()=>{ document.getElementById('outputShell').scrollIntoView({behavior:'smooth', block:'start'}); }, 80);
 }
 
+function doRandomAndCopy(){
+  doRandom();
+  setTimeout(()=>{ doCopy(); }, 180);
+}
+
 // ═══════════════════════════════════════════
 // Pro Panel
 // ═══════════════════════════════════════════
@@ -861,10 +866,16 @@ function doCopy(){
   const txt = document.getElementById('out').textContent;
   if(!txt||txt.includes('選好風格')) return;
   navigator.clipboard.writeText(txt).then(()=>{
-    const btn = document.getElementById('copyBtn');
-    btn.textContent = '✅ 已複製！';
-    btn.classList.add('done');
-    setTimeout(()=>{btn.textContent='📋 複製咒語';btn.classList.remove('done');},2000);
+    [
+      { id:'copyBtn', label:'📋 複製咒語' },
+      { id:'copyRandomBtn', label:'🎲 快速隨機風格咒語複製' }
+    ].forEach(({id, label})=>{
+      const btn = document.getElementById(id);
+      if(!btn) return;
+      btn.textContent = '✅ 已複製！';
+      btn.classList.add('done');
+      setTimeout(()=>{btn.textContent = label; btn.classList.remove('done');},2000);
+    });
   });
 }
 
