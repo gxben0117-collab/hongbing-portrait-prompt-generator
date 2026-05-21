@@ -93,6 +93,7 @@ const TPL_DEFAULTS = {
   realistic_life:{ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_natural',   atm:'at_warm',     camLang:'cl_social'},
   modern_lady:   {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_magazine'},
   dragon_beast:  {ang:'yang',     ratio:'r_916', lens:'l_28',  light:'ls_cinematic', atm:'at_dark',     camLang:'cl_movie'},
+  beast_tamer:   {ang:'huanjing', ratio:'r_23',  lens:'l_35',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_movie'},
   dynasty_palace:{ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_warm',     camLang:'cl_fashion'},
   classic_lit:   {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_fashion'},
   china_drama:   {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_movie'},
@@ -479,6 +480,16 @@ const TPLS = {
     comp:'epic full-body or dramatic portrait, mythological creature presence visible at environmental scale',
     quality:'premium epic fantasy art quality, ultra realistic armor and elemental creature environment, 8K HDR',
     mk:'dragon_epic', ancient:false
+  },
+  beast_tamer: {
+    char:'adult beast tamer or mythological creature companion heroine, genuine bond with animal companion, warm authority and mutual trust, clear recognizable face',
+    light:'dramatic natural lighting matched to beast habitat — golden forest light, moonlit clearing, mountain mist, aurora tundra, sacred temple glow',
+    outfit:'beast tamer specialty attire — leather companion gear, mythological companion robes, wildlife-tracker fashion, creature-bonded ceremonial dress',
+    fx:'creature companion visible at close or medium range near subject, bond gesture or eye contact between human and beast, habitat environmental atmosphere',
+    tone:'palette matched to the beast type — warm amber-gold for forest, cool blue-white for arctic, deep green for jungle, silver-moonlit for night',
+    comp:'environmental portrait showing subject and beast companion together, beast clearly visible and interactive, human-animal bond as the central visual story',
+    quality:'ultra realistic premium fantasy portrait, detailed creature texture and authentic companion interaction, cinematic depth, 8K HDR',
+    mk:'oriental', ancient:false
   },
   taiwan_travel: {
     char:'adult contemporary fashion heroine on Taiwan location photoshoot, clear recognizable face, fresh confident editorial presence',
