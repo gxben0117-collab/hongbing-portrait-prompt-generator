@@ -759,7 +759,7 @@ function doRandomAndCopy(){
   const lbl = document.getElementById('randLabel');
   if(lbl){
     lbl.textContent = cat.name + '　·　' + entry.name + (entry.sub ? '　—　' + entry.sub : '');
-    lbl.style.display = 'flex';
+    lbl.style.display = 'block';
   }
   setTimeout(()=>{ doCopy(); }, 180);
 }
