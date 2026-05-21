@@ -1,0 +1,10 @@
+# 核心資料不對外開放
+核心資料/
+
+# 內部文件
+CLAUDE.md
+目前進度_log.txt
+docs/
+
+# 暫存檔
+index -*.html
