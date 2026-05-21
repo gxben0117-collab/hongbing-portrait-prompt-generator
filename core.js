@@ -738,7 +738,7 @@ function selCamLang(id){
 // ═══════════════════════════════════════════
 // Random
 // ═══════════════════════════════════════════
-function doRandom(){
+function doRandom(suppressScroll){
   const catIdx = Math.floor(Math.random()*CATS.length);
   const cat = CATS[catIdx];
   const entryIdx = Math.floor(Math.random()*cat.entries.length);
@@ -749,17 +749,18 @@ function doRandom(){
   curMKID = entry.mk || tpl.mk || 'xianxia';
   applyDefs(entry, cat.tpl);
   renderAll();
-  const labelText = '🎲 隨機選到：' + cat.name + '　·　' + entry.name + (entry.sub ? '　—　' + entry.sub : '');
-  ['randomTag','randomTag2'].forEach(id=>{
-    const el = document.getElementById(id);
-    if(el){ el.textContent = labelText; el.style.display = 'block'; }
-  });
   generate(true);
-  setTimeout(()=>{ document.getElementById('outputShell').scrollIntoView({behavior:'smooth', block:'start'}); }, 80);
+  if(!suppressScroll) setTimeout(()=>{ document.getElementById('outputShell').scrollIntoView({behavior:'smooth', block:'start'}); }, 80);
+  return {cat, entry};
 }
 
 function doRandomAndCopy(){
-  doRandom();
+  const {cat, entry} = doRandom(true);
+  const lbl = document.getElementById('randLabel');
+  if(lbl){
+    lbl.textContent = cat.name + '　·　' + entry.name + (entry.sub ? '　—　' + entry.sub : '');
+    lbl.style.display = 'flex';
+  }
   setTimeout(()=>{ doCopy(); }, 180);
 }
 
@@ -862,30 +863,29 @@ function generate(suppressScroll){
   if(!suppressScroll) setTimeout(()=>{document.getElementById('copyBtn').scrollIntoView({behavior:'smooth',block:'center'});}, 80);
 }
 
+function generateAndCopy(){
+  generate();
+  setTimeout(()=>{ doCopy(); }, 80);
+}
+
 function doCopy(){
   const txt = document.getElementById('out').textContent;
   if(!txt||txt.includes('選好風格')) return;
   navigator.clipboard.writeText(txt).then(()=>{
-    [
-      { id:'copyBtn', label:'📋 複製咒語' },
-      { id:'copyRandomBtn', label:'🎲 快速隨機風格咒語複製' }
-    ].forEach(({id, label})=>{
-      const btn = document.getElementById(id);
-      if(!btn) return;
-      btn.textContent = '✅ 已複製！';
-      btn.classList.add('done');
-      setTimeout(()=>{btn.textContent = label; btn.classList.remove('done');},2000);
-    });
+    const btn = document.getElementById('copyBtn');
+    if(!btn) return;
+    btn.textContent = '✅ 已複製！';
+    btn.classList.add('done');
+    setTimeout(()=>{btn.textContent='📋 複製咒語';btn.classList.remove('done');},2000);
   });
 }
 
 function doClear(){
   const out = document.getElementById('out');
-  out.innerHTML = '<span class="output-ph">選好風格和場景後，點「生成咒語」即可獲得完整英文 prompt。</span>';
+  out.innerHTML = '<span class="output-ph">選好風格和場景後，點「產出咒語 + 複製咒語」即可獲得完整英文 prompt。</span>';
   document.getElementById('outputShell').classList.remove('has-content');
   document.getElementById('charCount').textContent = '';
   document.getElementById('outActions').style.display = 'none';
-  ['randomTag','randomTag2'].forEach(id=>{ const el=document.getElementById(id); if(el){ el.style.display='none'; el.textContent=''; } });
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
