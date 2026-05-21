@@ -749,9 +749,13 @@ function doRandom(){
   curMKID = entry.mk || tpl.mk || 'xianxia';
   applyDefs(entry, cat.tpl);
   renderAll();
-  const pill = document.querySelector('.cat-pill.active');
-  if(pill) pill.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-  document.getElementById('presetGrid').scrollIntoView({behavior:'smooth',block:'start'});
+  const tag = document.getElementById('randomTag');
+  if(tag){
+    tag.textContent = '🎲 隨機選到：' + cat.name + '　·　' + entry.name + (entry.sub ? '　—　' + entry.sub : '');
+    tag.style.display = '';
+  }
+  generate(true);
+  setTimeout(()=>{ document.getElementById('outputShell').scrollIntoView({behavior:'smooth', block:'start'}); }, 80);
 }
 
 // ═══════════════════════════════════════════
@@ -841,7 +845,7 @@ function buildPrompt(){
   return parts.join('\n\n');
 }
 
-function generate(){
+function generate(suppressScroll){
   const txt = buildPrompt();
   if(!txt) return;
   const out = document.getElementById('out');
@@ -850,7 +854,7 @@ function generate(){
   shell.classList.add('has-content');
   document.getElementById('charCount').textContent = `${txt.length.toLocaleString()} 字元`;
   document.getElementById('outActions').style.display = 'flex';
-  setTimeout(()=>{document.getElementById('copyBtn').scrollIntoView({behavior:'smooth',block:'center'});}, 80);
+  if(!suppressScroll) setTimeout(()=>{document.getElementById('copyBtn').scrollIntoView({behavior:'smooth',block:'center'});}, 80);
 }
 
 function doCopy(){
