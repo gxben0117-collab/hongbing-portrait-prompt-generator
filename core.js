@@ -875,6 +875,7 @@ function doClear(){
   document.getElementById('charCount').textContent = '';
   document.getElementById('outActions').style.display = 'none';
   ['randomTag','randomTag2'].forEach(id=>{ const el=document.getElementById(id); if(el){ el.style.display='none'; el.textContent=''; } });
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
 // Init — apply defaults for initial category
