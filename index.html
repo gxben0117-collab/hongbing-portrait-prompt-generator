@@ -42,23 +42,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .rand-btn:hover{background:linear-gradient(135deg,rgba(40,70,160,.6),rgba(80,30,130,.5));border-color:rgba(130,170,255,.5);box-shadow:0 4px 20px rgba(80,100,255,.2);transform:translateY(-1px);}
 .rand-icon{font-size:18px;display:inline-block;transition:transform .4s ease;}
 .rand-btn:hover .rand-icon{transform:rotate(180deg);}
-.rand-row{display:flex;gap:10px;align-items:stretch;}
-.rand-row .rand-btn{flex:1;min-width:0;}
-.search-wrap{position:relative;width:44%;flex-shrink:0;}
-.search-input-row{display:flex;gap:6px;align-items:stretch;}
-.search-input{flex:1;min-width:0;box-sizing:border-box;min-height:50px;padding:12px 12px;background:rgba(20,20,40,.7);border:1px solid rgba(100,140,255,.3);border-radius:var(--radius);color:#b8ccff;font-size:13px;font-family:inherit;outline:none;transition:border-color .3s;}
-.search-input::placeholder{color:rgba(184,204,255,.45);}
-.search-input:focus{border-color:rgba(130,170,255,.6);}
-.search-btn{padding:0 14px;background:rgba(80,100,200,.4);border:1px solid rgba(100,140,255,.35);border-radius:var(--radius);color:#b8ccff;font-size:16px;cursor:pointer;flex-shrink:0;transition:background .2s;}
-.search-btn:hover{background:rgba(100,130,220,.6);}
-.search-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0e0e1a;border:1px solid rgba(130,170,255,.35);border-radius:var(--radius-sm);z-index:999;max-height:280px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.6);}
-.search-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);transition:background .2s;}
-.search-item:last-child{border-bottom:none;}
-.search-item:hover{background:rgba(100,140,255,.15);}
-.si-cat{display:block;font-size:10px;color:rgba(184,204,255,.55);letter-spacing:.5px;margin-bottom:2px;}
-.si-name{display:block;font-size:13px;color:#c8d8ff;font-weight:500;}
-.search-empty{padding:14px;text-align:center;font-size:12px;color:rgba(184,204,255,.4);}
-#app.search-open .cat-strip,#app.search-open .preset-grid{pointer-events:none;}
 
 /* ─── Category Strip ─── */
 .cat-strip{display:grid;grid-template-rows:repeat(3,auto);grid-auto-flow:column;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
@@ -165,7 +148,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 </head>
 <body>
 <div id="app">
-<div id="searchBackdrop" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:500;pointer-events:none"></div>
 
 <div class="hero">
   <div class="hero-glow"></div>
@@ -184,19 +166,12 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   </div>
 
   <!-- 快速隨機 -->
-  <div class="sec rand-row">
+  <div class="sec">
     <button class="rand-btn" onclick="doRandom()">
       <span class="rand-icon">🎲</span>
       快速隨機
       <span style="font-size:11px;opacity:.7;margin-left:2px">從全庫隨機挑選</span>
     </button>
-    <div class="search-wrap">
-      <div class="search-input-row">
-        <input type="text" id="searchInput" class="search-input" placeholder="搜尋風格名稱…" oninput="doSearch(this.value)" onkeydown="if(event.key==='Enter')doSearch(this.value)" autocomplete="off" />
-        <button class="search-btn" onclick="doSearch(document.getElementById('searchInput').value)">🔍</button>
-      </div>
-      <div id="searchResults" class="search-results" style="display:none"></div>
-    </div>
   </div>
 
   <!-- 當前選擇 -->
