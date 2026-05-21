@@ -58,6 +58,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .si-cat{display:block;font-size:10px;color:rgba(184,204,255,.55);letter-spacing:.5px;margin-bottom:2px;}
 .si-name{display:block;font-size:13px;color:#c8d8ff;font-weight:500;}
 .search-empty{padding:14px;text-align:center;font-size:12px;color:rgba(184,204,255,.4);}
+#app.search-open .cat-strip,#app.search-open .preset-grid{pointer-events:none;}
 
 /* ─── Category Strip ─── */
 .cat-strip{display:grid;grid-template-rows:repeat(3,auto);grid-auto-flow:column;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
@@ -163,8 +164,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 </style>
 </head>
 <body>
-<div id="searchBackdrop" style="display:none;position:fixed;inset:0;z-index:998" onclick="closeSearch()"></div>
 <div id="app">
+<div id="searchBackdrop" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:500;pointer-events:none"></div>
 
 <div class="hero">
   <div class="hero-glow"></div>

@@ -766,6 +766,8 @@ function closeSearch(){
   const bd=document.getElementById('searchBackdrop');
   if(box){box.innerHTML='';box.style.display='none';}
   if(bd) bd.style.display='none';
+  const app=document.getElementById('app');
+  if(app) app.classList.remove('search-open');
 }
 function doSearch(q){
   const box = document.getElementById('searchResults');
@@ -786,6 +788,8 @@ function doSearch(q){
     box.innerHTML='<div class="search-empty">無結果</div>';
     box.style.display='block';
     if(bd) bd.style.display='block';
+    const app2=document.getElementById('app');
+    if(app2) app2.classList.add('search-open');
     return;
   }
   box.innerHTML = results.map(({cat,entry})=>
@@ -796,6 +800,8 @@ function doSearch(q){
   ).join('');
   box.style.display='block';
   if(bd) bd.style.display='block';
+  const app=document.getElementById('app');
+  if(app) app.classList.add('search-open');
 }
 function selectEntry(catId,entryId){
   const cat=CATS.find(c=>c.id===catId);
@@ -818,6 +824,15 @@ function selectEntry(catId,entryId){
   generate(true);
   setTimeout(()=>{document.getElementById('outputShell').scrollIntoView({behavior:'smooth',block:'start'});},80);
 }
+
+document.addEventListener('click', function(e){
+  const results = document.getElementById('searchResults');
+  if(results && results.style.display !== 'none'){
+    if(!e.target.closest('.search-wrap')){
+      closeSearch();
+    }
+  }
+});
 
 // ═══════════════════════════════════════════
 // Pro Panel
