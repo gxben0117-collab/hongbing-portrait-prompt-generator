@@ -23,8 +23,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 #app{position:relative;z-index:1}
 .hero{text-align:center;padding:72px 24px 56px;position:relative;overflow:hidden;}
 .hero-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:700px;height:300px;background:radial-gradient(ellipse at 50% 0%,rgba(201,146,42,.18) 0%,transparent 70%);pointer-events:none;}
-.hero-line{width:1px;height:40px;background:linear-gradient(to bottom,transparent,var(--gold),transparent);margin:0 auto 28px;animation:pulse-line 3s ease-in-out infinite;}
-@keyframes pulse-line{0%,100%{opacity:.4}50%{opacity:1}}
 .hero-eyebrow{font-size:11px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;font-weight:500;opacity:.85;margin-bottom:16px;}
 .hero-title{font-size:clamp(28px,5vw,52px);font-weight:700;letter-spacing:-.5px;line-height:1.1;background:linear-gradient(160deg,#f8f0e0 0%,#d4aa60 50%,#f0e0c0 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;}
 .hero-title em{font-style:normal;-webkit-text-fill-color:transparent;background:linear-gradient(135deg,#e8c060,#c07020);-webkit-background-clip:text;background-clip:text;}
@@ -155,7 +153,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
 <div class="hero">
   <div class="hero-glow"></div>
-  <div class="hero-line"></div>
   <div class="hero-eyebrow">紅兵風格寫真工坊</div>
   <h1 class="hero-title">紅兵風格<em>寫真</em><br>咒語產生器</h1>
   <p class="hero-sub">從風格範例庫挑選場景，生成咒語，附上照片貼給 ChatGPT<br>即可切換古裝、旅拍、婚紗、COS、女神與各式高級寫真風格</p>
