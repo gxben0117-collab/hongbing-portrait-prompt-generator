@@ -752,7 +752,7 @@ function doRandom(){
   const labelText = '🎲 隨機選到：' + cat.name + '　·　' + entry.name + (entry.sub ? '　—　' + entry.sub : '');
   ['randomTag','randomTag2'].forEach(id=>{
     const el = document.getElementById(id);
-    if(el){ el.textContent = labelText; el.style.display = ''; }
+    if(el){ el.textContent = labelText; el.style.display = 'block'; }
   });
   generate(true);
   setTimeout(()=>{ document.getElementById('outputShell').scrollIntoView({behavior:'smooth', block:'start'}); }, 80);
@@ -874,7 +874,7 @@ function doClear(){
   document.getElementById('outputShell').classList.remove('has-content');
   document.getElementById('charCount').textContent = '';
   document.getElementById('outActions').style.display = 'none';
-  ['randomTag','randomTag2'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
+  ['randomTag','randomTag2'].forEach(id=>{ const el=document.getElementById(id); if(el){ el.style.display='none'; el.textContent=''; } });
 }
 
 // Init — apply defaults for initial category
