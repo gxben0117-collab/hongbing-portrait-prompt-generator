@@ -761,9 +761,16 @@ function doRandom(){
 // ═══════════════════════════════════════════
 // Search
 // ═══════════════════════════════════════════
+function closeSearch(){
+  const box=document.getElementById('searchResults');
+  const bd=document.getElementById('searchBackdrop');
+  if(box){box.innerHTML='';box.style.display='none';}
+  if(bd) bd.style.display='none';
+}
 function doSearch(q){
   const box = document.getElementById('searchResults');
-  if(!q||!q.trim()){ box.innerHTML=''; box.style.display='none'; return; }
+  const bd = document.getElementById('searchBackdrop');
+  if(!q||!q.trim()){ closeSearch(); return; }
   const kw = q.trim().toLowerCase();
   const results = [];
   for(const cat of CATS){
@@ -778,6 +785,7 @@ function doSearch(q){
   if(!results.length){
     box.innerHTML='<div class="search-empty">無結果</div>';
     box.style.display='block';
+    if(bd) bd.style.display='block';
     return;
   }
   box.innerHTML = results.map(({cat,entry})=>
@@ -787,6 +795,7 @@ function doSearch(q){
     </div>`
   ).join('');
   box.style.display='block';
+  if(bd) bd.style.display='block';
 }
 function selectEntry(catId,entryId){
   const cat=CATS.find(c=>c.id===catId);
@@ -799,9 +808,8 @@ function selectEntry(catId,entryId){
   applyDefs(entry,cat.tpl);
   renderAll();
   const inp=document.getElementById('searchInput');
-  const box=document.getElementById('searchResults');
   if(inp) inp.value='';
-  if(box){box.innerHTML='';box.style.display='none';}
+  closeSearch();
   const labelText='🔍 搜尋選到：'+cat.name+'　·　'+entry.name+(entry.sub?'　—　'+entry.sub:'');
   ['randomTag','randomTag2'].forEach(id=>{
     const el=document.getElementById(id);
@@ -810,12 +818,6 @@ function selectEntry(catId,entryId){
   generate(true);
   setTimeout(()=>{document.getElementById('outputShell').scrollIntoView({behavior:'smooth',block:'start'});},80);
 }
-document.addEventListener('click',function(e){
-  if(!e.target.closest('.search-wrap')){
-    const box=document.getElementById('searchResults');
-    if(box){box.innerHTML='';box.style.display='none';}
-  }
-});
 
 // ═══════════════════════════════════════════
 // Pro Panel
