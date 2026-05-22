@@ -36,6 +36,7 @@
 - `versions/index_v0.30.html`：舊版保留
 - `versions/index_v0.35.html`：舊版保留
 - `versions/index_v0.36.html`：舊版保留
+- `versions/index_v0.37.html`：舊版保留
 - `核心資料/核心咒語規範.md`：專案核心規則來源
 - `核心資料/風格範例.md`：大型風格範例資料來源
 - `docs/`：文件中心
