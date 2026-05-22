@@ -45,10 +45,18 @@
 3. 微調妝容、角度、比例、鏡頭、燈光與氛圍
 4. 產生咒語後，與本人照片放在 ChatGPT 同一則訊息送出
 
+## 工程來源規則
+
+- 正式工程來源：`index.html`、`core.js`、`scripts/`、`docs/`、`核心資料/`
+- `dist/` 是建置產物，不是主要修改來源
+- 外部分發資料夾（如 `output/`）是同步副本，不是主要修改來源
+- `核心資料/核心咒語規範.md` 未獲明確同意不得修改
+
 ## 文件入口
 
 - `docs/README.md`
 - `docs/project/專案總覽.md`
+- `docs/project/正式工程路線圖.md`
 - `docs/版本規則.md`
 - `docs/development-log/V1.00.md`
 - `docs/development-log/V1.07.md`

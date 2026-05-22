@@ -62,6 +62,145 @@ const CAMERA_LANG = [
   {id:'cl_social',   name:'社群美圖', desc:'Social media optimized camera language: visually appealing clean composition, strong subject presence, shareable aesthetic quality, modern lifestyle visual.'},
 ];
 
+const SAFE_POSE_VARIANTS = [
+  'Use a varied but identity-safe pose: front-facing head with a three-quarter body angle, subtle shoulder turn, and natural arm placement that keeps the face open and recognizable.',
+  'Prefer a non-static editorial pose such as a gentle seated angle, a slow step forward, or a calm turn-back glance, while keeping the face clearly directed toward camera.',
+  'Encourage graceful movement in sleeves, cape, skirt, or hair so the image feels alive, but keep the neck, jawline, and torso alignment physically natural and photo-realistic.',
+  'Hands, props, and gestures should stay below eye level or clearly away from the central face area unless the face remains fully readable without distortion.',
+];
+
+const SAFE_POSE_BY_CAMERA_LANG = {
+  cl_fashion: [
+    'Fashion pose guidance: avoid flat standing symmetry; prefer one hip relaxed, shoulders softly offset, and an elegant hand pose that enhances silhouette without hiding the face.',
+    'Fashion pose guidance: use editorial asymmetry such as seated side-angle, leaning lightly against architecture, or one-step motion with direct facial visibility.',
+  ],
+  cl_travel: [
+    'Travel pose guidance: prefer walking, turning, looking over the shoulder, lightly touching a railing, veil, suitcase, or landscape element to create natural location interaction.',
+    'Travel pose guidance: the body can be in motion, but the head should remain mostly front-facing or three-quarter-facing so likeness stays stable.',
+  ],
+  cl_movie: [
+    'Cinematic pose guidance: prefer narrative hero poses such as drawing a sword, holding a prop low, stepping forward, seated on a throne, or turning mid-command while keeping facial features unobstructed.',
+    'Cinematic pose guidance: allow stronger gesture and costume flow, but avoid extreme twisting, sprinting, jumping, or any action that breaks facial-to-body coherence.',
+  ],
+  cl_magazine: [
+    'Magazine cover pose guidance: vary between seated, leaning, shoulder-turn, and prop-holding cover poses rather than neutral standing, while maintaining strong eye contact and a clean face silhouette.',
+  ],
+  cl_social: [
+    'Social portrait pose guidance: favor approachable candid poses such as soft laugh, relaxed seated angle, gentle walking, or light hand interaction with hair, flowers, or fabric below the face line.',
+  ],
+};
+
+const CATEGORY_POSE_LIBRARY = {
+  travel: {
+    prop: [
+      'walking slowly through the location with a relaxed travel-editorial body line, one hand lightly touching a railing, veil, hat brim, camera strap, suitcase handle, or nearby architectural detail while keeping the face open to camera',
+      'standing with a gentle turn-back glance toward camera, body angled toward the scenery, one hand naturally interacting with fabric, coat edge, skirt, or travel prop below the face line',
+      'pausing mid-step in a candid travel pose, shoulders relaxed, natural weight shift, subtle motion in clothing and hair, direct or near-direct facial visibility maintained',
+    ],
+    comp: [
+      'vertical environmental travel portrait, subject clearly readable within the location, face unobstructed, body slightly angled for motion, background landmark still recognizable',
+      'vertical three-quarter or full-body travel composition, natural walking or turn-back storytelling, clear facial visibility, foreground and background layered for depth',
+    ],
+  },
+  wedding: {
+    prop: [
+      'seated gracefully or half-seated with the gown spread naturally, one hand arranging veil, bouquet, or skirt folds while keeping neckline, jawline, and face fully visible',
+      'standing in bridal editorial posture with a gentle shoulder turn, lightly lifting the dress hem or veil below the waist, calm romantic gaze toward camera',
+      'slow bridal step with trailing gown and soft fabric motion, one hand holding bouquet or dress line low, elegant face-forward or three-quarter facial visibility',
+    ],
+    comp: [
+      'vertical bridal portrait with clear face, readable gown silhouette, and soft foreground layering from flowers, veil, or fabric without obscuring the subject',
+      'vertical three-quarter to full-body wedding composition, face large enough to preserve identity, skirt and train clearly visible, elegant depth behind the subject',
+    ],
+  },
+  hanfu: {
+    prop: [
+      'holding a folding fan, lantern, flower branch, jade ornament, sleeve edge, or sword hilt in a calm classical gesture below the face line, with a composed three-quarter stance',
+      'standing or seated in a poised traditional pose, one hand adjusting a long sleeve or ribbon while the other rests naturally near the waist, face turned clearly toward camera',
+      'slow step, seated pavilion pose, or graceful turn-back posture with classical costume movement, preserving a natural neck line and front-face-friendly identity stability',
+    ],
+    comp: [
+      'vertical classical portrait with clear face, readable sleeve and hair ornament details, and elegant three-quarter body angle instead of flat frontal stiffness',
+      'vertical full-body or three-quarter hanfu composition, costume layers and silhouette clearly visible, traditional prop integrated without covering the face',
+    ],
+  },
+  queen: {
+    prop: [
+      'seated on a throne, standing on palace steps, or holding a scepter, decree, sword, or ceremonial object low and controlled, with calm sovereign posture and direct facial authority',
+      'standing slightly elevated above the environment with one hand resting on throne arm, sword pommel, railing, or cape edge, keeping the face centered and dominant',
+      'issuing a quiet command, descending a ceremonial stair, or turning from the throne with controlled royal movement, maintaining clear face-to-body coherence',
+    ],
+    comp: [
+      'vertical regal portrait with throne, steps, or architectural axis reinforcing authority, face clearly readable, body posed in a stable commanding silhouette',
+      'vertical queenly composition with subtle low angle or central axis, strong facial clarity, costume and power symbols fully legible without overcomplicated action',
+    ],
+  },
+};
+
+const CATEGORY_POSE_MAP = {
+  taiwan_travel: 'travel',
+  europe_travel: 'travel',
+  japan_travel: 'travel',
+  korea_sea: 'travel',
+  world_travel: 'travel',
+  china_mark: 'travel',
+  mountain_sea: 'travel',
+  wedding_diamond: 'wedding',
+  hanfu: 'hanfu',
+  dynasty_palace: 'hanfu',
+  tang_grandeur: 'hanfu',
+  song_grace: 'hanfu',
+  ming_grace: 'hanfu',
+  qing_grace: 'hanfu',
+  xianxia: 'hanfu',
+  oriental: 'hanfu',
+  chinese_story: 'hanfu',
+  classic_lit: 'hanfu',
+  jinyong: 'hanfu',
+  china_drama: 'hanfu',
+  drama: 'hanfu',
+  hotdrama: 'hanfu',
+  queen: 'queen',
+  succubus_demon: 'queen',
+  fallen_angel: 'queen',
+  holy_angel: 'queen',
+  goddess_myth: 'queen',
+  myth: 'queen',
+};
+
+function pickRandom(list){
+  if(!Array.isArray(list) || list.length === 0) return '';
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function getCategoryPosePack(cat){
+  const group = CATEGORY_POSE_MAP[cat.id] || CATEGORY_POSE_MAP[cat.tpl] || null;
+  return group ? CATEGORY_POSE_LIBRARY[group] : null;
+}
+
+function buildPoseGuidance({cat, entry, camLang, proAction}){
+  const guidance = [];
+  const posePack = getCategoryPosePack(cat);
+  if(proAction){
+    guidance.push('Honor the selected action, but refine it if needed so the final pose remains natural, front-face-friendly, and identity-safe.');
+  } else {
+    guidance.push(pickRandom(SAFE_POSE_VARIANTS));
+    guidance.push(pickRandom(SAFE_POSE_BY_CAMERA_LANG[camLang.id] || []));
+    if(posePack){
+      guidance.push(`Category pose guidance: ${pickRandom(posePack.prop)}`);
+      guidance.push(`Category composition guidance: ${pickRandom(posePack.comp)}`);
+    }
+  }
+
+  if(!entry.prop){
+    guidance.push('Do not default to a plain symmetrical standing pose. Prefer subtle pose variation such as seated posture, slow walking, shoulder turn, looking back, holding fabric, or interacting with the environment.');
+  }
+
+  guidance.push('Pose realism rule: prioritize front-facing or three-quarter facial visibility, natural spine alignment, and believable weight distribution. Avoid extreme overhead arm poses, extreme back-bends, full back-facing poses, aggressive foreshortening, or complex choreography that could desynchronize face and body.');
+  guidance.push('Reference-photo compatibility rule: because many uploaded photos are front-facing, adapt every pose so the face can stay stable, readable, and naturally connected to the body.');
+  return guidance.filter(Boolean).join(' ');
+}
+
 // ═══════════════════════════════════════════
 // 場景智慧預設值（選分類/場景時自動套用）
 // ═══════════════════════════════════════════
@@ -806,6 +945,7 @@ function buildPrompt(){
   const atm      = ATM.find(a=>a.id===curAtmID)||ATM[0];
   const identity = IDENTITY_LOCK.find(i=>i.id===curIdentityID)||IDENTITY_LOCK[0];
   const camLang  = CAMERA_LANG.find(c=>c.id===curCamLangID)||CAMERA_LANG[0];
+  const posePack = getCategoryPosePack(cat);
 
   // Build scene description
   let sceneDesc = f('scene');
@@ -817,9 +957,13 @@ function buildPrompt(){
   const proParts = [];
   if(proShot)   proParts.push(`Camera framing priority: ${proShot}.`);
   if(proAction) proParts.push(`Action priority: ${proAction}.`);
+  proParts.push(buildPoseGuidance({ cat, entry, camLang, proAction }));
   proParts.push(`Action safety: face must remain fully visible — if any action would obscure the face, modify to keep face open and clearly lit.`);
   proParts.push(`Costume completeness: full costume must be visible — no cropped hems, no missing sleeves, no cut-off accessories.`);
   if(proCustom) proParts.push(proCustom);
+
+  const fallbackProp = !f('prop') && posePack ? pickRandom(posePack.prop) : '';
+  const fallbackComp = !f('comp') && posePack ? pickRandom(posePack.comp) : '';
 
   const parts = [
     CORE_GATE,
@@ -837,10 +981,10 @@ function buildPrompt(){
     `Makeup surface design: ${mk.desc}.`,
     tpl.ancient ? ANCIENT_BOOST : '',
     f('outfit') ? `Costume and styling: ${f('outfit')}.` : '',
-    f('prop') ? `Props and action: ${f('prop')}.` : '',
+    f('prop') ? `Props and action: ${f('prop')}.` : (fallbackProp ? `Props and action: ${fallbackProp}.` : ''),
     `Action, props, and composition must work together coherently: the action naturally incorporates the props, and the camera angle frames both the face and costume details optimally.`,
     `Prop and effect safety: no prop, hair ornament, veil, smoke, particle, or visual effect may cover the eyes, nose, mouth, or face outline.`,
-    f('comp') ? `Camera and composition: ${f('comp')}. Angle guidance: ${ang.desc}.` : `Angle guidance: ${ang.desc}.`,
+    f('comp') ? `Camera and composition: ${f('comp')}. Angle guidance: ${ang.desc}.` : (fallbackComp ? `Camera and composition: ${fallbackComp}. Angle guidance: ${ang.desc}.` : `Angle guidance: ${ang.desc}.`),
     f('fx') ? `Visual effects: ${f('fx')}.` : '',
     f('tone') ? `Color tone: ${f('tone')}.` : '',
     f('quality') ? `${f('quality')}.` : QUALITY_BASE,

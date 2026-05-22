@@ -1,10 +1,36 @@
-# 核心資料不對外開放
+# ===== 核心資料（不公開） =====
 核心資料/
-
-# 內部文件
+docs/
 CLAUDE.md
 目前進度_log.txt
-docs/
 
-# 暫存檔
-index -*.html
+# ===== Python =====
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# ===== Node.js =====
+node_modules/
+
+# ===== 環境變數 =====
+.env
+.env.*
+
+# ===== Build / Output =====
+dist/
+build/
+output/
+temp/
+
+# ===== VS Code =====
+.vscode/settings.json
+
+# ===== 系統檔 =====
+.DS_Store
+Thumbs.db
+
+# ===== HTML 暫存 =====
+index-*.html

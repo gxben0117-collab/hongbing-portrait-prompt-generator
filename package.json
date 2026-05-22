@@ -1,0 +1,11 @@
+{
+  "name": "hongbing-portrait-prompt-generator",
+  "private": true,
+  "version": "0.35.0",
+  "description": "Hongbing portrait prompt generator engineering workspace",
+  "scripts": {
+    "check:structure": "python scripts/check_structure.py",
+    "build:dist": "python scripts/build_dist.py",
+    "report:data-gaps": "python scripts/report_data_gaps.py"
+  }
+}
