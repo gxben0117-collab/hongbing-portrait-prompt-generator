@@ -11,9 +11,32 @@ const CORE_STRUCTURE = `PROMPT STRUCTURING & STYLE: Compose prompts in the follo
 const CORE_REALISM = `VISUAL REALISM PRIORITY: The final image should feel like a believable real photograph of the uploaded person captured in a natural moment rather than a synthetic AI-generated beauty render. Avoid overly rigid symmetry, mannequin-like posing, excessive glamour filtering, artificial skin smoothing, or repetitive static composition.`;
 const CORE_BEAUTY_SAFETY = `[CRITICAL BEAUTY SAFETY RULE] The styling keywords (such as fantasy, editorial, luxury, historical, goddess) describe environment, costume, and artistic direction ONLY. Beauty-related styling must NEVER idealize, refine, beautify, perfect, or reconstruct the uploaded person's facial structure, proportions, eye shapes, or recognizable identity. Preserve authentic facial uniqueness, natural asymmetry, realistic skin micro-relief, visible pores, and original facial characteristics. The subject must look like a real, naturally photographed person under the scene's lighting, not a synthetic AI render or smoothed influencer template.`;
 const CORE_FACE_BODY_COHERENCE = `FACE-BODY COHERENCE OVERRIDE (CRITICAL): Exact facial identity stability has higher priority than dramatic posing. The head angle, neck line, shoulder alignment, torso twist, and body action must remain naturally compatible with the uploaded person's face and likely facial viewpoint. If a pose would make the face feel pasted onto the body, over-twisted, mismatched in angle, or biomechanically inconsistent with the source face, reduce the pose intensity immediately and choose a safer action. When identity stability and pose drama conflict, pose drama must yield. Favor believable head-to-neck-to-shoulder continuity, front-facing or three-quarter facial compatibility, and natural body support for the original face.`;
+const CORE_PROPORTION = `PROPORTION COHERENCE OVERRIDE (CRITICAL): Maintain realistic head-to-body proportion, natural shoulder-width support, believable neck transition, stable torso presence, and camera distance that prevents oversized-head appearance. Avoid chibi proportion, enlarged cranial silhouette caused by hair ornaments, overly narrow shoulders under heavy costume, or face scale that overwhelms the body. If styling, hair volume, or camera choices make the head look too large relative to the costume silhouette, reduce ornament bulk, widen body support, and pull the camera slightly farther back.`;
+const CORE_MAKEUP_SAFETY = `MAKEUP SAFETY OVERRIDE (CRITICAL): Makeup is surface styling only. It may adjust color, texture, polish, and mood, but must never alter eye shape, eyelid structure, lip shape, jaw impression, age appearance, or turn the person into an AI beauty template. Avoid makeup instructions that reconstruct the face into actress-face, influencer-face, V-face, porcelain-skin perfection, or generic luxury beauty.`;
+const CORE_REFERENCE_OVERRIDE = `REFERENCE PRIORITY OVERRIDE (CRITICAL): The uploaded reference photo has absolute priority. If any style direction, costume fantasy, goddess wording, heroine styling, celebrity aura, luxury beauty phrase, or cinematic phrase conflicts with identity preservation, identity preservation must override style immediately.`;
 const ANCIENT_BOOST = `Ancient Chinese costume photoshoot styling (professional cinematic level while preserving uploaded person's exact identity): hair must be styled in traditional Chinese fashion with elaborate updos or cascading pinned sections. Hair accessories are mandatory and abundant: hairpins, step-shake ornaments, jade combs, floral hair clusters, tasseled ornaments, hair crowns, phoenix accessories, bead strands throughout the hair. Costume layering is required: inner robe, outer robe, wide flowing sleeves, decorative sash, embroidered waist ornament with jade pendants, and era-appropriate accessories. Hand props as contextually appropriate: folding fan, silk ribbons, ancient lamp, flower branch, jade flute, or sword hilt. The environment must match the era: ancient Chinese architecture with carved pillars and tile roofs, classical gardens, misty mountain temples, bamboo groves, or mythological celestial settings.`;
-const AVOID_LOCK = `identity drift, replaced face, different person, beauty-filter appearance, plastic skin, over-smoothed skin, generic influencer face, AI beauty template, V-shaped face, doll face, altered facial proportions, idealized bone structure, perfect face, refined features, flawless skin, luminous skin overlay, celestial radiance effect, editorial perfection filter, ultra glamorous face treatment, luxury beauty enhancement, cat-eye liner reshaping, heavy eyeliner distortion, intense dramatic smoky eye restructuring, dangerous beauty filter, mannequin-like posing, artificial symmetry, frozen expressions, anatomy distortion, deformed hands, fused fingers, extra fingers, disconnected arms, floating limbs, excessive glamour filtering, repetitive static composition, low quality, watermark, anachronistic modern elements`;
+const AVOID_LOCK = `identity drift, replaced face, different person, beauty-filter appearance, plastic skin, over-smoothed skin, generic influencer face, AI beauty template, actress-face reconstruction, celebrity-face replacement, heroine template face, V-shaped face, doll face, altered facial proportions, idealized bone structure, perfect face, refined features, flawless skin, luminous skin overlay, celestial radiance effect, editorial perfection filter, ultra glamorous face treatment, luxury beauty enhancement, cat-eye liner reshaping, heavy eyeliner distortion, intense dramatic smoky eye restructuring, dangerous beauty filter, mannequin-like posing, artificial symmetry, frozen expressions, anatomy distortion, deformed hands, fused fingers, extra fingers, disconnected arms, floating limbs, excessive glamour filtering, repetitive static composition, oversized head appearance, chibi proportion, enlarged cranial silhouette, low-angle hero shot, over-the-shoulder turn-back pose, movie-trailer blockbuster framing, low quality, watermark, anachronistic modern elements`;
 const QUALITY_BASE = `cinematic epic quality, dramatic film lighting, detailed costume fabric and environmental texture, high dynamic range, photorealistic rendering, period-authentic atmosphere, no AI look, 8K HDR`;
+const ANTI_PATTERNS = {
+  bannedCameraLanguageIds: ['cl_movie'],
+  bannedAngleIds: ['yang', 'huimou'],
+  bannedPromptTerms: [
+    'movie trailer',
+    'blockbuster',
+    'dramatic hero framing',
+    'looking back over shoulder',
+    'low angle upward shot',
+    'perfect beauty',
+    'flawless',
+    'luxury beauty',
+    'cat-eye',
+    'heavy smoky eye',
+    'extreme pose',
+    'jumping',
+    'spinning',
+    'back-facing',
+  ],
+};
 
 // ═══════════════════════════════════════════
 // 圖片規格控制
@@ -58,16 +81,16 @@ const IDENTITY_LOCK = [
 const CAMERA_LANG = [
   {id:'cl_fashion',  name:'時尚大片', desc:'Fashion editorial camera language: precise controlled composition with deliberate pose and gaze, high-end magazine visual grammar, luxury fashion photography aesthetic.'},
   {id:'cl_travel',   name:'旅遊紀實', desc:'Travel documentary camera language: natural candid energy, subject integrated authentically in location, editorial travel photography feel, story-driven environmental composition.'},
-  {id:'cl_movie',    name:'電影預告', desc:'Movie trailer camera language: dramatic hero framing, cinematic depth and tension, subject posed with narrative power, blockbuster visual language.'},
   {id:'cl_magazine', name:'雜誌封面', desc:'Magazine cover camera language: clean bold composition optimized for cover placement, subject large in frame, strong eye contact, graphic clarity.'},
   {id:'cl_social',   name:'社群美圖', desc:'Social media optimized camera language: visually appealing clean composition, strong subject presence, shareable aesthetic quality, modern lifestyle visual.'},
 ];
 
 const SAFE_POSE_VARIANTS = [
   'Use a varied but identity-safe pose: front-facing head with a three-quarter body angle, subtle shoulder turn, and natural arm placement that keeps the face open and recognizable.',
-  'Prefer a non-static editorial pose such as a gentle seated angle, a slow step forward, or a calm turn-back glance, while keeping the face clearly directed toward camera.',
+  'Prefer a non-static editorial pose such as a gentle seated angle, a slow step forward, or a calm paused motion, while keeping the face clearly directed toward camera.',
   'Encourage graceful movement in sleeves, cape, skirt, or hair so the image feels alive, but keep the neck, jawline, and torso alignment physically natural and photo-realistic.',
   'Hands, props, and gestures should stay below eye level or clearly away from the central face area unless the face remains fully readable without distortion.',
+  'Favor realistic head-to-shoulder support, natural neck transition, and enough torso presence so the face feels proportionate to the body and costume silhouette.',
 ];
 
 const SAFE_POSE_BY_CAMERA_LANG = {
@@ -76,12 +99,8 @@ const SAFE_POSE_BY_CAMERA_LANG = {
     'Fashion pose guidance: use editorial asymmetry such as seated side-angle, leaning lightly against architecture, or one-step motion with direct facial visibility.',
   ],
   cl_travel: [
-    'Travel pose guidance: prefer walking, turning, looking over the shoulder, lightly touching a railing, veil, suitcase, or landscape element to create natural location interaction.',
+    'Travel pose guidance: prefer walking, pausing, or lightly touching a railing, veil, suitcase, or landscape element to create natural location interaction.',
     'Travel pose guidance: the body can be in motion, but the head should remain mostly front-facing or three-quarter-facing so likeness stays stable.',
-  ],
-  cl_movie: [
-    'Cinematic pose guidance: prefer narrative hero poses such as drawing a sword, holding a prop low, stepping forward, seated on a throne, or turning mid-command while keeping facial features unobstructed.',
-    'Cinematic pose guidance: allow stronger gesture and costume flow, but avoid extreme twisting, sprinting, jumping, or any action that breaks facial-to-body coherence.',
   ],
   cl_magazine: [
     'Magazine cover pose guidance: vary between seated, leaning, shoulder-turn, and prop-holding cover poses rather than neutral standing, while maintaining strong eye contact and a clean face silhouette.',
@@ -174,6 +193,44 @@ function pickRandom(list){
   return list[Math.floor(Math.random() * list.length)];
 }
 
+function sanitizeSelectionId(id, bannedIds, fallbackId){
+  return bannedIds.includes(id) ? fallbackId : id;
+}
+
+function sanitizePromptText(text){
+  if(!text) return '';
+  return text
+    .replace(/movie trailer camera language/gi, 'fashion editorial camera language')
+    .replace(/dramatic hero framing/gi, 'controlled editorial framing')
+    .replace(/blockbuster visual language/gi, 'high-end editorial visual language')
+    .replace(/looking back over shoulder/gi, 'gentle three-quarter pause')
+    .replace(/turn-back glance/gi, 'calm paused glance')
+    .replace(/low angle upward shot/gi, 'stable eye-level or slight three-quarter shot')
+    .replace(/perfect beauty reconstruction/gi, 'identity-safe beauty styling')
+    .replace(/luxury beauty enhancement/gi, 'refined styling enhancement')
+    .replace(/cat-eye liner reshaping/gi, 'soft liner reshaping')
+    .replace(/heavy smoky eye/gi, 'controlled smoky eye');
+}
+
+function buildAntiPatternGuidance(){
+  return [
+    'ANTI-PATTERN OVERRIDE: remove low-angle hero shots, over-the-shoulder turn-back poses, and movie-trailer blockbuster staging even if the scene suggests them.',
+    'ANTI-PATTERN OVERRIDE: avoid eye-shape-changing makeup cues such as cat-eye reconstruction, heavy eyeliner distortion, or aggressive smoky-eye reshaping.',
+    'ANTI-PATTERN OVERRIDE: avoid extreme pose drama, jumping, spinning, or back-facing choreography; replace them with face-readable, identity-safe alternatives.',
+  ].join(' ');
+}
+
+function sanitizeCreativeField(text){
+  if(!text) return '';
+  return sanitizePromptText(text)
+    .replace(/flawless/gi, 'natural')
+    .replace(/bold eyeliner/gi, 'controlled eyeliner')
+    .replace(/extreme pose/gi, 'controlled pose')
+    .replace(/jumping/gi, 'grounded motion')
+    .replace(/spinning/gi, 'gentle movement')
+    .replace(/back-facing/gi, 'face-readable');
+}
+
 function getCategoryPosePack(cat){
   const group = CATEGORY_POSE_MAP[cat.id] || CATEGORY_POSE_MAP[cat.tpl] || null;
   return group ? CATEGORY_POSE_LIBRARY[group] : null;
@@ -212,37 +269,37 @@ const TPL_DEFAULTS = {
   hanfu:         {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_fashion'},
   oriental:      {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_fashion'},
   gothic:        {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_lowkey',    atm:'at_dark',     camLang:'cl_fashion'},
-  myth:          {ang:'yang',     ratio:'r_23',  lens:'l_85',  light:'ls_golden',    atm:'at_ethereal', camLang:'cl_movie'},
+  myth:          {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_golden',    atm:'at_ethereal', camLang:'cl_fashion'},
   fantasy:       {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_backlit',   atm:'at_ethereal', camLang:'cl_fashion'},
   water:         {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_backlit',   atm:'at_ethereal', camLang:'cl_fashion'},
   reference_styles:{ang:'sanfen', ratio:'r_916', lens:'l_35',  light:'ls_cinematic', atm:'at_ethereal', camLang:'cl_fashion'},
-  game:          {ang:'quan',     ratio:'r_23',  lens:'l_28',  light:'ls_cinematic', atm:'at_dark',     camLang:'cl_movie'},
-  darkfantasy:   {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_lowkey',    atm:'at_dark',     camLang:'cl_movie'},
-  drama:         {ang:'huanjing', ratio:'r_23',  lens:'l_35',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_movie'},
-  queen:         {ang:'yang',     ratio:'r_34',  lens:'l_85',  light:'ls_cinematic', atm:'at_warm',     camLang:'cl_fashion'},
+  game:          {ang:'quan',     ratio:'r_23',  lens:'l_28',  light:'ls_cinematic', atm:'at_dark',     camLang:'cl_fashion'},
+  darkfantasy:   {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_lowkey',    atm:'at_dark',     camLang:'cl_fashion'},
+  drama:         {ang:'sanfen',   ratio:'r_23',  lens:'l_35',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
+  queen:         {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_cinematic', atm:'at_warm',     camLang:'cl_fashion'},
   spirits:       {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_lowkey',    atm:'at_dark',     camLang:'cl_fashion'},
   europe_travel: {ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_travel'},
   japan_travel:  {ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_natural',   atm:'at_misty',    camLang:'cl_travel'},
   korea_sea:     {ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_travel'},
   world_travel:  {ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_travel'},
   china_mark:    {ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_golden',    atm:'at_clear',    camLang:'cl_travel'},
-  jinyong:       {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_moody',    camLang:'cl_movie'},
+  jinyong:       {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_moody',    camLang:'cl_fashion'},
   chinese_story: {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_moody',    camLang:'cl_fashion'},
-  fallen_angel:  {ang:'yang',     ratio:'r_23',  lens:'l_28',  light:'ls_cinematic', atm:'at_dark',     camLang:'cl_movie'},
-  holy_angel:    {ang:'yang',     ratio:'r_23',  lens:'l_28',  light:'ls_backlit',   atm:'at_ethereal', camLang:'cl_movie'},
-  goddess_myth:  {ang:'yang',     ratio:'r_23',  lens:'l_85',  light:'ls_golden',    atm:'at_ethereal', camLang:'cl_movie'},
-  cyberpunk_sf:  {ang:'sanfen',   ratio:'r_916', lens:'l_28',  light:'ls_cinematic', atm:'at_dark',     camLang:'cl_movie'},
+  fallen_angel:  {ang:'sanfen',   ratio:'r_23',  lens:'l_28',  light:'ls_cinematic', atm:'at_dark',     camLang:'cl_fashion'},
+  holy_angel:    {ang:'sanfen',   ratio:'r_23',  lens:'l_28',  light:'ls_backlit',   atm:'at_ethereal', camLang:'cl_fashion'},
+  goddess_myth:  {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_golden',    atm:'at_ethereal', camLang:'cl_fashion'},
+  cyberpunk_sf:  {ang:'sanfen',   ratio:'r_916', lens:'l_28',  light:'ls_cinematic', atm:'at_dark',     camLang:'cl_fashion'},
   realistic_life:{ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_natural',   atm:'at_warm',     camLang:'cl_social'},
   modern_lady:   {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_magazine'},
-  dragon_beast:  {ang:'yang',     ratio:'r_916', lens:'l_28',  light:'ls_cinematic', atm:'at_dark',     camLang:'cl_movie'},
-  beast_tamer:   {ang:'huanjing', ratio:'r_23',  lens:'l_35',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_movie'},
+  dragon_beast:  {ang:'sanfen',   ratio:'r_916', lens:'l_28',  light:'ls_cinematic', atm:'at_dark',     camLang:'cl_fashion'},
+  beast_tamer:   {ang:'huanjing', ratio:'r_23',  lens:'l_35',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
   dynasty_palace:{ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_warm',     camLang:'cl_fashion'},
   classic_lit:   {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_fashion'},
-  china_drama:   {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_movie'},
+  china_drama:   {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
   succubus_demon:{ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_lowkey',    atm:'at_dark',     camLang:'cl_fashion'},
   taiwan_travel: {ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_travel'},
   wedding_diamond:{ang:'sanfen',  ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_warm',     camLang:'cl_fashion'},
-  cos_character: {ang:'quan',     ratio:'r_23',  lens:'l_85',  light:'ls_cinematic', atm:'at_clear',    camLang:'cl_movie'},
+  cos_character: {ang:'quan',     ratio:'r_23',  lens:'l_85',  light:'ls_cinematic', atm:'at_clear',    camLang:'cl_fashion'},
   mountain_sea:  {ang:'huanjing', ratio:'r_169', lens:'l_28',  light:'ls_golden',    atm:'at_clear',    camLang:'cl_travel'},
 };
 
@@ -299,9 +356,7 @@ const ANG = [
   {id:'zheng',   name:'正面人像', zh:'臉正對鏡頭，對稱感強', desc:'front-facing portrait, face directly toward camera, symmetrical framing'},
   {id:'banshen', name:'半身人像', zh:'腰部以上，服裝道具清楚', desc:'half-body portrait from waist up, showing face, upper costume details, and hand props'},
   {id:'quan',    name:'全身人像', zh:'頭到腳，完整服裝剪裁', desc:'full body shot head to feet, complete costume visible from crown to hem'},
-  {id:'yang',    name:'仰拍氣勢', zh:'由下往上拍，人物顯高大', desc:'low angle upward shot, subject appears imposing and powerful against sky or architectural backdrop'},
   {id:'huanjing',name:'環境人像', zh:'融入大場景，強調地點感', desc:'environmental portrait, person within larger scene context, showing relationship between subject and full setting'},
-  {id:'huimou',  name:'回眸一望', zh:'回頭看鏡頭，電影故事感', desc:'looking back over shoulder, three-quarter rear pose, face turned to camera over shoulder'},
 ];
 
 // ═══════════════════════════════════════════
@@ -800,13 +855,13 @@ function renderAll(){
 function applyDefs(entryOrNull, tplKey){
   const defs = TPL_DEFAULTS[tplKey]||{};
   const e = entryOrNull||{};
-  if(e.ang    || defs.ang)     curAngID    = e.ang    || defs.ang;
+  if(e.ang    || defs.ang)     curAngID    = sanitizeSelectionId(e.ang || defs.ang, ANTI_PATTERNS.bannedAngleIds, 'sanfen');
   if(e.ratio  || defs.ratio)   curRatioID  = e.ratio  || defs.ratio;
   if(e.lens   || defs.lens)    curLensID   = e.lens   || defs.lens;
   if(e.light  || defs.light)   curLightID  = e.light  || defs.light;
   if(e.atm    || defs.atm)     curAtmID    = e.atm    || defs.atm;
   if(e.mk     || defs.mk)      curMKID     = e.mk     || defs.mk;
-  if(e.camLang|| defs.camLang) curCamLangID= e.camLang|| defs.camLang;
+  if(e.camLang|| defs.camLang) curCamLangID= sanitizeSelectionId(e.camLang || defs.camLang, ANTI_PATTERNS.bannedCameraLanguageIds, 'cl_fashion');
 }
 
 function selCat(catID){
@@ -844,9 +899,9 @@ function selMK(id){
 }
 
 function selAng(id){
-  curAngID = id;
+  curAngID = sanitizeSelectionId(id, ANTI_PATTERNS.bannedAngleIds, 'sanfen');
   document.querySelectorAll('#angChips .chip').forEach(c=>c.classList.remove('active'));
-  document.querySelector(`#angChips .chip[onclick="selAng('${id}')"]`)?.classList.add('active');
+  document.querySelector(`#angChips .chip[onclick="selAng('${curAngID}')"]`)?.classList.add('active');
   renderBadge();
 }
 
@@ -881,9 +936,10 @@ function selIdentity(id){
   renderBadge();
 }
 function selCamLang(id){
-  curCamLangID = id;
+  curCamLangID = sanitizeSelectionId(id, ANTI_PATTERNS.bannedCameraLanguageIds, 'cl_fashion');
   document.querySelectorAll('#camLangChips .chip').forEach(c=>c.classList.remove('active'));
-  document.querySelector(`#camLangChips .chip[onclick="selCamLang('${id}')"]`)?.classList.add('active');
+  document.querySelector(`#camLangChips .chip[onclick="selCamLang('${curCamLangID}')"]`)?.classList.add('active');
+  renderBadge();
 }
 
 // ═══════════════════════════════════════════
@@ -951,9 +1007,9 @@ function buildPrompt(){
   const posePack = getCategoryPosePack(cat);
 
   // Build scene description
-  let sceneDesc = f('scene');
+  let sceneDesc = sanitizeCreativeField(f('scene'));
   if(!sceneDesc && tpl.scene_prefix){
-    sceneDesc = `${tpl.scene_prefix}; ${entry.sub || entry.name}`;
+    sceneDesc = sanitizeCreativeField(`${tpl.scene_prefix}; ${entry.sub || entry.name}`);
   }
 
   // Build pro block
@@ -965,41 +1021,55 @@ function buildPrompt(){
   proParts.push(`Costume completeness: full costume must be visible — no cropped hems, no missing sleeves, no cut-off accessories.`);
   if(proCustom) proParts.push(proCustom);
 
-  const fallbackProp = !f('prop') && posePack ? pickRandom(posePack.prop) : '';
-  const fallbackComp = !f('comp') && posePack ? pickRandom(posePack.comp) : '';
+  const sanitizedLight = sanitizeCreativeField(f('light'));
+  const sanitizedChar = sanitizeCreativeField(f('char'));
+  const sanitizedOutfit = sanitizeCreativeField(f('outfit'));
+  const sanitizedProp = sanitizeCreativeField(f('prop'));
+  const sanitizedComp = sanitizeCreativeField(f('comp'));
+  const sanitizedFx = sanitizeCreativeField(f('fx'));
+  const sanitizedTone = sanitizeCreativeField(f('tone'));
+  const sanitizedQuality = sanitizeCreativeField(f('quality'));
+  const sanitizedTxtLine = sanitizeCreativeField(txtLine);
+  const sanitizedExtras = sanitizeCreativeField(extras);
+  const fallbackProp = !sanitizedProp && posePack ? sanitizeCreativeField(pickRandom(posePack.prop)) : '';
+  const fallbackComp = !sanitizedComp && posePack ? sanitizeCreativeField(pickRandom(posePack.comp)) : '';
 
   const parts = [
     CORE_GATE,
     CORE_IDENTITY,
+    identity.boost ? identity.boost : '',
+    CORE_REFERENCE_OVERRIDE,
+    CORE_MAKEUP_SAFETY,
+    CORE_FACE_BODY_COHERENCE,
+    CORE_PROPORTION,
     CORE_ELASTICITY,
     CORE_ANTI_AI,
     CORE_ANATOMY,
     CORE_STRUCTURE,
     CORE_REALISM,
-    CORE_FACE_BODY_COHERENCE,
     proParts.join(' '),
-    `[${cat.name} — ${entry.name}${entry.sub?' · '+entry.sub:''}]: ${entry.name} style, ${cat.name} aesthetic, strong authentic period or fantasy character styling, photorealistic cinematic editorial image.`,
+    buildAntiPatternGuidance(),
+    sanitizeCreativeField(`[${cat.name} — ${entry.name}${entry.sub?' · '+entry.sub:''}]: ${entry.name} style, ${cat.name} aesthetic, strong authentic period or fantasy character styling, photorealistic cinematic editorial image.`),
     sceneDesc ? `Scene: ${sceneDesc}.` : '',
-    f('light') ? `Lighting: ${f('light')}.` : '',
-    f('char') ? `Character atmosphere (costume and mood only — does not affect face): ${f('char')}.` : '',
+    sanitizedLight ? `Lighting: ${sanitizedLight}.` : '',
+    sanitizedChar ? `Character atmosphere (costume and mood only — does not affect face): ${sanitizedChar}.` : '',
     `Makeup surface design: ${mk.desc}.`,
     tpl.ancient ? ANCIENT_BOOST : '',
-    f('outfit') ? `Costume and styling: ${f('outfit')}.` : '',
-    f('prop') ? `Props and action: ${f('prop')}.` : (fallbackProp ? `Props and action: ${fallbackProp}.` : ''),
+    sanitizedOutfit ? `Costume and styling: ${sanitizedOutfit}.` : '',
+    sanitizedProp ? `Props and action: ${sanitizedProp}.` : (fallbackProp ? `Props and action: ${fallbackProp}.` : ''),
     `Action, props, and composition must work together coherently: the action naturally incorporates the props, and the camera angle frames both the face and costume details optimally.`,
     `Prop and effect safety: no prop, hair ornament, veil, smoke, particle, or visual effect may cover the eyes, nose, mouth, or face outline.`,
-    f('comp') ? `Camera and composition: ${f('comp')}. Angle guidance: ${ang.desc}.` : (fallbackComp ? `Camera and composition: ${fallbackComp}. Angle guidance: ${ang.desc}.` : `Angle guidance: ${ang.desc}.`),
-    f('fx') ? `Visual effects: ${f('fx')}.` : '',
-    f('tone') ? `Color tone: ${f('tone')}.` : '',
-    f('quality') ? `${f('quality')}.` : QUALITY_BASE,
-    txtLine ? `Typography overlay: ${txtLine}.` : '',
-    extras ? `Special requirements: ${extras}.` : '',
+    sanitizedComp ? `Camera and composition: ${sanitizedComp}. Angle guidance: ${ang.desc}.` : (fallbackComp ? `Camera and composition: ${fallbackComp}. Angle guidance: ${ang.desc}.` : `Angle guidance: ${ang.desc}.`),
+    sanitizedFx ? `Visual effects: ${sanitizedFx}.` : '',
+    sanitizedTone ? `Color tone: ${sanitizedTone}.` : '',
+    sanitizedQuality ? `${sanitizedQuality}.` : QUALITY_BASE,
+    sanitizedTxtLine ? `Typography overlay: ${sanitizedTxtLine}.` : '',
+    sanitizedExtras ? `Special requirements: ${sanitizedExtras}.` : '',
     `Image format: ${ratio.desc}`,
     `Lens simulation: ${lens.desc}`,
     `Editorial lighting override: ${lightSt.desc}`,
     `Overall atmosphere: ${atm.desc}`,
     `Camera language: ${camLang.desc}`,
-    identity.boost ? identity.boost : '',
     CORE_BEAUTY_SAFETY,
     `Avoid: ${AVOID_LOCK}.`,
   ].filter(l=>l&&l.trim().length>0);
