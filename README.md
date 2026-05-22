@@ -37,6 +37,8 @@
 - `versions/index_v0.35.html`：舊版保留
 - `versions/index_v0.36.html`：舊版保留
 - `versions/index_v0.37.html`：舊版保留
+- `versions/index_v0.38.html`：舊版保留
+- `versions/index_v0.39.html`：舊版保留
 - `核心資料/核心咒語規範.md`：專案核心規則來源
 - `核心資料/風格範例.md`：大型風格範例資料來源
 - `docs/`：文件中心
@@ -54,6 +56,12 @@
 - `dist/` 是建置產物，不是主要修改來源
 - 外部分發資料夾（如 `output/`）是同步副本，不是主要修改來源
 - `核心資料/核心咒語規範.md` 未獲明確同意不得修改
+
+## 目前資料治理
+
+- 風格範例資料本體的 `prop` / `comp` 已完成系統性補齊
+- 可使用 `node scripts/fill_style_pose_fields.mjs` 重新為缺漏條目補安全姿勢與構圖欄位
+- 可使用 `python scripts/report_data_gaps.py` 驗證目前是否仍有缺漏欄位
 
 ## 文件入口
 

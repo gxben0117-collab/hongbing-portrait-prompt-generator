@@ -6,6 +6,7 @@
   "scripts": {
     "check:structure": "python scripts/check_structure.py",
     "build:dist": "python scripts/build_dist.py",
-    "report:data-gaps": "python scripts/report_data_gaps.py"
+    "report:data-gaps": "python scripts/report_data_gaps.py",
+    "fill:style-pose-fields": "node scripts/fill_style_pose_fields.mjs"
   }
 }
