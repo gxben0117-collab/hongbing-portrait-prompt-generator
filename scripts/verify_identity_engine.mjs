@@ -49,23 +49,33 @@ function extractCatsArray(html) {
 
 function makeDocument() {
   const values = new Map([
+    ["faceDesc", ""],
     ["proShot", ""],
     ["proAction", ""],
     ["proCustom", ""],
     ["txtLine", ""],
     ["extras", ""],
   ]);
+  const elements = new Map();
 
   return {
     getElementById(id) {
-      return {
-        value: values.get(id) ?? "",
-        innerHTML: "",
-        textContent: "",
-        style: {},
-        classList: { add() {}, remove() {}, toggle() {} },
-        scrollIntoView() {},
-      };
+      if (!elements.has(id)) {
+        elements.set(id, {
+          get value() {
+            return values.get(id) ?? "";
+          },
+          set value(next) {
+            values.set(id, next ?? "");
+          },
+          innerHTML: "",
+          textContent: "",
+          style: {},
+          classList: { add() {}, remove() {}, toggle() {} },
+          scrollIntoView() {},
+        });
+      }
+      return elements.get(id);
     },
     querySelectorAll() {
       return [];
@@ -113,15 +123,37 @@ function buildFor(catId, entryId) {
   return sandbox.buildPrompt();
 }
 
+function setField(id, value) {
+  const element = sandbox.document.getElementById(id);
+  element.value = value;
+}
+
 const tests = [
-  { name: "baiqian", catId: "china_drama", entryId: "cd_01" },
-  { name: "sujin", catId: "china_drama", entryId: "cd_16" },
+  {
+    name: "baiqian",
+    catId: "china_drama",
+    entryId: "cd_01",
+    faceDesc: "single eyelids, natural eye spacing, straight nose bridge, soft squared chin, natural asymmetry",
+  },
+  {
+    name: "sujin",
+    catId: "china_drama",
+    entryId: "cd_16",
+    faceDesc: "defined eyelid structure, narrower lip width, longer philtrum, delicate jaw curvature, realistic skin texture",
+  },
 ];
 
 const output = {};
 for (const test of tests) {
+  setField("faceDesc", test.faceDesc);
   output[test.name] = buildFor(test.catId, test.entryId);
 }
+
+const baiqianSegments = output.baiqian.split("\n\n").slice(0, 3);
+const tplCharMatches = [...core.matchAll(/char:'([^']+)'/g)].map((match) => match[1].toLowerCase());
+const categoryPoseGuidanceLines = [...core.matchAll(/'([^']+)'/g)]
+  .map((match) => match[1].toLowerCase())
+  .filter((line) => line.includes("generic costume model") || line.includes("role-appropriate behavior"));
 
 fs.mkdirSync(path.join(ROOT, "temp"), { recursive: true });
 fs.writeFileSync(
@@ -136,15 +168,41 @@ console.log(
       outputFile: "temp/identity_engine_verification.json",
       tests: tests.map((test) => test.name),
       checks: {
+        promptOrderCorrect:
+          baiqianSegments[0]?.includes("MANDATORY FIRST STEP") &&
+          baiqianSegments[1]?.includes("SUBJECT FACE DESCRIPTION") &&
+          baiqianSegments[2]?.startsWith("Avoid: "),
+        faceAnchorPresent: output.baiqian.includes("SUBJECT FACE DESCRIPTION"),
         baiqianHasCoreIdentity: output.baiqian.includes("IDENTITY & EXPRESSION PRESERVATION"),
         baiqianHasProportionCore: output.baiqian.includes("PROPORTION COHERENCE OVERRIDE"),
         sujinHasAntiPatternOverride: output.sujin.includes("ANTI-PATTERN OVERRIDE"),
+        sceneContextLabelUsed: output.sujin.includes("Scene context:"),
         noMovieTrailer:
           !output.baiqian.toLowerCase().includes("movie trailer") &&
           !output.sujin.toLowerCase().includes("movie trailer"),
         noLowAngle:
           !output.baiqian.toLowerCase().includes("low angle upward shot") &&
           !output.sujin.toLowerCase().includes("low angle upward shot"),
+        noFashionEditorialCameraLanguage:
+          !output.baiqian.toLowerCase().includes("fashion editorial camera language") &&
+          !output.sujin.toLowerCase().includes("fashion editorial camera language"),
+        noArchetypeCharTermsInTplChars: tplCharMatches.every(
+          (line) =>
+            !line.includes("heroine") &&
+            !line.includes("beauty") &&
+            !line.includes("luminous") &&
+            !line.includes("alluring") &&
+            !line.includes("divine presence"),
+        ),
+        noArchetypeTermsInPoseGuidance: categoryPoseGuidanceLines.every(
+          (line) =>
+            !line.includes("heroine") &&
+            !line.includes("beauty"),
+        ),
+        ancientBoostUnder100Words:
+          ((core.match(/const ANCIENT_BOOST = `([\s\S]*?)`;/) || [])[1] || "")
+            .split(/\s+/)
+            .filter(Boolean).length < 100,
       },
     },
     null,

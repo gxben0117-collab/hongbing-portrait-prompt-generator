@@ -24,6 +24,13 @@ prompt 權重順序固定為：
 
 任何角色、服裝、世界觀、電影感、美術風格，都不得覆蓋前四層核心。
 
+實作細節補充：
+
+- prompt 第 1 段固定為 `CORE_GATE`
+- prompt 第 2 段為可選的 `face anchor`
+- prompt 第 3 段固定為 `Avoid: ...`
+- `face anchor` 空白時可略過，但 `CORE_GATE` 與 `Avoid:` 順序不變
+
 ## 核心模組
 
 ### 1. face_lock_core
@@ -50,6 +57,12 @@ prompt 權重順序固定為：
 - natural asymmetry
 - real age appearance
 - skin texture and pores
+
+前端對應：
+
+- `index.html` 新增 `臉部特徵（選填）`
+- 由 `buildFaceAnchor(faceDesc)` 轉成文字身份錨點
+- 若使用者填入 `單眼皮、寬鼻樑、方下巴、自然不對稱` 等描述，會在風格模組前強制插入
 
 ### 2. pose_coherence_core
 
@@ -116,6 +129,8 @@ prompt 權重順序固定為：
 
 - 預設值不得再導向這三種模式
 - 若資料條目或輸入文字含這些模式，輸出前要自動清洗成 safer version
+- `Scene context` 僅能描述世界觀，不得再混入 heroine / beauty / divine presence 類 archetype 用語
+- `Category pose guidance` 也必須遵守同一規則，行為誘導只能描述角色功能、敘事情境與動作邏輯，不得用 beauty / heroine 類人物原型詞
 
 ## 文件邊界
 
