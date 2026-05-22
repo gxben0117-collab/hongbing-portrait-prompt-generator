@@ -8,11 +8,14 @@
 - `project/正式工程路線圖.md`
 - `architecture/系統架構與模組規劃.md`
 - `architecture/Identity-First Prompt 架構規格.md`
+- `architecture/風格範例資料結構規格 v1.0.md`
+- `architecture/核心規範對應工程映射 v1.0.md`
 - `architecture/技術債清單.md`
 - `architecture/資料品質治理.md`
 - `process/工程維護規則.md`
 - `process/發佈流程.md`
 - `process/資料新增規格.md`
+- `process/風格範例 lint 與審核規則 v1.0.md`
 - `process/工作區邊界規則.md`
 - `development-log/`
 

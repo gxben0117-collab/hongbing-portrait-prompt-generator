@@ -2,6 +2,25 @@
 // 核心咒語規範 v1.4 (2026-05-22)
 // 來源文件：核心資料/核心咒語規範.md — 此為專案規範，任何修改請先更新 .md 文件
 // ═══════════════════════════════════════════
+//
+// 【風格範例擴增流程規範】
+// 新增任何風格範例（TPLS、CATS entry、正式 preset）前，必須遵守：
+//
+// 步驟一：先讀 核心資料/核心咒語規範.md
+//   確認哪些詞彙是換臉高風險詞，哪些姿勢/角度被禁用。
+//
+// 步驟二：按規範撰寫
+//   - char 欄：只寫場景世界觀，不寫人物外貌形容
+//   - outfit/scene/fx 欄：避免 goddess / flawless / perfect beauty / ethereal 等高風險詞
+//   - 姿勢描述：避免 回眸 / 仰拍 / movie trailer / back-facing 等禁用詞
+//
+// 步驟三：程式雙重保險
+//   輸出咒語時，所有風格欄位會自動執行 sanitizeCreativeField()，
+//   清洗已知高風險詞。但此層只能清洗已知詞，步驟一仍是最重要的把關。
+//
+// 結論：風格範例不是純美術描述，每條文字必須符合 identity-first 原則。
+//       先讀規範 → 後建檔 → 程式再清洗，三層保障缺一不可。
+// ═══════════════════════════════════════════
 const CORE_GATE = `MANDATORY FIRST STEP: Check the current ChatGPT message / conversation for an uploaded reference photo of the person. If no reference photo is attached or visible, STOP and ask the user to upload the person's photo first. Do not generate an image, do not invent a face, and do not proceed from text alone.`;
 const CORE_IDENTITY = `IDENTITY & EXPRESSION PRESERVATION (CRITICAL): Use the uploaded photo as the only identity reference. Preserve exact facial geometry, facial proportions, eye shape, nose structure, mouth structure, skin identity, natural expression behavior, emotional characteristics, and recognizable likeness. Keep the same person recognizable across hairstyle, styling, makeup, costume, lighting, emotional, environmental, and photographic variations. Preserve the uploaded person's natural eye emotion, mouth tension, smile structure, expression behavior, and emotional characteristics while allowing scene-appropriate emotional variation. Apply makeup as surface cosmetics only — makeup may affect color, texture, lighting polish, and stylistic mood, but must never reshape identity or alter the person's natural facial structure.`;
 const CORE_ELASTICITY = `IDENTITY ELASTICITY (REALISM SUPPORT): Allow natural hairstyle variation, hair movement, cinematic framing, realistic environmental interaction, candid energy, emotional variation, and realistic photographic imperfection. Realistic human variation is encouraged — the subject should feel alive, naturally photographed, and contextually integrated into each scene rather than frozen into a static presentation template. Natural cinematic imperfection is allowed, including realistic wind movement, partial framing, soft environmental obstruction, dynamic posing, candid behavior, and realistic photographic asymmetry.`;
@@ -941,21 +960,42 @@ function renderCamLang(){
     <div class="chip${c.id===curCamLangID?' active':''}" onclick="selCamLang('${c.id}')">${c.name}</div>`).join('');
 }
 
+function getDisplayIcon(icon, fallback='✦'){
+  const value = String(icon || '').trim();
+  if(!value) return fallback;
+  if(/^[A-Z]{2,3}$/.test(value)) return fallback;
+  if(value === '🇹🇼') return '🧋';
+  if(value === '🇯🇵') return '🗾';
+  if(value === '🇰🇷') return '🌸';
+  if(value === '🇨🇳') return '🏮';
+  if(value === '🇫🇷') return '🗼';
+  if(value === '🇬🇧') return '🕰️';
+  if(value === '🇺🇸') return '🌉';
+  if(value === '🇮🇳') return '🕌';
+  if(value === '🇹🇭') return '🛕';
+  return value;
+}
+
 function renderCatStrip(){
   const el = document.getElementById('catStrip');
+  const countMeta = document.getElementById('catCountMeta');
+  if(countMeta) countMeta.textContent = `${CATS.length} 類`;
   el.innerHTML = CATS.map(c=>`
     <div class="cat-pill${c.id===curCatID?' active':''}" onclick="selCat('${c.id}')">
-      <span class="cat-pill-icon">${c.icon}</span>
+      <span class="cat-pill-icon">${getDisplayIcon(c.icon,'✦')}</span>
       <span class="cat-pill-name">${c.name}</span>
+      <span class="cat-pill-count">${c.entries.length}</span>
     </div>`).join('');
 }
 
 function renderPresets(){
   const cat = getCat(curCatID);
   if(!cat) return;
+  const countMeta = document.getElementById('presetCountMeta');
+  if(countMeta) countMeta.textContent = `${cat.entries.length} 筆`;
   document.getElementById('presetGrid').innerHTML = cat.entries.map(e=>`
     <div class="preset-card${e.id===curEntryID?' active':''}" onclick="selEntry('${e.id}')">
-      <span class="preset-icon">${e.icon}</span>
+      <span class="preset-icon">${getDisplayIcon(e.icon, getDisplayIcon(cat.icon,'✦'))}</span>
       <span class="preset-name">${e.name}</span>
       <span class="preset-sub">${e.sub||''}</span>
     </div>`).join('');
@@ -988,9 +1028,9 @@ function renderBadge(){
   const light = LIGHT_STYLE.find(l=>l.id===sanitizeLightId(curLightID)) || LIGHT_STYLE[0];
   const identity = IDENTITY_LOCK.find(i=>i.id===curIdentityID);
   badge.innerHTML=`
-    <span class="badge-item">${cat.icon} ${cat.name}</span>
+    <span class="badge-item">${getDisplayIcon(cat.icon,'✦')} ${cat.name}</span>
     <span class="badge-sep">›</span>
-    <span class="badge-item">${entry.icon} ${entry.name}</span>
+    <span class="badge-item">${getDisplayIcon(entry.icon, getDisplayIcon(cat.icon,'✦'))} ${entry.name}</span>
     <span class="badge-sep">›</span>
     <span class="badge-item">💄 ${mk?mk.name:''}</span>
     <span class="badge-sep">›</span>

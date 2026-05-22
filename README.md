@@ -44,6 +44,8 @@
 - `versions/index_v0.42.html`：TASK-002 清理 pose guidance 後快照
 - `versions/index_v0.43.html`：快速隨機區塊左右位置交換後快照
 - `versions/index_v0.44.html`：TASK-002 硬精簡選項與安全主路徑重建後快照
+- `versions/index_v0.46.html`：批次擴充風格範例並加入分類/主題數量顯示後快照
+- `versions/index_v0.47.html`：第四輪 curated 擴充、icon fallback 與八行分類列後快照
 - `核心資料/核心咒語規範.md`：專案核心規則來源
 - `核心資料/風格範例.md`：大型風格範例資料來源
 - `docs/`：文件中心
@@ -73,6 +75,14 @@
 - `TPLS.char` 已改成純世界觀描述，不再用 heroine / beauty 等 archetype 詞覆蓋身份
 - `TASK-002` 進一步清理 `Category pose guidance` 的殘留 archetype 字眼，連行為誘導層也改成完全中性
 - `TASK-002` 已將高風險焦段 / 鏡頭語言 / 暗光與仙氣氛圍從主路徑移除，預設主幹收斂到 50mm / 85mm、雜誌封面、自然光與清透或輕霧氛圍
+- 2026-05-22 新增兩輪大批風格範例擴充，採「先讀核心規範、再建檔、輸出時再清洗」原則，重複度過高條目會跳過不加
+- 目前總風格條目數已提升至 `1750`，其中第二輪擴充聚焦台灣景點、高山大海、歐洲旅拍、日本旅拍、韓國與東南亞、世界地標、中國地標、漢服、朝代宮服與大唐盛世
+- 2026-05-22 已加入第三輪全自動批次擴充腳本，會先比對 `風格範例.md` 與現有 `CATS` 後再補低庫存分類，避免重複灌水
+- 第三輪完成後，總風格條目數已提升至 `1844`
+- 2026-05-22 已加入第四輪 curated 擴充腳本 `scripts/expand_style_examples_round4_curated_20260522.mjs`，改成低庫存分類逐組補入、逐組比對名稱/詞幹/風格來源後再寫入
+- 第四輪完成後，`song_grace`、`ming_grace`、`qing_grace`、`reference_styles`、`hotdrama`、`china_drama`、`spirits`、`goddess_myth`、`holy_angel`、`modern_lady`、`queen`、`wedding_diamond` 各再補 6 組，總風格條目數提升至 `1916`
+- 介面已把風格大類列擴充為 8 行，並對分類 icon / 卡片 icon / 選擇 badge 加入顯示 fallback，避免旗幟 emoji 在部分環境退化成 `TW` 等字母碼
+- 介面目前會顯示總分類數，以及每個分類當下的場景主題數量，方便檢查庫存擴充結果
 
 ## 文件入口
 
