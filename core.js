@@ -93,9 +93,9 @@ const SAFE_POSE_BY_CAMERA_LANG = {
 const CATEGORY_POSE_LIBRARY = {
   travel: {
     prop: [
-      'walking slowly through the location with a relaxed travel-editorial body line, one hand lightly touching a railing, veil, hat brim, camera strap, suitcase handle, or nearby architectural detail while keeping the face open to camera',
-      'standing with a gentle turn-back glance toward camera, body angled toward the scenery, one hand naturally interacting with fabric, coat edge, skirt, or travel prop below the face line',
-      'pausing mid-step in a candid travel pose, shoulders relaxed, natural weight shift, subtle motion in clothing and hair, direct or near-direct facial visibility maintained',
+      'Choose an action that fits a real traveler in this location: walking through the site, pausing to take in the view, touching a railing or architectural detail, adjusting hat or coat against wind, or calmly turning back toward the camera after interacting with the environment',
+      'The subject should behave like someone genuinely experiencing the place rather than posing generically: sight-seeing, arriving, pausing, turning, or quietly responding to the weather, landscape, or landmark around her',
+      'Use a location-driven travel moment with natural narrative intent, such as stepping along the path, standing at an overlook, waiting by water, touching a lantern, or looking back after moving through the scene, while preserving clear facial readability',
     ],
     comp: [
       'vertical environmental travel portrait, subject clearly readable within the location, face unobstructed, body slightly angled for motion, background landmark still recognizable',
@@ -104,9 +104,9 @@ const CATEGORY_POSE_LIBRARY = {
   },
   wedding: {
     prop: [
-      'seated gracefully or half-seated with the gown spread naturally, one hand arranging veil, bouquet, or skirt folds while keeping neckline, jawline, and face fully visible',
-      'standing in bridal editorial posture with a gentle shoulder turn, lightly lifting the dress hem or veil below the waist, calm romantic gaze toward camera',
-      'slow bridal step with trailing gown and soft fabric motion, one hand holding bouquet or dress line low, elegant face-forward or three-quarter facial visibility',
+      'Choose an action that feels true to a bride in this exact setting: adjusting veil before the ceremony, holding bouquet while waiting, smoothing the gown, stepping through the aisle or garden, or turning gently after hearing someone call to her',
+      'The subject should behave like she is inside a wedding moment rather than merely modeling the dress: preparing, entering, pausing in emotion, gathering the skirt, or quietly responding to the space with romantic presence',
+      'Use bridal narrative intent such as walking into the venue, sitting for a calm in-between moment, touching veil or bouquet naturally, or sharing a private reflective pause, while keeping face and identity clean and stable',
     ],
     comp: [
       'vertical bridal portrait with clear face, readable gown silhouette, and soft foreground layering from flowers, veil, or fabric without obscuring the subject',
@@ -115,9 +115,9 @@ const CATEGORY_POSE_LIBRARY = {
   },
   hanfu: {
     prop: [
-      'holding a folding fan, lantern, flower branch, jade ornament, sleeve edge, or sword hilt in a calm classical gesture below the face line, with a composed three-quarter stance',
-      'standing or seated in a poised traditional pose, one hand adjusting a long sleeve or ribbon while the other rests naturally near the waist, face turned clearly toward camera',
-      'slow step, seated pavilion pose, or graceful turn-back posture with classical costume movement, preserving a natural neck line and front-face-friendly identity stability',
+      'Choose an action that matches the character identity and historical atmosphere: listening to music, reading a letter, carrying a lantern, holding a fan, touching a sleeve, drawing near a railing, offering tea, walking through a corridor, or resting a hand near a sword hilt if the role is martial',
+      'The subject should feel like a person living inside the classical scene rather than a generic costume model: court lady waiting, scholar beauty pausing, traveler crossing a pavilion, noblewoman turning after hearing footsteps, or warrior heroine preparing to move',
+      'Use culturally and role-appropriate behavior driven by the scene: not random gesturing, but a calm action with purpose, social meaning, or emotional context, while preserving a front-face-friendly body relationship',
     ],
     comp: [
       'vertical classical portrait with clear face, readable sleeve and hair ornament details, and elegant three-quarter body angle instead of flat frontal stiffness',
@@ -126,9 +126,9 @@ const CATEGORY_POSE_LIBRARY = {
   },
   queen: {
     prop: [
-      'seated on a throne, standing on palace steps, or holding a scepter, decree, sword, or ceremonial object low and controlled, with calm sovereign posture and direct facial authority',
-      'standing slightly elevated above the environment with one hand resting on throne arm, sword pommel, railing, or cape edge, keeping the face centered and dominant',
-      'issuing a quiet command, descending a ceremonial stair, or turning from the throne with controlled royal movement, maintaining clear face-to-body coherence',
+      'Choose an action that fits a ruler, sovereign, goddess, or demon queen in this scene: receiving an audience, issuing a command, reviewing a decree, rising from the throne, descending ceremonial steps, resting a hand on a scepter or throne arm, or turning after hearing urgent news',
+      'The subject should feel like she holds power inside the world of the image rather than simply striking a strong pose: governing, judging, commanding, blessing, threatening, or presiding over the space with calm authority',
+      'Use behavior with role logic and narrative weight, such as ruling, deciding, summoning, or presiding, while keeping the body stable, the face readable, and the authority conveyed through action rather than exaggerated gesture alone',
     ],
     comp: [
       'vertical regal portrait with throne, steps, or architectural axis reinforcing authority, face clearly readable, body posed in a stable commanding silhouette',
@@ -193,9 +193,10 @@ function buildPoseGuidance({cat, entry, camLang, proAction}){
   }
 
   if(!entry.prop){
-    guidance.push('Do not default to a plain symmetrical standing pose. Prefer subtle pose variation such as seated posture, slow walking, shoulder turn, looking back, holding fabric, or interacting with the environment.');
+    guidance.push('Do not default to a plain symmetrical standing pose or shallow hand-raising gesture. Instead, infer an action from the subject role, social identity, emotional state, and scene atmosphere, then choose a believable behavior that fits that moment.');
   }
 
+  guidance.push('Action selection rule: determine what this person would naturally be doing in this exact moment, based on role, setting, costume, status, atmosphere, and story logic. The pose should emerge from character behavior, not from random gesture variation.');
   guidance.push('Pose realism rule: prioritize front-facing or three-quarter facial visibility, natural spine alignment, and believable weight distribution. Avoid extreme overhead arm poses, extreme back-bends, full back-facing poses, aggressive foreshortening, or complex choreography that could desynchronize face and body.');
   guidance.push('Reference-photo compatibility rule: because many uploaded photos are front-facing, adapt every pose so the face can stay stable, readable, and naturally connected to the body.');
   return guidance.filter(Boolean).join(' ');
