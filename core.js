@@ -18,7 +18,7 @@ const ANCIENT_BOOST = `Ancient Chinese costume styling: hair in traditional updo
 const AVOID_LOCK = `identity drift, replaced face, different person, beauty-filter appearance, plastic skin, over-smoothed skin, generic influencer face, AI beauty template, actress-face reconstruction, celebrity-face replacement, heroine template face, V-shaped face, doll face, altered facial proportions, idealized bone structure, perfect face, refined features, flawless skin, luminous skin overlay, celestial radiance effect, editorial perfection filter, ultra glamorous face treatment, luxury beauty enhancement, cat-eye liner reshaping, heavy eyeliner distortion, intense dramatic smoky eye restructuring, dangerous beauty filter, mannequin-like posing, artificial symmetry, frozen expressions, anatomy distortion, deformed hands, fused fingers, extra fingers, disconnected arms, floating limbs, excessive glamour filtering, repetitive static composition, oversized head appearance, chibi proportion, enlarged cranial silhouette, low-angle hero shot, over-the-shoulder turn-back pose, movie-trailer blockbuster framing, low quality, watermark, anachronistic modern elements`;
 const QUALITY_BASE = `cinematic epic quality, dramatic film lighting, detailed costume fabric and environmental texture, high dynamic range, photorealistic rendering, period-authentic atmosphere, no AI look, 8K HDR`;
 const ANTI_PATTERNS = {
-  bannedCameraLanguageIds: ['cl_movie'],
+  bannedCameraLanguageIds: ['cl_movie', 'cl_travel'],
   bannedAngleIds: ['yang', 'huimou'],
   bannedPromptTerms: [
     'movie trailer',
@@ -35,6 +35,12 @@ const ANTI_PATTERNS = {
     'jumping',
     'spinning',
     'back-facing',
+    'travel documentary',
+    'vlog',
+    'candid travel',
+    'low-key dramatic',
+    'ethereal atmosphere',
+    'celestial mist',
   ],
 };
 
@@ -53,25 +59,19 @@ const RATIO = [
 const LENS = [
   {id:'l_85',  name:'85mm 人像',  desc:'Simulated 85mm portrait lens: natural face compression, beautiful background bokeh, flattering facial proportions — ideal for close-up and half-body portraits.'},
   {id:'l_50',  name:'50mm 標準',  desc:'Simulated 50mm standard lens: natural human-eye perspective, minimal distortion — versatile for both portrait and environmental shots.'},
-  {id:'l_35',  name:'35mm 環境',  desc:'Simulated 35mm environmental lens: slightly wider view showing subject in context, natural documentary feel, environmental storytelling.'},
-  {id:'l_135', name:'135mm 長焦', desc:'Simulated 135mm telephoto lens: strong background compression, subject isolated from environment, dramatic depth separation, premium editorial compression.'},
-  {id:'l_28',  name:'28mm 超廣角',desc:'Simulated 28mm ultra-wide lens: dramatic wide-angle perspective, expansive environmental context, epic scale, dynamic depth.'},
 ];
 const LIGHT_STYLE = [
   {id:'ls_golden',   name:'黃金時刻', desc:'Golden hour editorial lighting: warm amber and orange sunlight at low angle, long soft shadows, glowing skin tones, romantic warmth.'},
   {id:'ls_natural',  name:'自然日光', desc:'Natural daylight lighting: soft overcast or window light, even illumination, true-to-life color rendering, clean editorial look.'},
   {id:'ls_cinematic',name:'電影感光', desc:'Cinematic lighting: dramatic contrast with motivated key light, colored rim light, deep shadows, filmic quality reminiscent of premium cinema.'},
   {id:'ls_studio',   name:'棚拍燈光', desc:'Studio editorial lighting: controlled three-point lighting setup, clean precise illumination, commercial-grade fashion shoot quality.'},
-  {id:'ls_lowkey',   name:'低調暗光', desc:'Low-key dramatic lighting: predominantly dark with selective beam of light on subject, noir or mysterious atmosphere, strong shadow play.'},
   {id:'ls_backlit',  name:'逆光輪廓', desc:'Backlit silhouette lighting: strong backlight creating glowing rim around subject, hair and fabric lit from behind, ethereal halo effect.'},
 ];
 const ATM = [
   {id:'at_clear',    name:'晴空清透', desc:'Clear atmospheric visibility: crisp clean air, vivid colors, strong defined details, high-clarity visual rendering.'},
-  {id:'at_misty',    name:'煙霧朦朧', desc:'Misty atmosphere: soft haze and mist layers, diffused depth, romantic atmospheric perspective, gentle obscuring of background.'},
+  {id:'at_misty',    name:'煙霧朦朧', desc:'Subtle misty atmosphere: very light haze in background only, body and face remain clearly visible and fully lit, soft romantic atmospheric depth without obscuring the subject.'},
   {id:'at_moody',    name:'電影憂鬱', desc:'Cinematic moody atmosphere: desaturated with selective color accent, heavy atmospheric haze, brooding emotional weight, art-house quality.'},
-  {id:'at_dark',     name:'暗黑戲劇', desc:'Dark dramatic atmosphere: deep shadow environment, intense contrast, sinister or powerful emotional charge, dark epic visual language.'},
   {id:'at_warm',     name:'暖光環繞', desc:'Warm glow atmosphere: enveloping warm light tones, golden and amber color environment, intimate cozy or romantic warmth.'},
-  {id:'at_ethereal', name:'仙氣縹緲', desc:'Ethereal atmosphere: otherworldly magical mist and glow, celestial light quality, dreamlike unreality, transcendent visual feeling.'},
 ];
 const IDENTITY_LOCK = [
   {id:'il_standard', name:'標準保護', boost:''},
@@ -80,7 +80,6 @@ const IDENTITY_LOCK = [
 ];
 const CAMERA_LANG = [
   {id:'cl_fashion',  name:'時尚大片', desc:'Fashion editorial camera language: precise controlled composition with deliberate pose and gaze, high-end magazine visual grammar, luxury fashion photography aesthetic.'},
-  {id:'cl_travel',   name:'旅遊紀實', desc:'Travel documentary camera language: natural candid energy, subject integrated authentically in location, editorial travel photography feel, story-driven environmental composition.'},
   {id:'cl_magazine', name:'雜誌封面', desc:'Magazine cover camera language: clean bold composition optimized for cover placement, subject large in frame, strong eye contact, graphic clarity.'},
   {id:'cl_social',   name:'社群美圖', desc:'Social media optimized camera language: visually appealing clean composition, strong subject presence, shareable aesthetic quality, modern lifestyle visual.'},
 ];
@@ -97,10 +96,6 @@ const SAFE_POSE_BY_CAMERA_LANG = {
   cl_fashion: [
     'Fashion pose guidance: avoid flat standing symmetry; prefer one hip relaxed, shoulders softly offset, and an elegant hand pose that enhances silhouette without hiding the face.',
     'Fashion pose guidance: use editorial asymmetry such as seated side-angle, leaning lightly against architecture, or one-step motion with direct facial visibility.',
-  ],
-  cl_travel: [
-    'Travel pose guidance: prefer walking, pausing, or lightly touching a railing, veil, suitcase, or landscape element to create natural location interaction.',
-    'Travel pose guidance: the body can be in motion, but the head should remain mostly front-facing or three-quarter-facing so likeness stays stable.',
   ],
   cl_magazine: [
     'Magazine cover pose guidance: vary between seated, leaning, shoulder-turn, and prop-holding cover poses rather than neutral standing, while maintaining strong eye contact and a clean face silhouette.',
@@ -155,6 +150,39 @@ const CATEGORY_POSE_LIBRARY = {
       'vertical queenly composition with subtle low angle or central axis, strong facial clarity, costume and power symbols fully legible without overcomplicated action',
     ],
   },
+  gothic: {
+    prop: [
+      'Choose an action that suits a gothic character inhabiting darkness with elegance: trailing fingertips along a stone wall or iron railing, standing at a high arched window with candlelight from behind, descending a shadowy staircase with unhurried grace, turning slowly toward the camera from a candlelit corridor, or sitting in a heavy carved chair with deliberate stillness',
+      'The subject should feel like she belongs to the dark architecture rather than merely standing in front of it: reading from an ancient book by candlelight, lifting a candelabra while her gaze falls elsewhere, reaching toward a tapestry or dark artifact with quiet ownership, or pausing at a threshold as if she decides whether the dark follows her',
+      'Use gothic narrative intent with composed presence rather than dramatic aggression: standing in shadow without concern, looking down from a tower height with cold aristocratic interest, or remaining perfectly still while the environment moves around her',
+    ],
+    comp: [
+      'vertical gothic portrait with candlelit or moonlit atmospheric depth, clear face, dark architectural framing without obscuring the subject',
+      'vertical full-body or three-quarter gothic composition, dramatic architectural setting clearly visible, subject as still center against the dark environment',
+    ],
+  },
+  fantasy: {
+    prop: [
+      'Choose an action that places this person inside a magical world rather than in front of it: reaching toward a floating magical element with calm ease, walking through a glowing forest path as particles orbit naturally, pausing as magical light gathers near her hands, or simply standing still while the magical world moves around her presence',
+      'The subject should feel like she belongs in the magical environment: a flower opening as she passes, a small creature landing nearby with trust, warm magical light gathering above her naturally, or standing on an enchanted path as if it was made for this moment',
+      'Use fantasy behavior that communicates wonder and belonging rather than theatrical supernatural power: adjusting a floral crown while looking at a glowing landscape, trailing a hand through floating petals, or sitting on a mossy stone in a magical clearing with natural ease',
+    ],
+    comp: [
+      'vertical fantasy portrait with magical environmental depth clearly visible, subject integrated into the magical scene, face clearly readable against soft glowing background',
+      'vertical full-body or three-quarter magical portrait, enchanted environment and subject as cohesive world, foreground magical elements framing without obscuring the face',
+    ],
+  },
+  myth_goddess: {
+    prop: [
+      'Choose an action that communicates divine authority through presence rather than dramatic gesture: standing at the center of a sacred architectural axis as if she summoned it, lifting one hand in a gesture of blessing or judgment with calm permanence, turning to acknowledge something below with composed divine awareness, or existing in stillness at the precise point where mortal and immortal realms meet',
+      'The subject should feel like the environment responds to her rather than the reverse: sacred light converging at the point where she stands, other elements of the composition orienting toward her natural center, or architectural and natural features aligning to frame her position',
+      'Use mythological behavior that projects scale through composure: descending from a celestial platform with measured grace, lifting her gaze from a sacred offering with divine attention, presiding over a ritual space with quiet authority, or turning as if hearing a prayer from a great distance',
+    ],
+    comp: [
+      'vertical mythological portrait with sacred architectural or celestial axis reinforcing divine status, face clearly readable, cosmic environment framing the subject with appropriate scale',
+      'vertical goddess composition with central axis or elevated position, divine environment fully legible, subject as the still center against a world in motion around her',
+    ],
+  },
 };
 
 const CATEGORY_POSE_MAP = {
@@ -182,10 +210,14 @@ const CATEGORY_POSE_MAP = {
   hotdrama: 'hanfu',
   queen: 'queen',
   succubus_demon: 'queen',
-  fallen_angel: 'queen',
-  holy_angel: 'queen',
-  goddess_myth: 'queen',
-  myth: 'queen',
+  fallen_angel: 'gothic',
+  holy_angel: 'myth_goddess',
+  goddess_myth: 'myth_goddess',
+  myth: 'myth_goddess',
+  gothic: 'gothic',
+  darkfantasy: 'gothic',
+  fantasy: 'fantasy',
+  water: 'fantasy',
 };
 
 function pickRandom(list){
@@ -195,6 +227,23 @@ function pickRandom(list){
 
 function sanitizeSelectionId(id, bannedIds, fallbackId){
   return bannedIds.includes(id) ? fallbackId : id;
+}
+
+function sanitizeOptionId(id, options, fallbackId){
+  const nextId = id || fallbackId;
+  return options.some(option => option.id === nextId) ? nextId : fallbackId;
+}
+
+function sanitizeLensId(id){
+  return sanitizeOptionId(id, LENS, 'l_50');
+}
+
+function sanitizeLightId(id){
+  return sanitizeOptionId(id, LIGHT_STYLE, 'ls_natural');
+}
+
+function sanitizeAtmId(id){
+  return sanitizeOptionId(id, ATM, 'at_clear');
 }
 
 function sanitizePromptText(text){
@@ -222,7 +271,17 @@ function sanitizePromptText(text){
     .replace(/extreme pose/gi, 'controlled pose')
     .replace(/jumping/gi, 'grounded motion')
     .replace(/spinning/gi, 'gentle movement')
-    .replace(/back-facing/gi, 'face-readable');
+    .replace(/back-facing/gi, 'face-readable')
+    .replace(/ethereal (light|glow|atmosphere|particles?)/gi, 'soft atmospheric light')
+    .replace(/celestial (particles?|radiance|glow|light)/gi, 'soft ambient light')
+    .replace(/immortal realm glow/gi, 'soft environmental glow')
+    .replace(/divine radiance/gi, 'warm environmental light')
+    .replace(/xianxia ethereal/gi, 'soft xianxia atmospheric')
+    .replace(/travel documentary/gi, 'location portrait')
+    .replace(/candid travel/gi, 'grounded travel portrait')
+    .replace(/low-key dramatic/gi, 'controlled dramatic')
+    .replace(/ethereal atmosphere/gi, 'soft atmosphere')
+    .replace(/celestial mist/gi, 'light atmospheric mist');
 }
 
 function buildAntiPatternGuidance(){
@@ -282,42 +341,42 @@ function buildPoseGuidance({cat, entry, camLang, proAction}){
 // 場景智慧預設值（選分類/場景時自動套用）
 // ═══════════════════════════════════════════
 const TPL_DEFAULTS = {
-  xianxia:       {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_ethereal', camLang:'cl_fashion'},
-  hanfu:         {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_fashion'},
-  oriental:      {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_fashion'},
-  gothic:        {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_lowkey',    atm:'at_dark',     camLang:'cl_fashion'},
-  myth:          {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_golden',    atm:'at_ethereal', camLang:'cl_fashion'},
-  fantasy:       {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_backlit',   atm:'at_ethereal', camLang:'cl_fashion'},
-  water:         {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_backlit',   atm:'at_ethereal', camLang:'cl_fashion'},
-  reference_styles:{ang:'sanfen', ratio:'r_916', lens:'l_35',  light:'ls_cinematic', atm:'at_ethereal', camLang:'cl_fashion'},
-  game:          {ang:'quan',     ratio:'r_23',  lens:'l_28',  light:'ls_cinematic', atm:'at_dark',     camLang:'cl_fashion'},
-  darkfantasy:   {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_lowkey',    atm:'at_dark',     camLang:'cl_fashion'},
-  drama:         {ang:'sanfen',   ratio:'r_23',  lens:'l_35',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
-  queen:         {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_cinematic', atm:'at_warm',     camLang:'cl_fashion'},
-  spirits:       {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_lowkey',    atm:'at_dark',     camLang:'cl_fashion'},
-  europe_travel: {ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_travel'},
-  japan_travel:  {ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_natural',   atm:'at_misty',    camLang:'cl_travel'},
-  korea_sea:     {ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_travel'},
-  world_travel:  {ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_travel'},
-  china_mark:    {ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_golden',    atm:'at_clear',    camLang:'cl_travel'},
-  jinyong:       {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_moody',    camLang:'cl_fashion'},
-  chinese_story: {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_moody',    camLang:'cl_fashion'},
-  fallen_angel:  {ang:'sanfen',   ratio:'r_23',  lens:'l_28',  light:'ls_cinematic', atm:'at_dark',     camLang:'cl_fashion'},
-  holy_angel:    {ang:'sanfen',   ratio:'r_23',  lens:'l_28',  light:'ls_backlit',   atm:'at_ethereal', camLang:'cl_fashion'},
-  goddess_myth:  {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_golden',    atm:'at_ethereal', camLang:'cl_fashion'},
-  cyberpunk_sf:  {ang:'sanfen',   ratio:'r_916', lens:'l_28',  light:'ls_cinematic', atm:'at_dark',     camLang:'cl_fashion'},
-  realistic_life:{ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_natural',   atm:'at_warm',     camLang:'cl_social'},
+  xianxia:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  hanfu:         {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  oriental:      {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  gothic:        {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
+  myth:          {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  fantasy:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  water:         {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  reference_styles:{ang:'sanfen', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  game:          {ang:'quan',     ratio:'r_23',  lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  darkfantasy:   {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
+  drama:         {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  queen:         {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_magazine'},
+  spirits:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  europe_travel: {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  japan_travel:  {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  korea_sea:     {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  world_travel:  {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  china_mark:    {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  jinyong:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  chinese_story: {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  fallen_angel:  {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
+  holy_angel:    {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_natural',   atm:'at_misty',    camLang:'cl_magazine'},
+  goddess_myth:  {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  cyberpunk_sf:  {ang:'sanfen',   ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  realistic_life:{ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_social'},
   modern_lady:   {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_magazine'},
-  dragon_beast:  {ang:'sanfen',   ratio:'r_916', lens:'l_28',  light:'ls_cinematic', atm:'at_dark',     camLang:'cl_fashion'},
-  beast_tamer:   {ang:'huanjing', ratio:'r_23',  lens:'l_35',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
-  dynasty_palace:{ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_warm',     camLang:'cl_fashion'},
-  classic_lit:   {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_fashion'},
-  china_drama:   {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
-  succubus_demon:{ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_lowkey',    atm:'at_dark',     camLang:'cl_fashion'},
-  taiwan_travel: {ang:'huanjing', ratio:'r_916', lens:'l_35',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_travel'},
-  wedding_diamond:{ang:'sanfen',  ratio:'r_34',  lens:'l_85',  light:'ls_golden',    atm:'at_warm',     camLang:'cl_fashion'},
-  cos_character: {ang:'quan',     ratio:'r_23',  lens:'l_85',  light:'ls_cinematic', atm:'at_clear',    camLang:'cl_fashion'},
-  mountain_sea:  {ang:'huanjing', ratio:'r_169', lens:'l_28',  light:'ls_golden',    atm:'at_clear',    camLang:'cl_travel'},
+  dragon_beast:  {ang:'sanfen',   ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  beast_tamer:   {ang:'huanjing', ratio:'r_23',  lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  dynasty_palace:{ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  classic_lit:   {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  china_drama:   {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  succubus_demon:{ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
+  taiwan_travel: {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  wedding_diamond:{ang:'sanfen',  ratio:'r_34',  lens:'l_85',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_magazine'},
+  cos_character: {ang:'quan',     ratio:'r_23',  lens:'l_85',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_magazine'},
+  mountain_sea:  {ang:'huanjing', ratio:'r_169', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
 };
 
 // ═══════════════════════════════════════════
@@ -831,8 +890,8 @@ function renderBadge(){
   const badge = document.getElementById('selBadge');
   sec.style.display='';
   const ratio = RATIO.find(r=>r.id===curRatioID);
-  const lens = LENS.find(l=>l.id===curLensID);
-  const light = LIGHT_STYLE.find(l=>l.id===curLightID);
+  const lens = LENS.find(l=>l.id===sanitizeLensId(curLensID)) || LENS[0];
+  const light = LIGHT_STYLE.find(l=>l.id===sanitizeLightId(curLightID)) || LIGHT_STYLE[0];
   const identity = IDENTITY_LOCK.find(i=>i.id===curIdentityID);
   badge.innerHTML=`
     <span class="badge-item">${cat.icon} ${cat.name}</span>
@@ -874,9 +933,9 @@ function applyDefs(entryOrNull, tplKey){
   const e = entryOrNull||{};
   if(e.ang    || defs.ang)     curAngID    = sanitizeSelectionId(e.ang || defs.ang, ANTI_PATTERNS.bannedAngleIds, 'sanfen');
   if(e.ratio  || defs.ratio)   curRatioID  = e.ratio  || defs.ratio;
-  if(e.lens   || defs.lens)    curLensID   = e.lens   || defs.lens;
-  if(e.light  || defs.light)   curLightID  = e.light  || defs.light;
-  if(e.atm    || defs.atm)     curAtmID    = e.atm    || defs.atm;
+  if(e.lens   || defs.lens)    curLensID   = sanitizeLensId(e.lens || defs.lens);
+  if(e.light  || defs.light)   curLightID  = sanitizeLightId(e.light || defs.light);
+  if(e.atm    || defs.atm)     curAtmID    = sanitizeAtmId(e.atm || defs.atm);
   if(e.mk     || defs.mk)      curMKID     = e.mk     || defs.mk;
   if(e.camLang|| defs.camLang) curCamLangID= sanitizeSelectionId(e.camLang || defs.camLang, ANTI_PATTERNS.bannedCameraLanguageIds, 'cl_fashion');
 }
@@ -929,21 +988,21 @@ function selRatio(id){
   renderBadge();
 }
 function selLens(id){
-  curLensID = id;
+  curLensID = sanitizeLensId(id);
   document.querySelectorAll('#lensChips .chip').forEach(c=>c.classList.remove('active'));
-  document.querySelector(`#lensChips .chip[onclick="selLens('${id}')"]`)?.classList.add('active');
+  document.querySelector(`#lensChips .chip[onclick="selLens('${curLensID}')"]`)?.classList.add('active');
   renderBadge();
 }
 function selLight(id){
-  curLightID = id;
+  curLightID = sanitizeLightId(id);
   document.querySelectorAll('#lightChips .chip').forEach(c=>c.classList.remove('active'));
-  document.querySelector(`#lightChips .chip[onclick="selLight('${id}')"]`)?.classList.add('active');
+  document.querySelector(`#lightChips .chip[onclick="selLight('${curLightID}')"]`)?.classList.add('active');
   renderBadge();
 }
 function selAtm(id){
-  curAtmID = id;
+  curAtmID = sanitizeAtmId(id);
   document.querySelectorAll('#atmChips .chip').forEach(c=>c.classList.remove('active'));
-  document.querySelector(`#atmChips .chip[onclick="selAtm('${id}')"]`)?.classList.add('active');
+  document.querySelector(`#atmChips .chip[onclick="selAtm('${curAtmID}')"]`)?.classList.add('active');
   renderBadge();
 }
 function selIdentity(id){
@@ -1018,9 +1077,9 @@ function buildPrompt(){
   const extras    = document.getElementById('extras').value.trim();
 
   const ratio    = RATIO.find(r=>r.id===curRatioID)||RATIO[0];
-  const lens     = LENS.find(l=>l.id===curLensID)||LENS[0];
-  const lightSt  = LIGHT_STYLE.find(l=>l.id===curLightID)||LIGHT_STYLE[0];
-  const atm      = ATM.find(a=>a.id===curAtmID)||ATM[0];
+  const lens     = LENS.find(l=>l.id===sanitizeLensId(curLensID))||LENS[0];
+  const lightSt  = LIGHT_STYLE.find(l=>l.id===sanitizeLightId(curLightID))||LIGHT_STYLE[0];
+  const atm      = ATM.find(a=>a.id===sanitizeAtmId(curAtmID))||ATM[0];
   const identity = IDENTITY_LOCK.find(i=>i.id===curIdentityID)||IDENTITY_LOCK[0];
   const safeCamLangID = sanitizeSelectionId(curCamLangID, ANTI_PATTERNS.bannedCameraLanguageIds, 'cl_fashion');
   const camLang  = CAMERA_LANG.find(c=>c.id===safeCamLangID)||CAMERA_LANG[0];

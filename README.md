@@ -43,6 +43,7 @@
 - `versions/index_v0.41.html`：本輪 TASK-001 完成後快照
 - `versions/index_v0.42.html`：TASK-002 清理 pose guidance 後快照
 - `versions/index_v0.43.html`：快速隨機區塊左右位置交換後快照
+- `versions/index_v0.44.html`：TASK-002 硬精簡選項與安全主路徑重建後快照
 - `核心資料/核心咒語規範.md`：專案核心規則來源
 - `核心資料/風格範例.md`：大型風格範例資料來源
 - `docs/`：文件中心
@@ -71,6 +72,7 @@
 - `Avoid:` 負面保護已前移到 prompt 第 3 段，避免尾段權重衰減
 - `TPLS.char` 已改成純世界觀描述，不再用 heroine / beauty 等 archetype 詞覆蓋身份
 - `TASK-002` 進一步清理 `Category pose guidance` 的殘留 archetype 字眼，連行為誘導層也改成完全中性
+- `TASK-002` 已將高風險焦段 / 鏡頭語言 / 暗光與仙氣氛圍從主路徑移除，預設主幹收斂到 50mm / 85mm、雜誌封面、自然光與清透或輕霧氛圍
 
 ## 文件入口
 

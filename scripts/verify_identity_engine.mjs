@@ -101,7 +101,7 @@ const sandbox = {
   curRatioID: "r_916",
   curLensID: "l_85",
   curLightID: "ls_golden",
-  curAtmID: "at_ethereal",
+  curAtmID: "at_misty",
   curIdentityID: "il_standard",
   curCamLangID: "cl_fashion",
   document: makeDocument(),
@@ -154,6 +154,11 @@ const tplCharMatches = [...core.matchAll(/char:'([^']+)'/g)].map((match) => matc
 const categoryPoseGuidanceLines = [...core.matchAll(/'([^']+)'/g)]
   .map((match) => match[1].toLowerCase())
   .filter((line) => line.includes("generic costume model") || line.includes("role-appropriate behavior"));
+const lensIds = [...core.matchAll(/\{id:'(l_[^']+)'/g)].map((match) => match[1]);
+const cameraLangIds = [...core.matchAll(/\{id:'(cl_[^']+)'/g)].map((match) => match[1]);
+const lightStyleIds = [...core.matchAll(/\{id:'(ls_[^']+)'/g)].map((match) => match[1]);
+const atmIds = [...core.matchAll(/\{id:'(at_[^']+)'/g)].map((match) => match[1]);
+const tplDefaultsBody = (core.match(/const TPL_DEFAULTS = \{([\s\S]*?)\n\};/) || [])[1] || "";
 
 fs.mkdirSync(path.join(ROOT, "temp"), { recursive: true });
 fs.writeFileSync(
@@ -199,6 +204,26 @@ console.log(
             !line.includes("heroine") &&
             !line.includes("beauty"),
         ),
+        lensPrunedToSafeSet:
+          lensIds.length === 2 &&
+          lensIds.includes("l_50") &&
+          lensIds.includes("l_85"),
+        cameraLangTravelRemoved:
+          !cameraLangIds.includes("cl_travel"),
+        lowkeyRemoved:
+          !lightStyleIds.includes("ls_lowkey"),
+        darkAndEtherealRemoved:
+          !atmIds.includes("at_dark") &&
+          !atmIds.includes("at_ethereal"),
+        tplDefaultsNoDeprecatedIds:
+          !/l_28|l_35|l_135|cl_travel|ls_lowkey|at_dark|at_ethereal/.test(tplDefaultsBody),
+        antiPatternsBlockTravel:
+          core.includes("bannedCameraLanguageIds: ['cl_movie', 'cl_travel']"),
+        mistyHasVisibilityGuard:
+          core.includes("body and face remain clearly visible and fully lit"),
+        faceDescGuidanceUpdated:
+          html.includes("優先填：眼型（單/雙/丹鳳眼）") &&
+          html.includes("填越具體越能鎖住本人五官"),
         ancientBoostUnder100Words:
           ((core.match(/const ANCIENT_BOOST = `([\s\S]*?)`;/) || [])[1] || "")
             .split(/\s+/)
