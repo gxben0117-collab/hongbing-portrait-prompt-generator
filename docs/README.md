@@ -16,6 +16,8 @@
 - `process/發佈流程.md`
 - `process/資料新增規格.md`
 - `process/風格範例 lint 與審核規則 v1.0.md`
+- `process/風格範例審核標記格式 v1.0.md`
+- `process/風格範例 lint 腳本規格 v1.0.md`
 - `process/工作區邊界規則.md`
 - `development-log/`
 

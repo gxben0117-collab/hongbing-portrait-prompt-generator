@@ -46,6 +46,7 @@
 - `versions/index_v0.44.html`：TASK-002 硬精簡選項與安全主路徑重建後快照
 - `versions/index_v0.46.html`：批次擴充風格範例並加入分類/主題數量顯示後快照
 - `versions/index_v0.47.html`：第四輪 curated 擴充、icon fallback 與八行分類列後快照
+- `versions/index_v0.48.html`：第五輪 curated 擴充 1000 組、全分類 icon 寫入與九行分類列後快照
 - `核心資料/核心咒語規範.md`：專案核心規則來源
 - `核心資料/風格範例.md`：大型風格範例資料來源
 - `docs/`：文件中心
@@ -81,7 +82,9 @@
 - 第三輪完成後，總風格條目數已提升至 `1844`
 - 2026-05-22 已加入第四輪 curated 擴充腳本 `scripts/expand_style_examples_round4_curated_20260522.mjs`，改成低庫存分類逐組補入、逐組比對名稱/詞幹/風格來源後再寫入
 - 第四輪完成後，`song_grace`、`ming_grace`、`qing_grace`、`reference_styles`、`hotdrama`、`china_drama`、`spirits`、`goddess_myth`、`holy_angel`、`modern_lady`、`queen`、`wedding_diamond` 各再補 6 組，總風格條目數提升至 `1916`
-- 介面已把風格大類列擴充為 8 行，並對分類 icon / 卡片 icon / 選擇 badge 加入顯示 fallback，避免旗幟 emoji 在部分環境退化成 `TW` 等字母碼
+- 2026-05-22 已加入第五輪 curated 擴充腳本 `scripts/expand_style_examples_round5_curated_20260522.mjs`，依全分類配額、逐組比對名稱/詞幹/素材母庫、禁詞檢查後再寫入，避免直接批次灌水
+- 第五輪完成後，43 個分類合計再補 `1000` 組，總風格條目數提升至 `2916`
+- 介面已把風格大類列擴充為 9 行，並對分類 icon / 卡片 icon / 選擇 badge 加入顯示 fallback，避免旗幟 emoji 在部分環境退化成 `TW` 等字母碼；第五輪新增條目也全部帶入 icon
 - 介面目前會顯示總分類數，以及每個分類當下的場景主題數量，方便檢查庫存擴充結果
 
 ## 文件入口
