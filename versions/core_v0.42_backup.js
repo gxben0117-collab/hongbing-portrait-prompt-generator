@@ -150,39 +150,6 @@ const CATEGORY_POSE_LIBRARY = {
       'vertical queenly composition with subtle low angle or central axis, strong facial clarity, costume and power symbols fully legible without overcomplicated action',
     ],
   },
-  gothic: {
-    prop: [
-      'Choose an action that suits a gothic character inhabiting darkness with elegance: trailing fingertips along a stone wall or iron railing, standing at a high arched window with candlelight from behind, descending a shadowy staircase with unhurried grace, turning slowly toward the camera from a candlelit corridor, or sitting in a heavy carved chair with deliberate stillness',
-      'The subject should feel like she belongs to the dark architecture rather than merely standing in front of it: reading from an ancient book by candlelight, lifting a candelabra while her gaze falls elsewhere, reaching toward a tapestry or dark artifact with quiet ownership, or pausing at a threshold as if she decides whether the dark follows her',
-      'Use gothic narrative intent with composed presence rather than dramatic aggression: standing in shadow without concern, looking down from a tower height with cold aristocratic interest, or remaining perfectly still while the environment moves around her',
-    ],
-    comp: [
-      'vertical gothic portrait with candlelit or moonlit atmospheric depth, clear face, dark architectural framing without obscuring the subject',
-      'vertical full-body or three-quarter gothic composition, dramatic architectural setting clearly visible, subject as still center against the dark environment',
-    ],
-  },
-  fantasy: {
-    prop: [
-      'Choose an action that places this person inside a magical world rather than in front of it: reaching toward a floating magical element with calm ease, walking through a glowing forest path as particles orbit naturally, pausing as magical light gathers near her hands, or simply standing still while the magical world moves around her presence',
-      'The subject should feel like she belongs in the magical environment: a flower opening as she passes, a small creature landing nearby with trust, warm magical light gathering above her naturally, or standing on an enchanted path as if it was made for this moment',
-      'Use fantasy behavior that communicates wonder and belonging rather than theatrical supernatural power: adjusting a floral crown while looking at a glowing landscape, trailing a hand through floating petals, or sitting on a mossy stone in a magical clearing with natural ease',
-    ],
-    comp: [
-      'vertical fantasy portrait with magical environmental depth clearly visible, subject integrated into the magical scene, face clearly readable against soft glowing background',
-      'vertical full-body or three-quarter magical portrait, enchanted environment and subject as cohesive world, foreground magical elements framing without obscuring the face',
-    ],
-  },
-  myth_goddess: {
-    prop: [
-      'Choose an action that communicates divine authority through presence rather than dramatic gesture: standing at the center of a sacred architectural axis as if she summoned it, lifting one hand in a gesture of blessing or judgment with calm permanence, turning to acknowledge something below with composed divine awareness, or existing in stillness at the precise point where mortal and immortal realms meet',
-      'The subject should feel like the environment responds to her rather than the reverse: sacred light converging at the point where she stands, other elements of the composition orienting toward her natural center, or architectural and natural features aligning to frame her position',
-      'Use mythological behavior that projects scale through composure: descending from a celestial platform with measured grace, lifting her gaze from a sacred offering with divine attention, presiding over a ritual space with quiet authority, or turning as if hearing a prayer from a great distance',
-    ],
-    comp: [
-      'vertical mythological portrait with sacred architectural or celestial axis reinforcing divine status, face clearly readable, cosmic environment framing the subject with appropriate scale',
-      'vertical goddess composition with central axis or elevated position, divine environment fully legible, subject as the still center against a world in motion around her',
-    ],
-  },
 };
 
 const CATEGORY_POSE_MAP = {
@@ -210,95 +177,10 @@ const CATEGORY_POSE_MAP = {
   hotdrama: 'hanfu',
   queen: 'queen',
   succubus_demon: 'queen',
-  fallen_angel: 'gothic',
-  holy_angel: 'myth_goddess',
-  goddess_myth: 'myth_goddess',
-  myth: 'myth_goddess',
-  gothic: 'gothic',
-  darkfantasy: 'gothic',
-  fantasy: 'fantasy',
-  water: 'fantasy',
-};
-
-// ═══════════════════════════════════════════
-// 角色行為邏輯模板（CHARACTER BEHAVIOR LOGIC）
-// 在 pose guidance 前插入角色身份與行為背景，
-// 讓 AI 從「這個人在這個時刻會做什麼」出發選擇姿勢，
-// 而不是從通用姿勢庫隨機挑選。
-// ═══════════════════════════════════════════
-const CHARACTER_BEHAVIOR_LOGIC = {
-  xianxia: [
-    'Character behavior context: this person is an immortal cultivator within a xianxia realm — her action should express inner stillness and spiritual awareness: sensing the energy of the location with quiet focus, releasing a spirit lantern or butterfly with purposeful calm, channeling spiritual intention through a contained gesture, or pausing at a threshold between worlds with composed knowing.',
-    'Character behavior context: xianxia figures move with deliberate grace and minimal wasted motion — choose an action woven from the scene itself: stepping along a floating path, arranging a sleeve before a mirror pool, or standing still in a sacred location as spiritual energy gathers around her naturally.',
-  ],
-  hanfu: [
-    'Character behavior context: this person is a historical figure embedded in classical Chinese society — her action should reflect her role and the present moment: a court lady adjusting a hairpin before an audience, a scholarly woman pausing mid-reading under pavilion eaves, a noble daughter standing alone in the garden with a private thought, or a traveler arriving at a destination with the journey still visible in her bearing.',
-    'Character behavior context: hanfu figures move with cultural intentionality — each action has social and emotional meaning. Choose behavior grounded in classical life: offering tea, arranging flowers, reading poetry, playing the guqin, walking through a corridor with purpose, or pausing in a courtyard at an unexpected but natural moment.',
-  ],
-  wedding: [
-    'Character behavior context: this bride is at the emotional center of the most important day — her action should carry that weight: taking a breath before entering, smoothing her gown with quiet focus, turning back toward someone calling her name, pausing alone in the last reflective moment before the ceremony, or walking with slow deliberate joy through a flower-lined space.',
-    'Character behavior context: bridal behavior is layered with personal and ceremonial meaning — choose actions that feel private yet beautiful: touching the veil while looking at nothing in particular, adjusting the bouquet before leaving the preparation room, sitting calmly as natural light falls across her, or standing at a window as the last quiet moment before everything changes.',
-  ],
-  queen: [
-    'Character behavior context: this ruler or commanding figure does not pose — she governs. Choose action that communicates power through purposeful motion: reviewing a document by lamplight, issuing a direction with one unhurried gesture, rising from a throne to address someone below, descending ceremonial steps with absolute composure, or standing at a high vantage point surveying her domain.',
-    'Character behavior context: queens hold power through stillness as much as through action — choose behavior that projects authority with economy of movement: standing at the center of an architectural axis, regarding something below with calm assessment, turning to acknowledge a new arrival without surprise, or resting one hand on a symbol of power with complete ownership.',
-  ],
-  travel: [
-    'Character behavior context: this traveler is defined by movement and genuine engagement with place — choose action that tells a story of being there: arriving at the location and pausing to absorb it, following a path while the camera catches her mid-step, reaching out to touch a landmark with natural curiosity, or standing somewhere significant while the light responds.',
-    'Character behavior context: travel portraits feel most alive when the person belongs in the environment rather than in front of it — choose behaviors that integrate location: turning back after walking ahead, pausing at a staircase with scenery below, sitting on a natural or architectural element with relaxed confidence, or standing in a doorway as if deciding whether to enter.',
-  ],
-  gothic: [
-    'Character behavior context: this gothic or dark character inhabits darkness with composure and elegance — choose action that communicates aristocratic mystery rather than aggression: standing at a high window with atmospheric light from behind, turning slowly in a candlelit hall, trailing fingertips along stone or iron with ownership, or sitting in heavy architecture with deliberate stillness.',
-    'Character behavior context: gothic atmosphere comes from composure in dark environments — choose behavior that feels inevitable and owned: lighting a candle without hurry, reading with focused attention by low light, standing in shadow without concern, or pausing at a threshold as if the dark is a familiar companion.',
-  ],
-  fantasy: [
-    'Character behavior context: this fantasy character is genuinely at home in a magical world — choose action that feels naturally wondrous rather than performative: reaching toward a floating magical element with calm ease, walking through a glowing path as the world responds, pausing as light gathers near her hands without theatrical effort, or standing in a magical clearing while the environment organizes around her.',
-    'Character behavior context: fantasy characters interact with their world through magic and nature — choose action where the environment responds to her: flowers opening as she passes, magical light gathering above her naturally, a small creature arriving with trust, or magical elements trailing from her movement without staged drama.',
-  ],
-  myth_goddess: [
-    'Character behavior context: this divine or mythological figure expresses divinity through presence rather than dramatic action — choose behavior that communicates cosmic scale with personal intimacy: standing at the center of a sacred space as ceremony unfolds around her, lifting one hand in blessing with calm permanence, turning to acknowledge something below with composed divine awareness, or existing in stillness at the precise intersection of mortal and immortal realms.',
-    'Character behavior context: mythological figures are defined by the world responding to them — choose action where the environment acknowledges her: sacred light converging at the point where she stands, architectural and natural elements aligning to frame her position, or the composition itself orienting toward her as its natural center.',
-  ],
-  darkfantasy: [
-    'Character behavior context: this dark fantasy figure occupies power in a dangerous or broken world — choose action that communicates authority through economy of movement: standing in the center of a dramatic landscape without concern, issuing one calm gesture that implies vast consequences, sitting at the position of command with composed sovereignty, or moving through a dangerous environment as the most powerful element within it.',
-    'Character behavior context: dark fantasy power is expressed through indifference to danger and quiet command — choose action where the darkness responds to her: broken landscape positioned as backdrop to her calm authority, dark atmosphere gathering near her as a cooperative force, or the environment maintaining a reverent distance that confirms her absolute status.',
-  ],
-};
-
-const CHARACTER_BEHAVIOR_GROUP_MAP = {
-  xianxia: 'xianxia',
-  hanfu: 'hanfu',
-  dynasty_palace: 'hanfu',
-  tang_grandeur: 'hanfu',
-  song_grace: 'hanfu',
-  ming_grace: 'hanfu',
-  qing_grace: 'hanfu',
-  oriental: 'hanfu',
-  chinese_story: 'hanfu',
-  classic_lit: 'hanfu',
-  jinyong: 'hanfu',
-  china_drama: 'hanfu',
-  drama: 'hanfu',
-  hotdrama: 'hanfu',
-  wedding_diamond: 'wedding',
-  queen: 'queen',
-  succubus_demon: 'queen',
-  fallen_angel: 'gothic',
-  holy_angel: 'myth_goddess',
-  goddess_myth: 'myth_goddess',
-  myth: 'myth_goddess',
-  spirits: 'myth_goddess',
-  gothic: 'gothic',
-  darkfantasy: 'darkfantasy',
-  fantasy: 'fantasy',
-  water: 'fantasy',
-  taiwan_travel: 'travel',
-  europe_travel: 'travel',
-  japan_travel: 'travel',
-  korea_sea: 'travel',
-  world_travel: 'travel',
-  china_mark: 'travel',
-  mountain_sea: 'travel',
+  fallen_angel: 'queen',
+  holy_angel: 'queen',
+  goddess_myth: 'queen',
+  myth: 'queen',
 };
 
 function pickRandom(list){
@@ -308,23 +190,6 @@ function pickRandom(list){
 
 function sanitizeSelectionId(id, bannedIds, fallbackId){
   return bannedIds.includes(id) ? fallbackId : id;
-}
-
-function sanitizeOptionId(id, options, fallbackId){
-  const nextId = id || fallbackId;
-  return options.some(option => option.id === nextId) ? nextId : fallbackId;
-}
-
-function sanitizeLensId(id){
-  return sanitizeOptionId(id, LENS, 'l_50');
-}
-
-function sanitizeLightId(id){
-  return sanitizeOptionId(id, LIGHT_STYLE, 'ls_natural');
-}
-
-function sanitizeAtmId(id){
-  return sanitizeOptionId(id, ATM, 'at_clear');
 }
 
 function sanitizePromptText(text){
@@ -388,14 +253,6 @@ function buildFaceAnchor(desc){
     `Any AI tendency to replace them with xianxia, dynasty, goddess, or influencer archetype faces must be completely suppressed.`;
 }
 
-function buildCharacterBehaviorContext(cat){
-  const group = CHARACTER_BEHAVIOR_GROUP_MAP[cat.id] || CHARACTER_BEHAVIOR_GROUP_MAP[cat.tpl] || null;
-  if(!group) return '';
-  const logicList = CHARACTER_BEHAVIOR_LOGIC[group];
-  if(!logicList || logicList.length === 0) return '';
-  return pickRandom(logicList);
-}
-
 function getCategoryPosePack(cat){
   const group = CATEGORY_POSE_MAP[cat.id] || CATEGORY_POSE_MAP[cat.tpl] || null;
   return group ? CATEGORY_POSE_LIBRARY[group] : null;
@@ -404,11 +261,6 @@ function getCategoryPosePack(cat){
 function buildPoseGuidance({cat, entry, camLang, proAction}){
   const guidance = [];
   const posePack = getCategoryPosePack(cat);
-
-  // 角色行為邏輯層：先建立「這個角色在這個時刻會做什麼」的行為背景
-  const behaviorCtx = buildCharacterBehaviorContext(cat);
-  if(behaviorCtx) guidance.push(behaviorCtx);
-
   if(proAction){
     guidance.push('Honor the selected action, but refine it if needed so the final pose remains natural, front-face-friendly, and identity-safe.');
   } else {
@@ -984,8 +836,8 @@ function renderBadge(){
   const badge = document.getElementById('selBadge');
   sec.style.display='';
   const ratio = RATIO.find(r=>r.id===curRatioID);
-  const lens = LENS.find(l=>l.id===sanitizeLensId(curLensID)) || LENS[0];
-  const light = LIGHT_STYLE.find(l=>l.id===sanitizeLightId(curLightID)) || LIGHT_STYLE[0];
+  const lens = LENS.find(l=>l.id===curLensID);
+  const light = LIGHT_STYLE.find(l=>l.id===curLightID);
   const identity = IDENTITY_LOCK.find(i=>i.id===curIdentityID);
   badge.innerHTML=`
     <span class="badge-item">${cat.icon} ${cat.name}</span>
@@ -1027,9 +879,9 @@ function applyDefs(entryOrNull, tplKey){
   const e = entryOrNull||{};
   if(e.ang    || defs.ang)     curAngID    = sanitizeSelectionId(e.ang || defs.ang, ANTI_PATTERNS.bannedAngleIds, 'sanfen');
   if(e.ratio  || defs.ratio)   curRatioID  = e.ratio  || defs.ratio;
-  if(e.lens   || defs.lens)    curLensID   = sanitizeLensId(e.lens || defs.lens);
-  if(e.light  || defs.light)   curLightID  = sanitizeLightId(e.light || defs.light);
-  if(e.atm    || defs.atm)     curAtmID    = sanitizeAtmId(e.atm || defs.atm);
+  if(e.lens   || defs.lens)    curLensID   = e.lens   || defs.lens;
+  if(e.light  || defs.light)   curLightID  = e.light  || defs.light;
+  if(e.atm    || defs.atm)     curAtmID    = e.atm    || defs.atm;
   if(e.mk     || defs.mk)      curMKID     = e.mk     || defs.mk;
   if(e.camLang|| defs.camLang) curCamLangID= sanitizeSelectionId(e.camLang || defs.camLang, ANTI_PATTERNS.bannedCameraLanguageIds, 'cl_fashion');
 }
@@ -1082,21 +934,21 @@ function selRatio(id){
   renderBadge();
 }
 function selLens(id){
-  curLensID = sanitizeLensId(id);
+  curLensID = id;
   document.querySelectorAll('#lensChips .chip').forEach(c=>c.classList.remove('active'));
-  document.querySelector(`#lensChips .chip[onclick="selLens('${curLensID}')"]`)?.classList.add('active');
+  document.querySelector(`#lensChips .chip[onclick="selLens('${id}')"]`)?.classList.add('active');
   renderBadge();
 }
 function selLight(id){
-  curLightID = sanitizeLightId(id);
+  curLightID = id;
   document.querySelectorAll('#lightChips .chip').forEach(c=>c.classList.remove('active'));
-  document.querySelector(`#lightChips .chip[onclick="selLight('${curLightID}')"]`)?.classList.add('active');
+  document.querySelector(`#lightChips .chip[onclick="selLight('${id}')"]`)?.classList.add('active');
   renderBadge();
 }
 function selAtm(id){
-  curAtmID = sanitizeAtmId(id);
+  curAtmID = id;
   document.querySelectorAll('#atmChips .chip').forEach(c=>c.classList.remove('active'));
-  document.querySelector(`#atmChips .chip[onclick="selAtm('${curAtmID}')"]`)?.classList.add('active');
+  document.querySelector(`#atmChips .chip[onclick="selAtm('${id}')"]`)?.classList.add('active');
   renderBadge();
 }
 function selIdentity(id){
@@ -1171,9 +1023,9 @@ function buildPrompt(){
   const extras    = document.getElementById('extras').value.trim();
 
   const ratio    = RATIO.find(r=>r.id===curRatioID)||RATIO[0];
-  const lens     = LENS.find(l=>l.id===sanitizeLensId(curLensID))||LENS[0];
-  const lightSt  = LIGHT_STYLE.find(l=>l.id===sanitizeLightId(curLightID))||LIGHT_STYLE[0];
-  const atm      = ATM.find(a=>a.id===sanitizeAtmId(curAtmID))||ATM[0];
+  const lens     = LENS.find(l=>l.id===curLensID)||LENS[0];
+  const lightSt  = LIGHT_STYLE.find(l=>l.id===curLightID)||LIGHT_STYLE[0];
+  const atm      = ATM.find(a=>a.id===curAtmID)||ATM[0];
   const identity = IDENTITY_LOCK.find(i=>i.id===curIdentityID)||IDENTITY_LOCK[0];
   const safeCamLangID = sanitizeSelectionId(curCamLangID, ANTI_PATTERNS.bannedCameraLanguageIds, 'cl_fashion');
   const camLang  = CAMERA_LANG.find(c=>c.id===safeCamLangID)||CAMERA_LANG[0];
