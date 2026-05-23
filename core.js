@@ -87,11 +87,13 @@ const LIGHT_STYLE = [
   {id:'ls_golden',   name:'黃金時刻', desc:'Golden hour editorial lighting: warm amber and orange sunlight at low angle, long soft shadows, glowing skin tones, romantic warmth.'},
   {id:'ls_natural',  name:'自然日光', desc:'Natural daylight lighting: soft overcast or window light, even illumination, true-to-life color rendering, clean editorial look.'},
   {id:'ls_studio',   name:'棚拍燈光', desc:'Studio editorial lighting: controlled three-point lighting setup, clean precise illumination, commercial-grade fashion shoot quality.'},
+  {id:'ls_cinematic',name:'電影戲劇光', desc:'Cinematic dramatic lighting: high-contrast motivated key light with colored rim light, deep atmospheric shadows, filmic premium cinema quality — no face-obscuring shadow, identity remains readable.'},
 ];
 const ATM = [
   {id:'at_clear',    name:'晴空清透', desc:'Clear atmospheric visibility: crisp clean air, vivid colors, strong defined details, high-clarity visual rendering.'},
   {id:'at_misty',    name:'煙霧朦朧', desc:'Subtle misty atmosphere: very light haze in background only, body and face remain clearly visible and fully lit, soft romantic atmospheric depth without obscuring the subject.'},
   {id:'at_warm',     name:'暖光環繞', desc:'Warm glow atmosphere: enveloping warm light tones, golden and amber color environment, intimate cozy or romantic warmth.'},
+  {id:'at_moody',    name:'暗黑氛圍', desc:'Dark moody atmosphere: deep shadows with selective accent lighting, heavy atmospheric depth, brooding emotional weight — subject face and identity remain clearly lit and readable.'},
 ];
 const IDENTITY_LOCK = [
   {id:'il_standard', name:'標準保護', boost:''},
