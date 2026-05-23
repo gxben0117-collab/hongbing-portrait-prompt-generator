@@ -86,14 +86,11 @@ const LENS = [
 const LIGHT_STYLE = [
   {id:'ls_golden',   name:'黃金時刻', desc:'Golden hour editorial lighting: warm amber and orange sunlight at low angle, long soft shadows, glowing skin tones, romantic warmth.'},
   {id:'ls_natural',  name:'自然日光', desc:'Natural daylight lighting: soft overcast or window light, even illumination, true-to-life color rendering, clean editorial look.'},
-  {id:'ls_cinematic',name:'電影感光', desc:'Cinematic lighting: dramatic contrast with motivated key light, colored rim light, deep shadows, filmic quality reminiscent of premium cinema.'},
   {id:'ls_studio',   name:'棚拍燈光', desc:'Studio editorial lighting: controlled three-point lighting setup, clean precise illumination, commercial-grade fashion shoot quality.'},
-  {id:'ls_backlit',  name:'逆光輪廓', desc:'Backlit silhouette lighting: strong backlight creating glowing rim around subject, hair and fabric lit from behind, ethereal halo effect.'},
 ];
 const ATM = [
   {id:'at_clear',    name:'晴空清透', desc:'Clear atmospheric visibility: crisp clean air, vivid colors, strong defined details, high-clarity visual rendering.'},
   {id:'at_misty',    name:'煙霧朦朧', desc:'Subtle misty atmosphere: very light haze in background only, body and face remain clearly visible and fully lit, soft romantic atmospheric depth without obscuring the subject.'},
-  {id:'at_moody',    name:'電影憂鬱', desc:'Cinematic moody atmosphere: desaturated with selective color accent, heavy atmospheric haze, brooding emotional weight, art-house quality.'},
   {id:'at_warm',     name:'暖光環繞', desc:'Warm glow atmosphere: enveloping warm light tones, golden and amber color environment, intimate cozy or romantic warmth.'},
 ];
 const IDENTITY_LOCK = [
@@ -449,13 +446,13 @@ const TPL_DEFAULTS = {
   xianxia:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   hanfu:         {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   oriental:      {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  gothic:        {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
+  gothic:        {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_fashion'},
   myth:          {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   fantasy:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   water:         {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   reference_styles:{ang:'sanfen', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   game:          {ang:'quan',     ratio:'r_23',  lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
-  darkfantasy:   {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
+  darkfantasy:   {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_fashion'},
   drama:         {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   queen:         {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_magazine'},
   spirits:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
@@ -466,7 +463,7 @@ const TPL_DEFAULTS = {
   china_mark:    {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   jinyong:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   chinese_story: {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  fallen_angel:  {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
+  fallen_angel:  {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_studio',    atm:'at_misty',    camLang:'cl_fashion'},
   holy_angel:    {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_natural',   atm:'at_misty',    camLang:'cl_magazine'},
   goddess_myth:  {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   cyberpunk_sf:  {ang:'sanfen',   ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
@@ -477,7 +474,7 @@ const TPL_DEFAULTS = {
   dynasty_palace:{ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   classic_lit:   {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   china_drama:   {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  succubus_demon:{ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
+  succubus_demon:{ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_fashion'},
   taiwan_travel: {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   wedding_diamond:{ang:'sanfen',  ratio:'r_34',  lens:'l_50',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_magazine'},
   cos_character: {ang:'quan',     ratio:'r_23',  lens:'l_85',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_magazine'},
@@ -935,8 +932,8 @@ function renderLens(){
   document.getElementById('lensChips').innerHTML = LENS.map(l=>`
     <div class="chip${l.id===curLensID?' active':''}" onclick="selLens('${l.id}')">${l.name}</div>`).join('');
 }
-const CAUTION_LIGHTS = ['ls_cinematic','ls_backlit'];
-const CAUTION_ATM    = ['at_moody'];
+const CAUTION_LIGHTS = [];
+const CAUTION_ATM    = [];
 function renderLight(){
   document.getElementById('lightChips').innerHTML = LIGHT_STYLE.map(l=>{
     const caution = CAUTION_LIGHTS.includes(l.id);
