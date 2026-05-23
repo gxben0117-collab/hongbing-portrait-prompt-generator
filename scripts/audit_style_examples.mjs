@@ -19,6 +19,7 @@ import fs from 'node:fs';
 const outDir = path.join(ROOT, 'docs', 'audit');
 const reportPath = path.join(outDir, '風格範例_資料盤點_20260523.md');
 const jsonPath = path.join(ROOT, 'temp', 'style_examples_audit_20260523.json');
+const GENERATED_AT_TOKEN = '__GENERATED_AT__';
 
 const { cards, uiCats } = loadProjectData();
 const uiEntries = flattenUiEntries(uiCats);
@@ -58,7 +59,7 @@ const misfits = cards
 const report = [];
 report.push('# 風格範例資料盤點報告');
 report.push('');
-report.push(`產生時間：${new Date().toISOString()}`);
+report.push(`產生時間：${GENERATED_AT_TOKEN}`);
 report.push(`專案：\`${ROOT}\``);
 report.push(`母庫：\`${path.relative(ROOT, STYLE_MD_PATH)}\``);
 report.push('');
@@ -185,7 +186,7 @@ report.push('- 建索引時應保守標記：UI 已收錄且欄位完整者可�
 report.push('');
 
 ensureDir(outDir);
-fs.writeFileSync(reportPath, report.join('\n'), 'utf8');
+fs.writeFileSync(reportPath, materializeReport(reportPath, report.join('\n')), 'utf8');
 
 writeJson(jsonPath, {
   generated_at: new Date().toISOString(),
@@ -245,3 +246,16 @@ console.log(JSON.stringify({
   reportPath,
   jsonPath,
 }, null, 2));
+
+function materializeReport(targetPath, draft) {
+  const next = draft.replace(GENERATED_AT_TOKEN, new Date().toISOString());
+  if (!fs.existsSync(targetPath)) return next;
+  const previous = fs.readFileSync(targetPath, 'utf8');
+  const normalizeGeneratedAt = (text) => text.replace(
+    /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)/,
+    GENERATED_AT_TOKEN,
+  );
+  if (normalizeGeneratedAt(previous) !== normalizeGeneratedAt(next)) return next;
+  const previousTime = previous.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/)?.[0];
+  return previousTime ? draft.replace(GENERATED_AT_TOKEN, previousTime) : next;
+}

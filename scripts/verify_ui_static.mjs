@@ -58,22 +58,24 @@ class FakeElement {
 
 function parseChildren(id, htmlText) {
   if (id === 'seriesFilter') {
-    return [...htmlText.matchAll(/class="series-chip([^"]*)" data-series-id="([^"]*)">([\s\S]*?)<\/div>/g)].map((match) => {
+    return [...htmlText.matchAll(/<div\s+([^>]*class="[^"]*series-chip[^"]*"[^>]*)>([\s\S]*?)<\/div>/g)].map((match) => {
       const el = new FakeElement();
+      const attrs = match[1];
       el.kind = 'series';
-      el.dataset.seriesId = decodeHtml(match[2]);
-      if (match[1].includes('active')) el.classList.add('active');
-      el.textContent = stripTags(match[3]);
+      el.dataset.seriesId = decodeHtml(getAttr(attrs, 'data-series-id'));
+      if ((getAttr(attrs, 'class') || '').includes('active')) el.classList.add('active');
+      el.textContent = stripTags(match[2]);
       return el;
     });
   }
   if (id === 'presetGrid') {
-    return [...htmlText.matchAll(/class="preset-card([^"]*)" onclick="selEntry\('([^']+)'\)"([\s\S]*?)<\/div>/g)].map((match) => {
+    return [...htmlText.matchAll(/<div\s+([^>]*class="[^"]*preset-card[^"]*"[^>]*)>([\s\S]*?)<\/div>/g)].map((match) => {
       const el = new FakeElement();
+      const attrs = match[1];
       el.kind = 'preset';
-      el.dataset.entryId = match[2];
-      if (match[1].includes('active')) el.classList.add('active');
-      el.textContent = stripTags(match[3]);
+      el.dataset.entryId = (getAttr(attrs, 'onclick').match(/selEntry\('([^']+)'\)/) || [])[1] || '';
+      if ((getAttr(attrs, 'class') || '').includes('active')) el.classList.add('active');
+      el.textContent = stripTags(match[2]);
       return el;
     });
   }
@@ -89,8 +91,19 @@ function stripTags(value) {
   return String(value || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 }
 
+function getAttr(attrs, name) {
+  const match = String(attrs || '').match(new RegExp(`${name}="([^"]*)"`, 'i'));
+  return match ? match[1] : '';
+}
+
 function decodeHtml(value) {
-  return String(value || '').replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+  return String(value || '')
+    .replace(/&#96;/g, '`')
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<')
+    .replace(/&amp;/g, '&');
 }
 
 const ids = [

@@ -60,6 +60,16 @@ async function runCase(metrics) {
       const outputBefore = document.getElementById('out')?.textContent || '';
       document.querySelector('.gen-btn')?.click();
       const outputAfter = document.getElementById('out')?.textContent || '';
+      const activePresetBefore = document.querySelector('.preset-card.active')?.textContent || '';
+      const inactivePreset = [...document.querySelectorAll('.preset-card')].find((card) => !card.classList.contains('active'));
+      inactivePreset?.focus();
+      inactivePreset?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      const activePresetAfter = document.querySelector('.preset-card.active')?.textContent || '';
+      const proToggle = document.getElementById('proToggle');
+      const proExpandedBefore = proToggle?.getAttribute('aria-expanded');
+      proToggle?.focus();
+      proToggle?.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+      const proExpandedAfter = proToggle?.getAttribute('aria-expanded');
       const style = getComputedStyle(document.querySelector('.preset-grid'));
       return {
         title: document.title,
@@ -68,6 +78,10 @@ async function runCase(metrics) {
         lensChipCount: document.querySelectorAll('#lensChips .chip').length,
         presetCards: document.querySelectorAll('.preset-card').length,
         seriesChips: document.querySelectorAll('.series-chip').length,
+        focusableControlCount: document.querySelectorAll('[role="button"][tabindex="0"]').length,
+        ariaPressedCount: document.querySelectorAll('[aria-pressed]').length,
+        keyboardPresetChanged: Boolean(inactivePreset) && activePresetBefore !== activePresetAfter,
+        proToggleKeyboardWorks: proExpandedBefore !== proExpandedAfter && proExpandedAfter === 'true',
         outputGenerated: outputAfter.includes('IDENTITY LOCK') && outputAfter.length > outputBefore.length,
         promptHas50mm: outputAfter.includes('50mm'),
         promptHasOldLens: /70mm|80mm|85mm|l_70|l_80|l_85/.test(outputAfter),
@@ -90,6 +104,10 @@ async function runCase(metrics) {
   if (value.catCount !== 15) throw new Error(`Expected 15 categories, got ${value.catCount}`);
   if (value.lensChipCount !== 1) throw new Error(`Expected 1 lens chip, got ${value.lensChipCount}`);
   if (!value.outputGenerated) throw new Error('Generate button did not produce an identity-lock prompt');
+  if (value.focusableControlCount < 40) throw new Error(`Expected keyboard-focusable controls, got ${value.focusableControlCount}`);
+  if (value.ariaPressedCount < 30) throw new Error(`Expected aria-pressed state on selectable controls, got ${value.ariaPressedCount}`);
+  if (!value.keyboardPresetChanged) throw new Error('Keyboard Enter did not activate a preset card');
+  if (!value.proToggleKeyboardWorks) throw new Error('Keyboard Space did not toggle the pro panel');
   if (value.promptHasOldLens) throw new Error('Generated prompt contains deprecated lens terms');
   if (value.promptHasLowAngle) throw new Error('Generated prompt contains unsafe low-angle terms');
   if (value.horizontalOverflow) throw new Error(`Viewport has horizontal overflow: ${value.viewport.scrollWidth} > ${value.viewport.width}`);

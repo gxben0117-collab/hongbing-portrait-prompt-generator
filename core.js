@@ -996,38 +996,71 @@ function statusLabel(status){
   }[status] || '';
 }
 
+function escapeHtml(value){
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;',
+  }[ch]));
+}
+
+function escapeAttr(value){
+  return escapeHtml(value).replace(/`/g, '&#96;');
+}
+
+function buttonAttrs(label, pressed){
+  const state = typeof pressed === 'boolean' ? ` aria-pressed="${pressed ? 'true' : 'false'}"` : '';
+  return `role="button" tabindex="0"${state} aria-label="${escapeAttr(label)}"`;
+}
+
+function installKeyboardActivation(){
+  if(typeof document === 'undefined' || typeof document.addEventListener !== 'function' || document.__hongbingKeyboardActivation) return;
+  document.__hongbingKeyboardActivation = true;
+  document.addEventListener('keydown', event => {
+    const target = event.target && event.target.closest
+      ? event.target.closest('[role="button"][tabindex="0"]')
+      : null;
+    if(!target || target.tagName === 'BUTTON') return;
+    if(event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    target.click();
+  });
+}
+
 // ═══════════════════════════════════════════
 // Render
 // ═══════════════════════════════════════════
 function renderRatio(){
   document.getElementById('ratioChips').innerHTML = RATIO.map(r=>`
-    <div class="chip${r.id===curRatioID?' active':''}" onclick="selRatio('${r.id}')">${r.name}</div>`).join('');
+    <div class="chip${r.id===curRatioID?' active':''}" ${buttonAttrs(`${r.name} 圖片比例`, r.id===curRatioID)} onclick="selRatio('${r.id}')">${escapeHtml(r.name)}</div>`).join('');
 }
 function renderLens(){
   document.getElementById('lensChips').innerHTML = LENS.map(l=>`
-    <div class="chip${l.id===curLensID?' active':''}" onclick="selLens('${l.id}')">${l.name}</div>`).join('');
+    <div class="chip${l.id===curLensID?' active':''}" ${buttonAttrs(`${l.name} 鏡頭焦段`, l.id===curLensID)} onclick="selLens('${l.id}')">${escapeHtml(l.name)}</div>`).join('');
 }
 const CAUTION_LIGHTS = [];
 const CAUTION_ATM    = [];
 function renderLight(){
   document.getElementById('lightChips').innerHTML = LIGHT_STYLE.map(l=>{
     const caution = CAUTION_LIGHTS.includes(l.id);
-    return `<div class="chip${l.id===curLightID?' active':''}${caution?' caution':''}" onclick="selLight('${l.id}')" title="${caution?'謹慎使用：容易增加大頭視覺或假人感':''}">${l.name}${caution?' ⚠':''}</div>`;
+    return `<div class="chip${l.id===curLightID?' active':''}${caution?' caution':''}" ${buttonAttrs(`${l.name} 燈光風格`, l.id===curLightID)} onclick="selLight('${l.id}')" title="${caution?'謹慎使用：容易增加大頭視覺或假人感':''}">${escapeHtml(l.name)}${caution?' ⚠':''}</div>`;
   }).join('');
 }
 function renderAtm(){
   document.getElementById('atmChips').innerHTML = ATM.map(a=>{
     const caution = CAUTION_ATM.includes(a.id);
-    return `<div class="chip${a.id===curAtmID?' active':''}${caution?' caution':''}" onclick="selAtm('${a.id}')" title="${caution?'謹慎使用：容易讓身體消失、頭部主體化':''}">${a.name}${caution?' ⚠':''}</div>`;
+    return `<div class="chip${a.id===curAtmID?' active':''}${caution?' caution':''}" ${buttonAttrs(`${a.name} 整體氛圍`, a.id===curAtmID)} onclick="selAtm('${a.id}')" title="${caution?'謹慎使用：容易讓身體消失、頭部主體化':''}">${escapeHtml(a.name)}${caution?' ⚠':''}</div>`;
   }).join('');
 }
 function renderIdentity(){
   document.getElementById('identityChips').innerHTML = IDENTITY_LOCK.map(i=>`
-    <div class="chip${i.id===curIdentityID?' active':''}" onclick="selIdentity('${i.id}')">${i.name}</div>`).join('');
+    <div class="chip${i.id===curIdentityID?' active':''}" ${buttonAttrs(`${i.name} 身份鎖定強度`, i.id===curIdentityID)} onclick="selIdentity('${i.id}')">${escapeHtml(i.name)}</div>`).join('');
 }
 function renderCamLang(){
   document.getElementById('camLangChips').innerHTML = CAMERA_LANG.map(c=>`
-    <div class="chip${c.id===curCamLangID?' active':''}" onclick="selCamLang('${c.id}')">${c.name}</div>`).join('');
+    <div class="chip${c.id===curCamLangID?' active':''}" ${buttonAttrs(`${c.name} 鏡頭語言`, c.id===curCamLangID)} onclick="selCamLang('${c.id}')">${escapeHtml(c.name)}</div>`).join('');
 }
 
 function getDisplayIcon(icon, fallback='✦'){
@@ -1051,9 +1084,9 @@ function renderCatStrip(){
   const countMeta = document.getElementById('catCountMeta');
   if(countMeta) countMeta.textContent = `${CATS.length} 類`;
   el.innerHTML = CATS.map(c=>`
-    <div class="cat-pill${c.id===curCatID?' active':''}" onclick="selCat('${c.id}')">
+    <div class="cat-pill${c.id===curCatID?' active':''}" ${buttonAttrs(`選擇風格大類：${c.name}`, c.id===curCatID)} onclick="selCat('${c.id}')">
       <span class="cat-pill-icon">${getDisplayIcon(c.icon,'✦')}</span>
-      <span class="cat-pill-name">${c.name}</span>
+      <span class="cat-pill-name">${escapeHtml(c.name)}</span>
       <span class="cat-pill-count">${c.entries.length}</span>
     </div>`).join('');
 }
@@ -1069,9 +1102,9 @@ function renderSeriesFilter(){
   }
   const allCount = (cat.entries || []).length;
   el.innerHTML = [
-    `<div class="series-chip${curSeriesID==='__all'?' active':''}" data-series-id="__all">全部<span class="series-chip-count">${allCount}</span></div>`,
+    `<div class="series-chip${curSeriesID==='__all'?' active':''}" ${buttonAttrs('顯示全部子系列', curSeriesID==='__all')} data-series-id="__all">全部<span class="series-chip-count">${allCount}</span></div>`,
     ...options.map(([series,count])=>`
-      <div class="series-chip${series===curSeriesID?' active':''}" data-series-id="${series.replace(/"/g,'&quot;')}">${series}<span class="series-chip-count">${count}</span></div>`)
+      <div class="series-chip${series===curSeriesID?' active':''}" ${buttonAttrs(`篩選子系列：${series}`, series===curSeriesID)} data-series-id="${escapeAttr(series)}">${escapeHtml(series)}<span class="series-chip-count">${count}</span></div>`)
   ].join('');
   el.querySelectorAll('.series-chip').forEach(chip=>{
     chip.addEventListener('click',()=>selSeries(chip.dataset.seriesId || '__all'));
@@ -1085,27 +1118,27 @@ function renderPresets(){
   const countMeta = document.getElementById('presetCountMeta');
   if(countMeta) countMeta.textContent = curSeriesID === '__all' ? `${cat.entries.length} 筆` : `${entries.length} / ${cat.entries.length} 筆`;
   document.getElementById('presetGrid').innerHTML = entries.map(e=>`
-    <div class="preset-card${e.id===curEntryID?' active':''}" onclick="selEntry('${e.id}')">
+    <div class="preset-card${e.id===curEntryID?' active':''}" ${buttonAttrs(`選擇場景主題：${e.name}${e.sub ? '，' + e.sub : ''}`, e.id===curEntryID)} onclick="selEntry('${e.id}')">
       <span class="preset-icon">${getDisplayIcon(e.icon, getDisplayIcon(cat.icon,'✦'))}</span>
-      <span class="preset-name">${e.name}</span>
-      <span class="preset-sub">${e.sub||''}</span>
+      <span class="preset-name">${escapeHtml(e.name)}</span>
+      <span class="preset-sub">${escapeHtml(e.sub||'')}</span>
       <span class="preset-meta">
         ${statusLabel(e.ui_status) ? `<span class="preset-tag ${e.ui_status}">${statusLabel(e.ui_status)}</span>` : ''}
-        ${getEntrySeries(e) ? `<span class="preset-tag">${getEntrySeries(e)}</span>` : ''}
+        ${getEntrySeries(e) ? `<span class="preset-tag">${escapeHtml(getEntrySeries(e))}</span>` : ''}
       </span>
     </div>`).join('');
 }
 
 function renderMK(){
   document.getElementById('mkChips').innerHTML = MK.map(m=>`
-    <div class="chip${m.id===curMKID?' active':''}" onclick="selMK('${m.id}')">${m.name}</div>`).join('');
+    <div class="chip${m.id===curMKID?' active':''}" ${buttonAttrs(`${m.name} 妝容風格`, m.id===curMKID)} onclick="selMK('${m.id}')">${escapeHtml(m.name)}</div>`).join('');
 }
 
 function renderAng(){
   document.getElementById('angChips').innerHTML = ANG.map(a=>`
-    <div class="chip${a.id===curAngID?' active':''}" onclick="selAng('${a.id}')">
-      <span>${a.name}</span>
-      <span class="chip-sub">${a.zh}</span>
+    <div class="chip${a.id===curAngID?' active':''}" ${buttonAttrs(`${a.name} 鏡頭角度`, a.id===curAngID)} onclick="selAng('${a.id}')">
+      <span>${escapeHtml(a.name)}</span>
+      <span class="chip-sub">${escapeHtml(a.zh)}</span>
     </div>`).join('');
 }
 
@@ -1141,6 +1174,7 @@ function renderBadge(){
 }
 
 function renderAll(){
+  installKeyboardActivation();
   renderCatStrip();
   renderSeriesFilter();
   renderPresets();
@@ -1315,8 +1349,11 @@ function doRandomAndCopy(){
 // Pro Panel
 // ═══════════════════════════════════════════
 function togglePro(){
-  document.getElementById('proToggle').classList.toggle('open');
-  document.getElementById('proBody').classList.toggle('open');
+  const toggle = document.getElementById('proToggle');
+  const body = document.getElementById('proBody');
+  toggle.classList.toggle('open');
+  body.classList.toggle('open');
+  toggle.setAttribute('aria-expanded', body.classList.contains('open') ? 'true' : 'false');
 }
 
 // ═══════════════════════════════════════════

@@ -17,6 +17,7 @@ const requested = process.argv.includes('--formal') ? INDEX_PATH : INDEX_DRAFT_P
 const indexPath = fs.existsSync(requested) ? requested : INDEX_DRAFT_PATH;
 const reportPath = path.join(ROOT, 'docs', 'audit', '風格索引檢查_20260523.md');
 const jsonPath = path.join(ROOT, 'temp', 'style_index_audit_20260523.json');
+const GENERATED_AT_TOKEN = '__GENERATED_AT__';
 
 const index = readJson(indexPath);
 const { cards, uiCats } = loadProjectData();
@@ -88,7 +89,7 @@ const themeRows = [...VALID_THEME_IDS].sort().map((themeId) => {
 const report = [
   '# 風格索引檢查報告',
   '',
-  `產生時間：${new Date().toISOString()}`,
+  `產生時間：${GENERATED_AT_TOKEN}`,
   `檢查索引：\`${path.relative(ROOT, indexPath)}\``,
   '',
   '## 1. 摘要',
@@ -123,7 +124,7 @@ const report = [
 ].join('\n');
 
 fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-fs.writeFileSync(reportPath, report, 'utf8');
+fs.writeFileSync(reportPath, materializeReport(reportPath, report), 'utf8');
 writeJson(jsonPath, {
   generated_at: new Date().toISOString(),
   index_path: path.relative(ROOT, indexPath),
@@ -170,4 +171,17 @@ function countBy(items, keyFn) {
     counts[key] = (counts[key] || 0) + 1;
   }
   return counts;
+}
+
+function materializeReport(targetPath, draft) {
+  const next = draft.replace(GENERATED_AT_TOKEN, new Date().toISOString());
+  if (!fs.existsSync(targetPath)) return next;
+  const previous = fs.readFileSync(targetPath, 'utf8');
+  const normalizeGeneratedAt = (text) => text.replace(
+    /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)/,
+    GENERATED_AT_TOKEN,
+  );
+  if (normalizeGeneratedAt(previous) !== normalizeGeneratedAt(next)) return next;
+  const previousTime = previous.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/)?.[0];
+  return previousTime ? draft.replace(GENERATED_AT_TOKEN, previousTime) : next;
 }
