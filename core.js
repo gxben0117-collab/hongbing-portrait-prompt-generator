@@ -40,7 +40,8 @@ const AVOID_LOCK = `identity drift, replaced face, AI beauty templates, influenc
 const ANCIENT_BOOST = `Ancient Chinese costume: traditional updo with 2-3 accessories only (hairpins or step-shake ornaments) that do not enlarge head silhouette. Layered robes with wide sleeves, embroidered waist ornament, one era-appropriate hand prop. Setting: ancient Chinese architecture, classical gardens, or mythological environment.`;
 
 const QUALITY_BASE = `cinematic quality, photorealistic rendering, detailed costume and environment texture, 8K HDR`;
-const ANTI_PATTERNS = {
+const GOVERNANCE = (typeof window !== 'undefined' && window.PROMPT_GOVERNANCE) ? window.PROMPT_GOVERNANCE : {};
+const ANTI_PATTERNS = GOVERNANCE.antiPatterns || {
   bannedCameraLanguageIds: ['cl_movie', 'cl_travel'],
   bannedAngleIds: ['yang', 'huimou'],
   bannedPromptTerms: [
@@ -66,6 +67,7 @@ const ANTI_PATTERNS = {
     'celestial mist',
   ],
 };
+const TEXT_REPLACEMENTS = GOVERNANCE.replacements || [];
 
 // ═══════════════════════════════════════════
 // 圖片規格控制
@@ -79,9 +81,11 @@ const RATIO = [
   {id:'r_916', name:'9:16 手機直',  desc:'Generate in 9:16 tall vertical mobile format — optimized for phone display and social media stories.'},
   {id:'r_239', name:'2.39:1 超寬幕',desc:'Generate in 2.39:1 ultra-wide cinematic letterbox format — maximum cinematic scope for epic scenes.'},
 ];
-const LENS = [
-  {id:'l_85',  name:'85mm 人像',  desc:'Simulated 85mm portrait lens: natural face compression, beautiful background bokeh — for close-up and half-body portraits only. Avoid for full-body shots as it compresses the body and exaggerates head-to-body ratio.'},
-  {id:'l_50',  name:'50mm 標準',  desc:'Simulated 50mm full-body fashion photography lens: natural human-eye perspective, minimal distortion, realistic head-to-body proportions — camera positioned at eye-level or chest height, balanced full-body and three-quarter editorial framing.'},
+const LENS = GOVERNANCE.lensOptions || [
+  {id:'l_50',  name:'50mm 全身最穩',  desc:'Simulated 50mm full-body fashion photography lens: natural human-eye perspective, minimal distortion, realistic head-to-body proportions — camera positioned at eye-level or chest height, balanced full-body and three-quarter editorial framing.'},
+  {id:'l_70',  name:'70mm 平衡人像',  desc:'Simulated 70mm balanced portrait lens: mild portrait compression with still-realistic body scale, optimized for three-quarter portraits that need both a beautiful face and stable head-to-body proportion.'},
+  {id:'l_80',  name:'80mm 角色近景',  desc:'Simulated 80mm character portrait lens: stronger portrait compression than 70mm but safer than 85mm for three-quarter character styling and dramatic costume portraits.'},
+  {id:'l_85',  name:'85mm 半身美臉',  desc:'Simulated 85mm portrait lens: natural face compression, beautiful background bokeh — for close-up and half-body portraits only. Avoid for full-body shots as it compresses the body and exaggerates head-to-body ratio.'},
 ];
 const LIGHT_STYLE = [
   {id:'ls_golden',   name:'黃金時刻', desc:'Golden hour editorial lighting: warm amber and orange sunlight at low angle, long soft shadows, glowing skin tones, romantic warmth.'},
@@ -351,7 +355,11 @@ function sanitizeAtmId(id){
 
 function sanitizePromptText(text){
   if(!text) return '';
-  return text
+  let next = text;
+  TEXT_REPLACEMENTS.forEach(([from, to]) => {
+    next = next.replace(new RegExp(escapeRegExp(from), 'gi'), to);
+  });
+  return next
     .replace(/movie trailer camera language/gi, 'controlled portrait camera framing')
     .replace(/fashion editorial camera language/gi, 'controlled portrait camera framing')
     .replace(/blockbuster visual language/gi, 'natural portrait visual language')
@@ -389,6 +397,10 @@ function sanitizePromptText(text){
     .replace(/celestial mist/gi, 'light atmospheric mist');
 }
 
+function escapeRegExp(text){
+  return String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function buildAntiPatternGuidance(){
   return 'ANTI-PATTERN OVERRIDE: no low-angle hero shots, back-facing poses, movie-trailer staging, eye-shape-changing liner, or extreme choreography — replace with face-readable, identity-safe alternatives.';
 }
@@ -421,6 +433,21 @@ function getCategoryPosePack(cat){
   return group ? CATEGORY_POSE_LIBRARY[group] : null;
 }
 
+function getCategoryRule(cat){
+  const rules = GOVERNANCE.categoryRules || {};
+  return Object.values(rules).find(rule => {
+    const categories = rule.categories || [];
+    return categories.includes(cat.id) || categories.includes(cat.tpl);
+  }) || null;
+}
+
+function buildLensGuidance(cat, lens){
+  const rule = getCategoryRule(cat);
+  const base = rule && rule.guidance ? rule.guidance : '';
+  const selected = lens && lens.id ? `Selected lens policy: ${lens.name} — ${lens.desc}` : '';
+  return [base, selected].filter(Boolean).join(' ');
+}
+
 function buildPoseGuidance({cat, entry, camLang, proAction}){
   const guidance = [];
   const posePack = getCategoryPosePack(cat);
@@ -448,15 +475,15 @@ const TPL_DEFAULTS = {
   xianxia:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   hanfu:         {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   oriental:      {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  gothic:        {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_fashion'},
+  gothic:        {ang:'sanfen',   ratio:'r_23',  lens:'l_70',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_fashion'},
   myth:          {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   fantasy:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   water:         {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   reference_styles:{ang:'sanfen', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
-  game:          {ang:'quan',     ratio:'r_23',  lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
-  darkfantasy:   {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_fashion'},
+  game:          {ang:'quan',     ratio:'r_23',  lens:'l_80',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  darkfantasy:   {ang:'sanfen',   ratio:'r_23',  lens:'l_70',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_fashion'},
   drama:         {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  queen:         {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_magazine'},
+  queen:         {ang:'sanfen',   ratio:'r_34',  lens:'l_70',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_magazine'},
   spirits:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   europe_travel: {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   japan_travel:  {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
@@ -465,21 +492,21 @@ const TPL_DEFAULTS = {
   china_mark:    {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   jinyong:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   chinese_story: {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  fallen_angel:  {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_studio',    atm:'at_misty',    camLang:'cl_fashion'},
-  holy_angel:    {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_natural',   atm:'at_misty',    camLang:'cl_magazine'},
-  goddess_myth:  {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  cyberpunk_sf:  {ang:'sanfen',   ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
-  realistic_life:{ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_social'},
-  modern_lady:   {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_magazine'},
+  fallen_angel:  {ang:'sanfen',   ratio:'r_23',  lens:'l_70',  light:'ls_studio',    atm:'at_misty',    camLang:'cl_fashion'},
+  holy_angel:    {ang:'sanfen',   ratio:'r_23',  lens:'l_70',  light:'ls_natural',   atm:'at_misty',    camLang:'cl_magazine'},
+  goddess_myth:  {ang:'sanfen',   ratio:'r_23',  lens:'l_70',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  cyberpunk_sf:  {ang:'sanfen',   ratio:'r_916', lens:'l_80',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  realistic_life:{ang:'huanjing', ratio:'r_916', lens:'l_70',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_social'},
+  modern_lady:   {ang:'sanfen',   ratio:'r_34',  lens:'l_70',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_magazine'},
   dragon_beast:  {ang:'sanfen',   ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   beast_tamer:   {ang:'huanjing', ratio:'r_23',  lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   dynasty_palace:{ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   classic_lit:   {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   china_drama:   {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  succubus_demon:{ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_fashion'},
+  succubus_demon:{ang:'sanfen',   ratio:'r_23',  lens:'l_70',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_fashion'},
   taiwan_travel: {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   wedding_diamond:{ang:'sanfen',  ratio:'r_34',  lens:'l_50',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_magazine'},
-  cos_character: {ang:'quan',     ratio:'r_23',  lens:'l_85',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_magazine'},
+  cos_character: {ang:'quan',     ratio:'r_23',  lens:'l_80',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_magazine'},
   mountain_sea:  {ang:'huanjing', ratio:'r_169', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
 };
 
@@ -532,7 +559,7 @@ const MK = [
 // 鏡頭角度庫
 // ═══════════════════════════════════════════
 const ANG = [
-  {id:'sanfen',  name:'三分側面', zh:'臉微側45°，最顯臉型', desc:'three-quarter angle, slight natural head turn, most flattering for face and costume'},
+  {id:'sanfen',  name:'鎖臉微側', zh:'臉只微側10-15°，不破壞五官', desc:'identity-safe micro three-quarter angle: face remains mostly front-facing, only a subtle 10-15 degree head turn, shoulders may angle gently, facial geometry stays readable and recognizable'},
   {id:'zheng',   name:'正面人像', zh:'臉正對鏡頭，對稱感強', desc:'front-facing portrait, face directly toward camera, symmetrical framing'},
   {id:'banshen', name:'半身人像', zh:'腰部以上，服裝道具清楚', desc:'half-body portrait from waist up, showing face, upper costume details, and hand props'},
   {id:'quan',    name:'全身人像', zh:'頭到腳，完整服裝剪裁', desc:'full body shot head to feet, complete costume visible from crown to hem'},
@@ -1247,6 +1274,7 @@ function buildPrompt(){
   const sanitizedExtras = sanitizeCreativeField(extras);
   const sanitizedCamLang = sanitizeCreativeField(camLang.desc);
   const sanitizedAngleDesc = sanitizeCreativeField(ang.desc);
+  const sanitizedLensGuidance = sanitizeCreativeField(buildLensGuidance(cat, lens));
   const fallbackProp = !sanitizedProp && posePack ? sanitizeCreativeField(pickRandom(posePack.prop)) : '';
   const fallbackComp = !sanitizedComp && posePack ? sanitizeCreativeField(pickRandom(posePack.comp)) : '';
 
@@ -1259,6 +1287,7 @@ function buildPrompt(){
     CORE_SAFETY,
     CORE_ELASTICITY,
     proParts.join(' '),
+    sanitizedLensGuidance ? `Lens selection guidance: ${sanitizedLensGuidance}.` : '',
     buildAntiPatternGuidance(),
     sanitizeCreativeField(`[${cat.name} — ${entry.name}${entry.sub?' · '+entry.sub:''}]`),
     sceneDesc ? `Scene: ${sceneDesc}.` : '',

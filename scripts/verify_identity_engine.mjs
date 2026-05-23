@@ -88,6 +88,7 @@ function makeDocument() {
 
 const html = read("index.html");
 const core = read("core.js");
+const governance = read("prompt_governance.js");
 const catsArray = extractCatsArray(html);
 
 const sandbox = {
@@ -112,6 +113,7 @@ const sandbox = {
 };
 
 vm.createContext(sandbox);
+vm.runInContext(governance, sandbox);
 vm.runInContext(core, sandbox);
 
 function buildFor(catId, entryId) {
@@ -131,14 +133,14 @@ function setField(id, value) {
 const tests = [
   {
     name: "baiqian",
-    catId: "china_drama",
-    entryId: "cd_01",
+    catId: "theme_09",
+    entryId: "tv_01",
     faceDesc: "single eyelids, natural eye spacing, straight nose bridge, soft squared chin, natural asymmetry",
   },
   {
-    name: "sujin",
-    catId: "china_drama",
-    entryId: "cd_16",
+    name: "bridal",
+    catId: "theme_15",
+    entryId: "hs_01",
     faceDesc: "defined eyelid structure, narrower lip width, longer philtrum, delicate jaw curvature, realistic skin texture",
   },
 ];
@@ -174,23 +176,23 @@ console.log(
       tests: tests.map((test) => test.name),
       checks: {
         promptOrderCorrect:
-          baiqianSegments[0]?.includes("MANDATORY FIRST STEP") &&
+          baiqianSegments[0]?.includes("MANDATORY: Check for an uploaded reference photo") &&
           baiqianSegments[1]?.includes("SUBJECT FACE DESCRIPTION") &&
           baiqianSegments[2]?.startsWith("Avoid: "),
         faceAnchorPresent: output.baiqian.includes("SUBJECT FACE DESCRIPTION"),
-        baiqianHasCoreIdentity: output.baiqian.includes("IDENTITY & EXPRESSION PRESERVATION"),
-        baiqianHasProportionCore: output.baiqian.includes("PROPORTION COHERENCE OVERRIDE"),
-        sujinHasAntiPatternOverride: output.sujin.includes("ANTI-PATTERN OVERRIDE"),
-        sceneContextLabelUsed: output.sujin.includes("Scene context:"),
+        baiqianHasCoreIdentity: output.baiqian.includes("IDENTITY LOCK (CRITICAL)"),
+        baiqianHasProportionCore: output.baiqian.includes("Head-to-body proportion must be realistic"),
+        bridalHasAntiPatternOverride: output.bridal.includes("ANTI-PATTERN OVERRIDE"),
+        sceneContextLabelUsed: output.bridal.includes("Character context:"),
         noMovieTrailer:
           !output.baiqian.toLowerCase().includes("movie trailer") &&
-          !output.sujin.toLowerCase().includes("movie trailer"),
+          !output.bridal.toLowerCase().includes("movie trailer"),
         noLowAngle:
           !output.baiqian.toLowerCase().includes("low angle upward shot") &&
-          !output.sujin.toLowerCase().includes("low angle upward shot"),
+          !output.bridal.toLowerCase().includes("low angle upward shot"),
         noFashionEditorialCameraLanguage:
           !output.baiqian.toLowerCase().includes("fashion editorial camera language") &&
-          !output.sujin.toLowerCase().includes("fashion editorial camera language"),
+          !output.bridal.toLowerCase().includes("fashion editorial camera language"),
         noArchetypeCharTermsInTplChars: tplCharMatches.every(
           (line) =>
             !line.includes("heroine") &&
@@ -205,9 +207,18 @@ console.log(
             !line.includes("beauty"),
         ),
         lensPrunedToSafeSet:
-          lensIds.length === 2 &&
+          lensIds.length === 4 &&
           lensIds.includes("l_50") &&
+          lensIds.includes("l_70") &&
+          lensIds.includes("l_80") &&
           lensIds.includes("l_85"),
+        governanceLoaded:
+          html.includes("prompt_governance.js") &&
+          core.includes("const GOVERNANCE") &&
+          governance.includes("PROMPT_GOVERNANCE"),
+        microTurnAngleUsed:
+          core.includes("name:'鎖臉微側'") &&
+          core.includes("10-15 degree head turn"),
         cameraLangTravelRemoved:
           !cameraLangIds.includes("cl_travel"),
         lowkeyRemoved:

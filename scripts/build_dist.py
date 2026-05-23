@@ -8,7 +8,7 @@ DIST = ROOT / "dist"
 
 def main() -> None:
     DIST.mkdir(exist_ok=True)
-    for filename in ("index.html", "core.js"):
+    for filename in ("index.html", "core.js", "prompt_governance.js"):
         src = ROOT / filename
         dst = DIST / filename
         if src.exists():
