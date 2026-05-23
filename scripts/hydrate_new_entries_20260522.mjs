@@ -157,7 +157,7 @@ function queenProp(seed) {
 function queenComp(seed) {
   return chooseByHash(seed, [
     "vertical regal portrait with throne, steps, or architectural axis reinforcing authority, face clearly readable, body posed in a stable commanding silhouette",
-    "vertical queenly composition with subtle low angle or central axis, strong facial clarity, costume and power symbols fully legible without overcomplicated action",
+    "vertical queenly composition with stable central axis, strong facial clarity, costume and power symbols fully legible without overcomplicated action",
     "vertical sovereignty portrait, face unobstructed, full styling readable, and ceremonial depth supporting the authority of the role",
   ]);
 }

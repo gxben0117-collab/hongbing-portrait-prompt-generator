@@ -18,12 +18,12 @@ vm.createContext(sandbox);
 vm.runInContext(governanceSource, sandbox);
 
 const replacements = [
-  ...(sandbox.window.PROMPT_GOVERNANCE?.replacements || []).filter(([from]) => !["goddess", "heroine", "celebrity"].includes(from)),
+  ...(sandbox.window.PROMPT_GOVERNANCE?.replacements || []),
   [/low angle shot/gi, "stable eye-level shot"],
   [/low angle dramatic tracking shot/gi, "stable eye-level dramatic tracking shot"],
   [/low angle heroic cinematic framing/gi, "stable eye-level heroic cinematic framing"],
   [/low angle cinematic shot/gi, "stable eye-level cinematic shot"],
-  [/low angle side light/gi, "low side light from the environment"],
+  [/low angle side light/gi, "side light from the environment"],
   [/looking back over (her )?shoulder/gi, "turning gently with face still readable"],
   [/looking back toward (the )?(camera|lens|camera lens)/gi, "turning gently toward the camera with face still readable"],
   [/looking back slightly/gi, "turning gently while keeping the face readable"],

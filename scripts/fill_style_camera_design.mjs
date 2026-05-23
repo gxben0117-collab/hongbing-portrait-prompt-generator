@@ -109,15 +109,15 @@ function decideCamera(category, entry) {
     return { ratio: "r_23", lens: "l_50", ang: "quan", camLang: isRoyal ? "cl_magazine" : "cl_fashion", light: isDark ? "ls_cinematic" : "ls_golden", atm: isDark ? "at_moody" : "at_misty" };
   }
   if (isClose) {
-    return { ratio: "r_34", lens: "l_85", ang: "banshen", camLang: "cl_fashion", light: isStudio ? "ls_studio" : "ls_cinematic", atm: isDark ? "at_moody" : "at_clear" };
+    return { ratio: "r_34", lens: "l_50", ang: "banshen", camLang: "cl_fashion", light: isStudio ? "ls_studio" : "ls_cinematic", atm: isDark ? "at_moody" : "at_clear" };
   }
   if (isAction) {
-    return { ratio: "r_23", lens: "l_70", ang: "quan", camLang: "cl_fashion", light: isDark ? "ls_cinematic" : "ls_golden", atm: isDark ? "at_moody" : "at_misty" };
+    return { ratio: "r_23", lens: "l_50", ang: "quan", camLang: "cl_fashion", light: isDark ? "ls_cinematic" : "ls_golden", atm: isDark ? "at_moody" : "at_misty" };
   }
   if (isRoyal) {
-    return { ratio: "r_34", lens: "l_70", ang: "sanfen", camLang: "cl_magazine", light: isDark ? "ls_cinematic" : "ls_studio", atm: isDark ? "at_moody" : "at_warm" };
+    return { ratio: "r_34", lens: "l_50", ang: "sanfen", camLang: "cl_magazine", light: isDark ? "ls_cinematic" : "ls_studio", atm: isDark ? "at_moody" : "at_warm" };
   }
-  return { ratio: "r_34", lens: "l_70", ang: "sanfen", camLang: "cl_fashion", light: isDark ? "ls_cinematic" : "ls_natural", atm: isDark ? "at_moody" : "at_clear" };
+  return { ratio: "r_34", lens: "l_50", ang: "sanfen", camLang: "cl_fashion", light: isDark ? "ls_cinematic" : "ls_natural", atm: isDark ? "at_moody" : "at_clear" };
 }
 
 function reorderObject(source, preferredOrder) {

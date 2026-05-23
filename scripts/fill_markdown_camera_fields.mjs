@@ -16,9 +16,6 @@ const CAMERA_META = {
   },
   lens: {
     l_50: "50mm 自然視角，最穩定保護頭身比例與全身服裝",
-    l_70: "70mm 平衡人像，保留臉部美感並維持身體比例",
-    l_80: "80mm 角色近景，適合角色感較強的三分之二人像",
-    l_85: "85mm 半身美臉，只用於近景或半身，避免全身大頭化",
   },
   ang: {
     sanfen: "鎖臉微側，臉部只允許 10-15 度自然微轉，肩身可配合場景",
@@ -67,15 +64,15 @@ function decideCamera(text) {
     return { ratio: "r_23", lens: "l_50", ang: "quan", light: isDark ? "ls_cinematic" : "ls_golden", atm: isDark ? "at_moody" : "at_misty", camLang: isRoyal ? "cl_magazine" : "cl_fashion" };
   }
   if (isClose) {
-    return { ratio: "r_34", lens: "l_85", ang: "banshen", light: isStudio ? "ls_studio" : "ls_cinematic", atm: isDark ? "at_moody" : "at_clear", camLang: "cl_fashion" };
+    return { ratio: "r_34", lens: "l_50", ang: "banshen", light: isStudio ? "ls_studio" : "ls_cinematic", atm: isDark ? "at_moody" : "at_clear", camLang: "cl_fashion" };
   }
   if (isAction) {
-    return { ratio: "r_23", lens: "l_70", ang: "quan", light: isDark ? "ls_cinematic" : "ls_golden", atm: isDark ? "at_moody" : "at_misty", camLang: "cl_fashion" };
+    return { ratio: "r_23", lens: "l_50", ang: "quan", light: isDark ? "ls_cinematic" : "ls_golden", atm: isDark ? "at_moody" : "at_misty", camLang: "cl_fashion" };
   }
   if (isRoyal) {
-    return { ratio: "r_34", lens: "l_70", ang: "sanfen", light: isDark ? "ls_cinematic" : "ls_studio", atm: isDark ? "at_moody" : "at_warm", camLang: "cl_magazine" };
+    return { ratio: "r_34", lens: "l_50", ang: "sanfen", light: isDark ? "ls_cinematic" : "ls_studio", atm: isDark ? "at_moody" : "at_warm", camLang: "cl_magazine" };
   }
-  return { ratio: "r_34", lens: "l_70", ang: "sanfen", light: isDark ? "ls_cinematic" : "ls_natural", atm: isDark ? "at_moody" : "at_clear", camLang: "cl_fashion" };
+  return { ratio: "r_34", lens: "l_50", ang: "sanfen", light: isDark ? "ls_cinematic" : "ls_natural", atm: isDark ? "at_moody" : "at_clear", camLang: "cl_fashion" };
 }
 
 function fieldLine(label, id, group) {

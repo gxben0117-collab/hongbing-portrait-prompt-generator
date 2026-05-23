@@ -55,8 +55,8 @@ function cameraFor(card) {
   if (travel) return { ang: "huanjing", ratio: "r_916", lens: "l_50", light: "ls_natural", atm: "at_clear", camLang: "cl_magazine" };
   if (water) return { ang: "huanjing", ratio: "r_23", lens: "l_50", light: "ls_natural", atm: "at_misty", camLang: "cl_magazine" };
   if (action) return { ang: "quan", ratio: "r_23", lens: "l_50", light: dark ? "ls_cinematic" : "ls_golden", atm: dark ? "at_moody" : "at_misty", camLang: "cl_fashion" };
-  if (close) return { ang: "banshen", ratio: "r_34", lens: "l_70", light: dark ? "ls_cinematic" : "ls_golden", atm: dark ? "at_moody" : "at_warm", camLang: "cl_magazine" };
-  return { ang: "sanfen", ratio: "r_34", lens: "l_70", light: dark ? "ls_cinematic" : "ls_natural", atm: dark ? "at_moody" : "at_clear", camLang: "cl_magazine" };
+  if (close) return { ang: "banshen", ratio: "r_34", lens: "l_50", light: dark ? "ls_cinematic" : "ls_golden", atm: dark ? "at_moody" : "at_warm", camLang: "cl_magazine" };
+  return { ang: "sanfen", ratio: "r_34", lens: "l_50", light: dark ? "ls_cinematic" : "ls_natural", atm: dark ? "at_moody" : "at_clear", camLang: "cl_magazine" };
 }
 
 function buildAction(card) {

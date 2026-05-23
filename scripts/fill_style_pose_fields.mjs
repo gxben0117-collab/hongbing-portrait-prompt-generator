@@ -377,7 +377,7 @@ function buildHanfuProp(context, seed) {
     ],
     landscape: [
       "standing in the wider classical landscape with one foot slightly forward, sleeves and hair moved by wind, face turned back with grounded calm",
-      "walking through the scene with measured story intent, using a traveler, heroine, or noblewoman body line instead of a static pose",
+      "walking through the scene with measured story intent, using a traveler, central character, or noblewoman body line instead of a static pose",
       "pausing at the overlook or path edge with posture guided by the terrain, body stable and face clearly visible",
     ],
     general: [
@@ -458,7 +458,7 @@ function buildQueenProp(context, seed) {
     ],
     general: [
       "choosing a ruler's action such as issuing a command, receiving an audience, reviewing a decree, or rising from the throne, while keeping body control and facial clarity",
-      "letting the role logic of sovereign, goddess, or dark queen drive the pose instead of relying on random gesture, with stable shoulders and natural face alignment",
+      "letting the role logic of sovereign, mythic figure, or dark queen drive the pose instead of relying on random gesture, with stable shoulders and natural face alignment",
       "using narrative authority rather than theatrical distortion, so the face remains unmistakably connected to the body and role",
     ],
   };
@@ -470,7 +470,7 @@ function buildQueenComp(context, seed) {
   const variants = {
     royal: [
       "vertical throne-room or coronation composition, subject elevated or centered, steps, columns, or court depth reinforcing power, face unobstructed",
-      "vertical regal portrait with central axis or subtle low angle, face clear, authority symbols readable, costume silhouette strong and stable",
+      "vertical regal portrait with central axis or stable eye-level perspective, face clear, authority symbols readable, costume silhouette strong and stable",
     ],
     study: [
       "vertical governance portrait, face clear, desk, maps, or decree objects layered low in frame, authority conveyed through composition rather than clutter",
@@ -478,7 +478,7 @@ function buildQueenComp(context, seed) {
     ],
     martial: [
       "vertical heroic queen portrait, full or three-quarter body readable, environment scale behind, face stable against dramatic lighting and motion",
-      "vertical battle-sovereign composition, subtle low angle, strong silhouette, face unobstructed while banners, weapon, or domain reinforce command",
+      "vertical battle-sovereign composition, stable eye-level perspective, strong silhouette, face unobstructed while banners, weapon, or domain reinforce command",
     ],
     architecture: [
       "vertical regal architectural portrait, face clear, body aligned to the ceremonial lines of the space, throne or steps reinforcing authority",
@@ -490,7 +490,7 @@ function buildQueenComp(context, seed) {
     ],
     general: [
       "vertical regal portrait with throne, steps, or architectural axis reinforcing authority, face clearly readable, body posed in a stable commanding silhouette",
-      "vertical queenly composition with subtle low angle or central axis, strong facial clarity, costume and power symbols fully legible without overcomplicated action",
+      "vertical queenly composition with stable central axis, strong facial clarity, costume and power symbols fully legible without overcomplicated action",
     ],
   };
 

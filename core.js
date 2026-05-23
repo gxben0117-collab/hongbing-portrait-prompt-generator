@@ -11,7 +11,7 @@
 //
 // 步驟二：按規範撰寫
 //   - char 欄：只寫場景世界觀，不寫人物外貌形容
-//   - outfit/scene/fx 欄：避免 goddess / flawless / perfect beauty / ethereal 等高風險詞
+//   - outfit/scene/fx 欄：避免換臉、美顏模板、誇張透視與遮臉姿勢等高風險描述
 //   - 姿勢描述：避免 回眸 / 仰拍 / movie trailer / back-facing 等禁用詞
 //
 // 步驟三：程式雙重保險
@@ -25,7 +25,7 @@
 // ── 核心規則（已整合壓縮，保留所有關鍵約束）──
 const CORE_GATE = `MANDATORY: Check for an uploaded reference photo before proceeding. No reference photo — stop and ask for one. Never invent a face or generate from text alone.`;
 
-const CORE_IDENTITY = `IDENTITY LOCK (CRITICAL): The uploaded photo is the only identity reference. Preserve exact facial geometry, eye shape, nose structure, mouth shape, skin identity, and recognizable likeness across all styling, costume, and lighting variations. Makeup is surface cosmetics only — color, texture, mood — never alters eye shape, brow bone, lip shape, jaw, or facial proportions. Style keywords (fantasy, luxury, goddess, heroine, celebrity) describe costume and environment only — they must never reconstruct or replace the uploaded person's face. The uploaded photo overrides all style, cinematic, and beauty directions. Final image must feel like a real photograph of this specific person.`;
+const CORE_IDENTITY = `IDENTITY LOCK (CRITICAL): The uploaded photo is the only identity reference. Preserve exact facial geometry, eye shape, nose structure, mouth shape, skin identity, and recognizable likeness across all styling, costume, and lighting variations. Makeup is surface cosmetics only — color, texture, mood — never alters eye shape, brow bone, lip shape, jaw, or facial proportions. Style keywords describe costume, role, mood, lighting, and environment only — they must never reconstruct or replace the uploaded person's face. The uploaded photo overrides all style and cinematic directions. Final image must feel like a real photograph of this specific person.`;
 
 const CORE_SAFETY = `BEAUTY & ANATOMY SAFETY: Avoid identity drift, AI beauty templates, influencer face replacement, plastic skin, over-smoothed renders. Preserve natural asymmetry, real skin texture, and original facial uniqueness. Maintain realistic adult anatomy — natural limb proportions, correct fingers, believable body balance. Head-to-body proportion must be realistic: no oversized head, no chibi proportions, no cranial enlargement from hair ornaments or heavy costume. Face-to-neck-to-shoulder alignment must stay physically natural — when pose drama conflicts with face stability, reduce pose drama. Body proportion priority over cinematic exaggeration — do not sacrifice limb length or torso scale for dramatic effect. Camera at eye-level or chest height for full-body shots — avoid forced perspective that enlarges the head relative to the body. Facial identity remains readable in all poses.`;
 
@@ -34,7 +34,7 @@ const CORE_ELASTICITY = `Natural variation is encouraged: hair movement, candid 
 const CORE_STRUCTURE = `Render: scene → lighting → character context → makeup → costume → action/props → composition → effects → tone → quality → specs. Identity preservation overrides all style direction.`;
 
 // ── 禁止詞列表（已精簡）──
-const AVOID_LOCK = `identity drift, replaced face, AI beauty templates, influencer face, plastic skin, V-face, doll face, flawless skin, porcelain skin filter, eye-reshaping liner, heavy eyeliner distortion, mannequin poses, artificial symmetry, anatomy distortion, floating limbs, deformed fingers, oversized head, chibi proportions, low-angle hero shots, back-facing poses, movie-trailer staging, low quality, watermarks`;
+const AVOID_LOCK = `identity drift, replaced face, template face, standardized facial features, over-smoothed skin, reshaped jawline, doll-like face, artificial skin filter, eye-reshaping liner, heavy eyeliner distortion, mannequin poses, artificial symmetry, anatomy distortion, floating limbs, deformed fingers, oversized head, chibi proportions, forced-perspective hero shots, face-hidden poses, trailer-style staging, low quality, watermarks`;
 
 // ── 古裝加強（精簡版）──
 const ANCIENT_BOOST = `Ancient Chinese costume: traditional updo with 2-3 accessories only (hairpins or step-shake ornaments) that do not enlarge head silhouette. Layered robes with wide sleeves, embroidered waist ornament, one era-appropriate hand prop. Setting: ancient Chinese architecture, classical gardens, or mythological environment.`;
@@ -73,22 +73,19 @@ const TEXT_REPLACEMENTS = GOVERNANCE.replacements || [];
 // 圖片規格控制
 // ═══════════════════════════════════════════
 const RATIO = [
-  {id:'r_34',  name:'3:4 直式人像', desc:'Generate in 3:4 vertical portrait orientation — standard portrait crop optimized for face and full-body shots.'},
-  {id:'r_23',  name:'2:3 直式',     desc:'Generate in 2:3 vertical format — tall portrait framing ideal for full-body costume display.'},
+  {id:'r_34',  name:'3:4 直式人像', desc:'Generate in 3:4 vertical orientation — standard vertical composition for face and full-body shots.'},
+  {id:'r_23',  name:'2:3 直式',     desc:'Generate in 2:3 vertical format — tall vertical framing ideal for full-body costume display.'},
   {id:'r_11',  name:'1:1 正方',     desc:'Generate in 1:1 square format — balanced composition for close-up and half-body shots.'},
   {id:'r_43',  name:'4:3 橫版',     desc:'Generate in 4:3 horizontal landscape orientation — natural photographic landscape framing.'},
   {id:'r_169', name:'16:9 電影橫',  desc:'Generate in 16:9 widescreen cinematic format — epic horizontal cinematic framing.'},
   {id:'r_916', name:'9:16 手機直',  desc:'Generate in 9:16 tall vertical mobile format — optimized for phone display and social media stories.'},
-  {id:'r_239', name:'2.39:1 超寬幕',desc:'Generate in 2.39:1 ultra-wide cinematic letterbox format — maximum cinematic scope for epic scenes.'},
+  {id:'r_239', name:'2.39:1 超寬幕',desc:'Generate in 2.39:1 wide cinematic letterbox format — environmental scope with stable human scale.'},
 ];
 const LENS = GOVERNANCE.lensOptions || [
-  {id:'l_50',  name:'50mm 全身最穩',  desc:'Simulated 50mm full-body fashion photography lens: natural human-eye perspective, minimal distortion, realistic head-to-body proportions — camera positioned at eye-level or chest height, balanced full-body and three-quarter editorial framing.'},
-  {id:'l_70',  name:'70mm 平衡人像',  desc:'Simulated 70mm balanced portrait lens: mild portrait compression with still-realistic body scale, optimized for three-quarter portraits that need both a beautiful face and stable head-to-body proportion.'},
-  {id:'l_80',  name:'80mm 角色近景',  desc:'Simulated 80mm character portrait lens: stronger portrait compression than 70mm but safer than 85mm for three-quarter character styling and dramatic costume portraits.'},
-  {id:'l_85',  name:'85mm 半身美臉',  desc:'Simulated 85mm portrait lens: natural face compression, beautiful background bokeh — for close-up and half-body portraits only. Avoid for full-body shots as it compresses the body and exaggerates head-to-body ratio.'},
+  {id:'l_50',  name:'50mm 全身最穩',  desc:'Simulated 50mm full-body fashion photography lens: natural human-eye perspective, minimal distortion, realistic head-to-body proportions, stable full-body and three-quarter editorial framing, outfit and environment both remain readable.'},
 ];
 const LIGHT_STYLE = [
-  {id:'ls_golden',   name:'黃金時刻', desc:'Golden hour editorial lighting: warm amber and orange sunlight at low angle, long soft shadows, glowing skin tones, romantic warmth.'},
+  {id:'ls_golden',   name:'黃金時刻', desc:'Golden hour editorial lighting: warm amber and orange sunlight from a natural horizon direction, long soft shadows, glowing skin tones, romantic warmth.'},
   {id:'ls_natural',  name:'自然日光', desc:'Natural daylight lighting: soft overcast or window light, even illumination, true-to-life color rendering, clean editorial look.'},
   {id:'ls_studio',   name:'棚拍燈光', desc:'Studio editorial lighting: controlled three-point lighting setup, clean precise illumination, commercial-grade fashion shoot quality.'},
   {id:'ls_cinematic',name:'電影戲劇光', desc:'Cinematic dramatic lighting: high-contrast motivated key light with colored rim light, deep atmospheric shadows, filmic premium cinema quality — no face-obscuring shadow, identity remains readable.'},
@@ -139,7 +136,7 @@ const CATEGORY_POSE_LIBRARY = {
       'Use a location-driven travel moment with natural narrative intent, such as stepping along the path, standing at an overlook, waiting by water, touching a lantern, or looking back after moving through the scene, while preserving clear facial readability',
     ],
     comp: [
-      'vertical environmental travel portrait, subject clearly readable within the location, face unobstructed, body slightly angled for motion, background landmark still recognizable',
+      'vertical environmental travel composition, subject clearly readable within the location, face unobstructed, body slightly angled for motion, background landmark still recognizable',
       'vertical three-quarter or full-body travel composition, natural walking or turn-back storytelling, clear facial visibility, foreground and background layered for depth',
     ],
   },
@@ -150,7 +147,7 @@ const CATEGORY_POSE_LIBRARY = {
       'Use bridal narrative intent such as walking into the venue, sitting for a calm in-between moment, touching veil or bouquet naturally, or sharing a private reflective pause, while keeping face and identity clean and stable',
     ],
     comp: [
-      'vertical bridal portrait with clear face, readable gown silhouette, and soft foreground layering from flowers, veil, or fabric without obscuring the subject',
+      'vertical bridal composition with clear face, readable gown silhouette, and soft foreground layering from flowers, veil, or fabric without obscuring the subject',
       'vertical three-quarter to full-body wedding composition, face clearly readable while preserving identity, skirt and train clearly visible, elegant depth behind the subject',
     ],
   },
@@ -161,18 +158,18 @@ const CATEGORY_POSE_LIBRARY = {
       'Use culturally and role-appropriate behavior driven by the scene: not random gesturing, but a calm action with purpose, social meaning, or emotional context, while preserving a front-face-friendly body relationship',
     ],
     comp: [
-      'vertical classical portrait with clear face, readable sleeve and hair ornament details, and elegant three-quarter body angle instead of flat frontal stiffness',
+      'vertical classical composition with clear face, readable sleeve and hair ornament details, and elegant three-quarter body angle instead of flat frontal stiffness',
       'vertical full-body or three-quarter hanfu composition, costume layers and silhouette clearly visible, traditional prop integrated without covering the face',
     ],
   },
   queen: {
     prop: [
-      'Choose an action that fits a ruler, sovereign, goddess, or demon queen in this scene: receiving an audience, issuing a command, reviewing a decree, rising from the throne, descending ceremonial steps, resting a hand on a scepter or throne arm, or turning after hearing urgent news',
+      'Choose an action that fits a ruler, sovereign, mythic figure, or demon queen in this scene: receiving an audience, issuing a command, reviewing a decree, rising from the throne, descending ceremonial steps, resting a hand on a scepter or throne arm, or turning after hearing urgent news',
       'The subject should feel like she holds power inside the world of the image rather than simply striking a strong pose: governing, judging, commanding, blessing, threatening, or presiding over the space with calm authority',
       'Use behavior with role logic and narrative weight, such as ruling, deciding, summoning, or presiding, while keeping the body stable, the face readable, and the authority conveyed through action rather than exaggerated gesture alone',
     ],
     comp: [
-      'vertical regal portrait with throne, steps, or architectural axis reinforcing authority, face clearly readable, body posed in a stable commanding silhouette',
+      'vertical regal composition with throne, steps, or architectural axis reinforcing authority, face clearly readable, body posed in a stable commanding silhouette',
       'vertical queenly composition with eye-level or central-axis framing, natural human proportions, strong facial clarity, costume and power symbols fully legible, body proportion priority over cinematic exaggeration',
     ],
   },
@@ -183,7 +180,7 @@ const CATEGORY_POSE_LIBRARY = {
       'Use gothic narrative intent with composed presence rather than dramatic aggression: standing in shadow without concern, looking down from a tower height with cold aristocratic interest, or remaining perfectly still while the environment moves around her',
     ],
     comp: [
-      'vertical gothic portrait with candlelit or moonlit atmospheric depth, clear face, dark architectural framing without obscuring the subject',
+      'vertical gothic composition with candlelit or moonlit atmospheric depth, clear face, dark architectural framing without obscuring the subject',
       'vertical full-body or three-quarter gothic composition, dramatic architectural setting clearly visible, subject as still center against the dark environment',
     ],
   },
@@ -194,8 +191,8 @@ const CATEGORY_POSE_LIBRARY = {
       'Use fantasy behavior that communicates wonder and belonging rather than theatrical supernatural power: adjusting a floral crown while looking at a glowing landscape, trailing a hand through floating petals, or sitting on a mossy stone in a magical clearing with natural ease',
     ],
     comp: [
-      'vertical fantasy portrait with magical environmental depth clearly visible, subject integrated into the magical scene, face clearly readable against soft glowing background',
-      'vertical full-body or three-quarter magical portrait, enchanted environment and subject as cohesive world, foreground magical elements framing without obscuring the face',
+      'vertical fantasy composition with magical environmental depth clearly visible, subject integrated into the magical scene, face clearly readable against soft glowing background',
+      'vertical full-body or three-quarter magical composition, enchanted environment and subject as cohesive world, foreground magical elements framing without obscuring the face',
     ],
   },
   myth_goddess: {
@@ -205,8 +202,8 @@ const CATEGORY_POSE_LIBRARY = {
       'Use mythological behavior that projects scale through composure: descending from a celestial platform with measured grace, lifting her gaze from a sacred offering with divine attention, presiding over a ritual space with quiet authority, or turning as if hearing a prayer from a great distance',
     ],
     comp: [
-      'vertical mythological portrait with sacred architectural or celestial axis reinforcing divine status, face clearly readable, cosmic environment framing the subject with appropriate scale',
-      'vertical goddess composition with central axis or elevated position, divine environment fully legible, subject as the still center against a world in motion around her',
+      'vertical mythological composition with sacred architectural or celestial axis reinforcing divine status, face clearly readable, cosmic environment framing the subject with appropriate scale',
+      'vertical mythic composition with central axis or elevated position, divine environment fully legible, subject as the still center against a world in motion around her',
     ],
   },
 };
@@ -271,7 +268,7 @@ const CHARACTER_BEHAVIOR_LOGIC = {
   ],
   travel: [
     'Character behavior context: this traveler is defined by movement and genuine engagement with place — choose action that tells a story of being there: arriving at the location and pausing to absorb it, following a path while the camera catches her mid-step, reaching out to touch a landmark with natural curiosity, or standing somewhere significant while the light responds.',
-    'Character behavior context: travel portraits feel most alive when the person belongs in the environment rather than in front of it — choose behaviors that integrate location: turning back after walking ahead, pausing at a staircase with scenery below, sitting on a natural or architectural element with relaxed confidence, or standing in a doorway as if deciding whether to enter.',
+    'Character behavior context: travel scenes feel most alive when the person belongs in the environment rather than in front of it — choose behaviors that integrate location: turning back after walking ahead, pausing at a staircase with scenery below, sitting on a natural or architectural element with relaxed confidence, or standing in a doorway as if deciding whether to enter.',
   ],
   gothic: [
     'Character behavior context: this gothic or dark character inhabits darkness with composure and elegance — choose action that communicates aristocratic mystery rather than aggression: standing at a high window with atmospheric light from behind, turning slowly in a candlelit hall, trailing fingertips along stone or iron with ownership, or sitting in heavy architecture with deliberate stillness.',
@@ -360,16 +357,19 @@ function sanitizePromptText(text){
     next = next.replace(new RegExp(escapeRegExp(from), 'gi'), to);
   });
   return next
-    .replace(/movie trailer camera language/gi, 'controlled portrait camera framing')
-    .replace(/fashion editorial camera language/gi, 'controlled portrait camera framing')
-    .replace(/blockbuster visual language/gi, 'natural portrait visual language')
+    .replace(/movie trailer camera language/gi, 'controlled cinematic camera framing')
+    .replace(/fashion editorial camera language/gi, 'controlled fashion camera framing')
+    .replace(/blockbuster visual language/gi, 'natural cinematic visual language')
     .replace(/\bblockbuster\b/gi, 'cinematic quality')
-    .replace(/\bvlog\b/gi, 'location portrait')
-    .replace(/dramatic hero framing/gi, 'stable portrait framing')
+    .replace(/\bvlog\b/gi, 'location editorial')
+    .replace(/dramatic hero framing/gi, 'stable cinematic framing')
     .replace(/looking back over shoulder/gi, 'gentle three-quarter pause')
     .replace(/turn-back glance/gi, 'calm paused glance')
     .replace(/low angle upward shot/gi, 'stable eye-level or slight three-quarter shot')
+    .replace(/low angle/gi, 'eye-level')
     .replace(/low-angle/gi, 'stable eye-level')
+    .replace(/ultra-wide/gi, 'wide environmental')
+    .replace(/wide-angle/gi, 'wide environmental')
     .replace(/perfect beauty reconstruction/gi, 'natural appearance')
     .replace(/perfect beauty/gi, 'natural appearance')
     .replace(/flawless/gi, 'natural')
@@ -390,8 +390,8 @@ function sanitizePromptText(text){
     .replace(/immortal realm glow/gi, 'soft environmental glow')
     .replace(/divine radiance/gi, 'warm environmental light')
     .replace(/xianxia ethereal/gi, 'soft xianxia atmospheric')
-    .replace(/travel documentary/gi, 'location portrait')
-    .replace(/candid travel/gi, 'grounded travel portrait')
+    .replace(/travel documentary/gi, 'location editorial')
+    .replace(/candid travel/gi, 'grounded travel editorial')
     .replace(/low-key dramatic/gi, 'controlled dramatic')
     .replace(/ethereal atmosphere/gi, 'soft atmosphere')
     .replace(/celestial mist/gi, 'light atmospheric mist');
@@ -402,7 +402,7 @@ function escapeRegExp(text){
 }
 
 function buildAntiPatternGuidance(){
-  return 'ANTI-PATTERN OVERRIDE: no low-angle hero shots, back-facing poses, movie-trailer staging, eye-shape-changing liner, or extreme choreography — replace with face-readable, identity-safe alternatives.';
+  return 'ANTI-PATTERN OVERRIDE: no forced-perspective hero shots, face-hidden poses, trailer-style staging, eye-shape-changing liner, or extreme choreography — replace with face-readable, identity-safe alternatives.';
 }
 
 function sanitizeCreativeField(text){
@@ -417,7 +417,7 @@ function buildFaceAnchor(desc){
   if(!desc) return '';
   return `SUBJECT FACE DESCRIPTION (absolute ground truth — overrides all style, archetype, and beauty references): ${desc}. ` +
     `These specific features must be reproduced exactly as described. ` +
-    `Any AI tendency to replace them with xianxia, dynasty, goddess, or influencer archetype faces must be completely suppressed.`;
+    `Any AI tendency to replace them with xianxia, dynasty, mythic, or template faces must be completely suppressed.`;
 }
 
 function buildCharacterBehaviorContext(cat){
@@ -485,15 +485,15 @@ const TPL_DEFAULTS = {
   xianxia:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   hanfu:         {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   oriental:      {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  gothic:        {ang:'sanfen',   ratio:'r_23',  lens:'l_70',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_fashion'},
+  gothic:        {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_fashion'},
   myth:          {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   fantasy:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   water:         {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   reference_styles:{ang:'sanfen', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
-  game:          {ang:'quan',     ratio:'r_23',  lens:'l_80',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
-  darkfantasy:   {ang:'sanfen',   ratio:'r_23',  lens:'l_70',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_fashion'},
+  game:          {ang:'quan',     ratio:'r_23',  lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  darkfantasy:   {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_fashion'},
   drama:         {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  queen:         {ang:'sanfen',   ratio:'r_34',  lens:'l_70',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_magazine'},
+  queen:         {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_magazine'},
   spirits:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   europe_travel: {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   japan_travel:  {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
@@ -502,21 +502,21 @@ const TPL_DEFAULTS = {
   china_mark:    {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   jinyong:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   chinese_story: {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  fallen_angel:  {ang:'sanfen',   ratio:'r_23',  lens:'l_70',  light:'ls_studio',    atm:'at_misty',    camLang:'cl_fashion'},
-  holy_angel:    {ang:'sanfen',   ratio:'r_23',  lens:'l_70',  light:'ls_natural',   atm:'at_misty',    camLang:'cl_magazine'},
-  goddess_myth:  {ang:'sanfen',   ratio:'r_23',  lens:'l_70',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  cyberpunk_sf:  {ang:'sanfen',   ratio:'r_916', lens:'l_80',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
-  realistic_life:{ang:'huanjing', ratio:'r_916', lens:'l_70',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_social'},
-  modern_lady:   {ang:'sanfen',   ratio:'r_34',  lens:'l_70',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_magazine'},
+  fallen_angel:  {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_studio',    atm:'at_misty',    camLang:'cl_fashion'},
+  holy_angel:    {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_natural',   atm:'at_misty',    camLang:'cl_magazine'},
+  goddess_myth:  {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
+  cyberpunk_sf:  {ang:'sanfen',   ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
+  realistic_life:{ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_social'},
+  modern_lady:   {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_magazine'},
   dragon_beast:  {ang:'sanfen',   ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   beast_tamer:   {ang:'huanjing', ratio:'r_23',  lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   dynasty_palace:{ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   classic_lit:   {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   china_drama:   {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  succubus_demon:{ang:'sanfen',   ratio:'r_23',  lens:'l_70',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_fashion'},
+  succubus_demon:{ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_fashion'},
   taiwan_travel: {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   wedding_diamond:{ang:'sanfen',  ratio:'r_34',  lens:'l_50',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_magazine'},
-  cos_character: {ang:'quan',     ratio:'r_23',  lens:'l_80',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_magazine'},
+  cos_character: {ang:'quan',     ratio:'r_23',  lens:'l_50',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_magazine'},
   mountain_sea:  {ang:'huanjing', ratio:'r_169', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
 };
 
@@ -556,7 +556,7 @@ const MK = [
   {id:'wedding', name:'鑽光婚紗', desc:'bridal surface makeup: champagne shimmer highlights, soft romantic eye definition, rose or nude glossy lip, elegant tenderness — applied as surface cosmetics respecting original skin texture and facial features'},
   {id:'luxury_glam', name:'奢華名媛', desc:'luxury glamour surface makeup: refined smoky eye shadow, champagne highlighter, elegant red or nude lip — surface-only cosmetics for a premium socialite aesthetic without altering the original complexion'},
   {id:'runway_supermodel', name:'超模秀場', desc:'runway supermodel makeup: sculptural editorial eyes, clean cheekbone highlights kept surface-only, neutral or bold fashion lip, high-end runway confidence'},
-  {id:'japanese_geisha', name:'和風藝伎', desc:'Japanese classical stage makeup: pale refined base, precise red lip, delicate black liner, controlled blush and traditional elegance adapted tastefully for portrait realism'},
+  {id:'japanese_geisha', name:'和風藝伎', desc:'Japanese classical stage makeup: pale refined base, precise red lip, delicate black liner, controlled blush and traditional elegance adapted tastefully for photographic realism'},
   {id:'magic_girl', name:'魔法少女', desc:'magical girl makeup: bright youthful fantasy eye shimmer, soft pink blush, glossy cherry lip, sparkling highlights, cheerful heroic character energy'},
   {id:'bohemian_sun', name:'波西米亞', desc:'bohemian sun makeup: warm natural skin, bronze-gold eye shimmer, soft earthy blush, terracotta or peach lip, relaxed outdoor festival and desert travel beauty'},
   {id:'vampire_lady', name:'吸血貴女', desc:'vampire noble makeup: pale luminous base, deep burgundy smoky eyes, sharp elegant liner, blood-wine lip, aristocratic nocturnal glamour'},
@@ -587,7 +587,7 @@ const TPLS = {
     fx:'story-specific xianxia atmosphere, fabric motion, environmental particles, cinematic effects that support the face without covering it',
     tone:'coherent palette built for the specific story setting, refined cinematic color grading',
     comp:'full-body or three-quarter editorial composition, clear face, readable costume silhouette, decisive story pose, editorial framing with natural proportions',
-    quality:'ultra realistic premium travel portrait, detailed costume texture, natural skin, coherent anatomy, high-end editorial finish, 8K HDR',
+    quality:'ultra realistic premium travel editorial realism, detailed costume texture, natural skin, coherent anatomy, high-end editorial finish, 8K HDR',
     mk:'xianxia', ancient:true
   },
   hanfu: {
@@ -609,7 +609,7 @@ const TPLS = {
     fx:'theme-specific atmosphere, fabric motion, subtle particles, environmental depth, effects supporting the face without covering it',
     tone:'coherent palette matched to the specific classical theme, refined cinematic color grading',
     comp:'premium full-body or three-quarter editorial composition, clear face, outfit and setting readable',
-    quality:'ultra realistic premium travel portrait, detailed costume texture, natural skin, coherent anatomy, 8K HDR',
+    quality:'ultra realistic premium travel editorial realism, detailed costume texture, natural skin, coherent anatomy, 8K HDR',
     mk:'oriental', ancient:true
   },
   gothic: {
@@ -630,7 +630,7 @@ const TPLS = {
     fx:'theme-specific mythological atmosphere, fabric motion, divine particles, environmental depth, cinematic effects supporting the face',
     tone:'coherent palette matched to the mythological theme, refined cinematic color grading with strong symbolic color identity',
     comp:'premium full-body or three-quarter editorial composition, clear face, outfit and mythological setting readable',
-    quality:'ultra realistic premium myth-history travel portrait, detailed costume texture, natural skin, coherent anatomy, 8K HDR',
+    quality:'ultra realistic premium myth-history travel editorial realism, detailed costume texture, natural skin, coherent anatomy, 8K HDR',
     mk:'xianxia', ancient:true
   },
   fantasy: {
@@ -640,7 +640,7 @@ const TPLS = {
     fx:'magical particles, glowing effects, fantasy atmosphere, floating elements, dreamlike bokeh',
     tone:'pastel magical palette — lavender, rose gold, seafoam, pearl white, soft gold',
     comp:'premium full-body or three-quarter editorial composition, clear face, magical environment fully visible',
-    quality:'ultra realistic premium fantasy editorial portrait, detailed costume texture, natural skin, coherent anatomy, 8K HDR',
+    quality:'ultra realistic premium fantasy editorial realism, detailed costume texture, natural skin, coherent anatomy, 8K HDR',
     mk:'flower_fairy', ancient:false
   },
   water: {
@@ -661,7 +661,7 @@ const TPLS = {
     fx:'reference-inspired atmosphere, fabric motion, reflective particles, water shimmer, moon glow, golden haze, or location-specific depth; effects frame the face without covering eyes, nose, mouth, or face outline',
     tone:'palette matched to the selected reference concept with refined cinematic color grading',
     comp:'premium reference-style editorial composition, face sharp and readable, body alignment coherent, costume and environment clearly visible',
-    quality:'ultra realistic premium reference-inspired portrait, natural skin, coherent anatomy, detailed costume and environment texture, high-end editorial finish, 8K HDR',
+    quality:'ultra realistic premium reference-inspired editorial realism, natural skin, coherent anatomy, detailed costume and environment texture, high-end editorial finish, 8K HDR',
     mk:'editorial', ancient:false
   },
   game: {
@@ -681,7 +681,7 @@ const TPLS = {
     outfit:'dark fantasy costume — elaborate dark robes or armor, sinister accessories, dramatic silhouette, dark crown or headdress',
     fx:'dark energy particles, atmospheric haze, shadow effects, moonlit particles, dramatic sinister light',
     tone:'deep black, blood red, dark purple, sinister gold, shadow atmosphere',
-    comp:'full-body or three-quarter cinematic portrait, story-driven pose, clear face, costume and dark location fully readable',
+    comp:'full-body or three-quarter cinematic composition, story-driven pose, clear face, costume and dark location fully readable',
     quality:'ultra realistic premium cinematic travel photoshoot, detailed costume and environment texture, natural skin, coherent anatomy, 8K HDR',
     mk:'demon_lord', ancient:false
   },
@@ -701,8 +701,8 @@ const TPLS = {
     outfit:'majestic queen couture — structured royal gown, jeweled crown, embroidered cape, ceremonial jewelry, powerful silhouette',
     fx:'gold dust, banners, throne glow, ceremonial wind through cape',
     tone:'palette matched to the story, refined cinematic grading, strong costume-location harmony',
-    comp:'full-body or three-quarter cinematic portrait, story-driven pose, clear face, costume and location fully readable',
-    quality:'premium myth-history travel portrait, ultra realistic fabric and jewelry detail, 8K HDR',
+    comp:'full-body or three-quarter cinematic composition, story-driven pose, clear face, costume and location fully readable',
+    quality:'premium myth-history travel editorial realism, ultra realistic fabric and jewelry detail, 8K HDR',
     mk:'imperial_empress', ancient:true
   },
   spirits: {
@@ -711,38 +711,38 @@ const TPLS = {
     outfit:'elaborate spirit-queen or enchantress couture — luxurious court robes with mythological motifs, ornate hairpins, long sleeves, jeweled belt, elegant dangerous styling',
     fx:'spirit fire, mystical smoke, palace lantern shadows, golden sparks, translucent spirit effects',
     tone:'palette matched to the myth or history story, refined cinematic grading, strong costume-location harmony',
-    comp:'full-body or three-quarter cinematic portrait, story-driven pose, clear face, costume and location fully readable',
-    quality:'premium myth-history travel portrait, ultra realistic fabric and jewelry detail, 8K HDR',
+    comp:'full-body or three-quarter cinematic composition, story-driven pose, clear face, costume and location fully readable',
+    quality:'premium myth-history travel editorial realism, ultra realistic fabric and jewelry detail, 8K HDR',
     mk:'fox_noir', ancient:true
   },
   europe_travel: {
-    char:'character exists within a European travel portrait setting',
+    char:'character exists within a European travel editorial setting',
     light:'natural European location light — soft morning or golden hour daylight, flattering face illumination',
     outfit:'stylish contemporary travel fashion — chic dress or casual luxury attire, coordinated accessories, location-appropriate styling',
     fx:'iconic architectural bokeh, European location atmosphere, soft environmental depth',
     tone:'warm European palette — stone, terracotta, ivory, pastel walls, golden afternoon light',
     comp:'premium travel editorial, subject in foreground with iconic landmark visible, full-body or three-quarter framing',
-    quality:'ultra realistic premium travel portrait, detailed fashion and location texture, natural skin, coherent anatomy, 8K HDR',
+    quality:'ultra realistic premium travel editorial realism, detailed fashion and location texture, natural skin, coherent anatomy, 8K HDR',
     mk:'outdoor_glow', ancient:false
   },
   japan_travel: {
-    char:'character exists within a Japanese travel portrait setting',
+    char:'character exists within a Japanese travel editorial setting',
     light:'Japanese natural light — soft diffused sakura-filtered or morning shrine light, flattering face illumination',
     outfit:'modern Japanese minimalist fashion or kimono-inspired styling with coordinated accessories',
     fx:'Japanese atmospheric depth — cherry blossom petals, bamboo light, torii glow',
     tone:'sakura pink, moss green, stone grey, lacquer red, wood warmth, ink white',
     comp:'premium travel editorial with iconic Japanese location integrated, full-body or three-quarter framing',
-    quality:'ultra realistic premium travel portrait, 8K HDR',
+    quality:'ultra realistic premium travel editorial realism, 8K HDR',
     mk:'outdoor_glow', ancient:false
   },
   korea_sea: {
-    char:'character exists within a Korean or Southeast Asian travel portrait setting',
+    char:'character exists within a Korean or Southeast Asian travel editorial setting',
     light:'soft Korean or tropical Southeast Asian natural light, flattering environmental illumination',
     outfit:'modern Korean street fashion or Southeast Asian inspired styling with trend-forward accessories',
     fx:'location atmosphere — Korean palace glow, tropical warmth, lush botanical depth',
     tone:'soft pastel contemporary palette or vibrant tropical warmth matched to the specific location',
     comp:'premium travel editorial composition with location integrated, full-body or three-quarter framing',
-    quality:'ultra realistic premium travel portrait, 8K HDR',
+    quality:'ultra realistic premium travel editorial realism, 8K HDR',
     mk:'outdoor_glow', ancient:false
   },
   world_travel: {
@@ -752,7 +752,7 @@ const TPLS = {
     fx:'iconic world landmark atmosphere, global environmental depth and authentic local character',
     tone:'palette matched to the specific world location and cultural environment',
     comp:'premium travel editorial composition, iconic landmark fully visible behind subject',
-    quality:'ultra realistic premium world travel portrait, 8K HDR',
+    quality:'ultra realistic premium world travel editorial realism, 8K HDR',
     mk:'global_sun', ancient:false
   },
   china_mark: {
@@ -762,7 +762,7 @@ const TPLS = {
     fx:'iconic Chinese landmark atmosphere, cultural environmental depth',
     tone:'palette inspired by the specific Chinese landmark — crimson, jade, ink, gold, mountain mist',
     comp:'premium travel editorial with Chinese landmark, full-body or three-quarter framing, landmark clearly visible',
-    quality:'ultra realistic premium Chinese landmark travel portrait, 8K HDR',
+    quality:'ultra realistic premium Chinese landmark travel editorial realism, 8K HDR',
     mk:'outdoor_glow', ancient:false
   },
   jinyong: {
@@ -771,8 +771,8 @@ const TPLS = {
     outfit:'complete Jin Yong era-appropriate wuxia costume — hanfu martial arts dress, character-signature hair styling, authentic wuxia accessories and weapon prop',
     fx:'fabric motion, subtle wuxia energy atmosphere, era-authentic environment, cinematic story elements',
     tone:'palette matched to the specific character world — desert gold, mountain green, palace red, lake blue',
-    comp:'premium character portrait, clear face, wuxia costume and story environment fully readable',
-    quality:'premium wuxia character portrait, ultra realistic fabric texture, 8K HDR',
+    comp:'premium character editorial composition, clear face, wuxia costume and story environment fully readable',
+    quality:'premium wuxia character editorial realism, ultra realistic fabric texture, 8K HDR',
     mk:'wuxia', ancient:true
   },
   chinese_story: {
@@ -781,8 +781,8 @@ const TPLS = {
     outfit:'costume appropriate for the specific story and character — dynasty hanfu, mythological dress, classical folk costume',
     fx:'story-specific atmospheric effects, fabric motion, seasonal and environmental storytelling elements',
     tone:'palette matched to the specific story world and emotional register',
-    comp:'premium classical character portrait, clear face, story costume and setting fully readable',
-    quality:'premium Chinese classical story portrait, ultra realistic fabric and environment texture, 8K HDR',
+    comp:'premium classical character editorial composition, clear face, story costume and setting fully readable',
+    quality:'premium Chinese classical story editorial realism, ultra realistic fabric and environment texture, 8K HDR',
     mk:'gudian_hong', ancient:true
   },
   fallen_angel: {
@@ -791,7 +791,7 @@ const TPLS = {
     outfit:'fallen divine armor or torn celestial robes — cracked dark halo, asymmetric wings one intact one shattered, dark silver and void black styling',
     fx:'falling dark feathers, fracturing divine light, void energy particles, dramatic heaven-to-darkness atmosphere',
     tone:'tarnished silver, void black, fractured gold light, storm grey, deep violet corruption',
-    comp:'epic full-body character portrait, wings spread or partially unfurled, dramatic celestial ruin environment',
+    comp:'epic full-body character composition, wings spread or partially unfurled, dramatic celestial ruin environment',
     quality:'premium dark celestial concept art quality, ultra realistic feather and fabric texture, 8K HDR',
     mk:'fallen_angel', ancient:false
   },
@@ -801,18 +801,18 @@ const TPLS = {
     outfit:'divine ceremonial armor or holy celestial robes — pristine white and divine gold, majestic intact wings, sacred halo crown and accessories',
     fx:'golden divine light rays, white feathers floating gracefully, sacred halo glow, heavenly celestial atmosphere',
     tone:'pure white, divine gold, celestial sky blue, holy silver, warm heavenly light',
-    comp:'epic full-body character portrait, wings spread majestically, heavenly divine setting fully visible',
+    comp:'epic full-body character composition, wings spread majestically, heavenly divine setting fully visible',
     quality:'premium holy celestial concept art quality, ultra realistic divine feather and fabric, 8K HDR',
     mk:'angel_holy', ancient:false
   },
   goddess_myth: {
     char:'character exists within a mythological pantheon setting',
     light:'divine mythological lighting — Olympian marble sunlight, Nordic aurora radiance, or Egyptian solar-god light matched to the specific pantheon',
-    outfit:'complete goddess divine attire — pantheon-appropriate divine robes or armor, crown or headdress, signature mythological weapons or symbolic accessories',
+    outfit:'complete mythic divine attire — pantheon-appropriate divine robes or armor, crown or headdress, signature mythological weapons or symbolic accessories',
     fx:'divine energy aura, pantheon-specific environmental effects — Greek lightning, Norse aurora, Egyptian desert divine wind',
     tone:'palette matched to the specific mythology — Greek white-gold-marble, Norse aurora-silver-ice, Egyptian gold-lapis-sand',
-    comp:'epic full-body divine portrait, goddess commanding the divine environment, majestic scale and commanding presence',
-    quality:'premium mythological goddess art quality, ultra realistic divine costume and environment, 8K HDR',
+    comp:'epic full-body divine composition, mythic figure commanding the divine environment, majestic scale and commanding presence',
+    quality:'premium mythological figure art quality, ultra realistic divine costume and environment, 8K HDR',
     mk:'oracle_gold', ancient:false
   },
   cyberpunk_sf: {
@@ -821,18 +821,18 @@ const TPLS = {
     outfit:'cyberpunk or sci-fi attire — tech-enhanced jacket, circuit-detail bodysuit, holographic accessories, augmented reality visor or neural implants',
     fx:'neon rain reflections, holographic glitch effects, cyberpunk city electric glow, energy particle details',
     tone:'electric blue, neon magenta, chrome silver, deep black, bright cyan and amber accent',
-    comp:'premium cyberpunk editorial portrait, neon-lit urban night environment, full-body or three-quarter framing',
+    comp:'premium cyberpunk editorial composition, neon-lit urban night environment, full-body or three-quarter framing',
     quality:'ultra realistic premium cyberpunk editorial, detailed tech costume and neon environment, 8K HDR',
     mk:'cyber_idol', ancient:false
   },
   realistic_life: {
-    char:'character exists within a contemporary lifestyle portrait setting',
+    char:'character exists within a contemporary lifestyle editorial setting',
     light:'natural authentic lighting — golden hour warmth, soft diffused daylight, ambient interior — always flattering and genuine',
     outfit:'contemporary fashion — casual luxury, bohemian, or modern lifestyle attire authentically matched to the location',
     fx:'natural environment details, soft bokeh, genuine atmospheric depth and seasonal character',
     tone:'natural true-to-life palette matched to the specific natural or urban location',
     comp:'natural editorial composition, subject integrated authentically in real-world environment',
-    quality:'ultra realistic premium natural editorial portrait, authentic skin and genuine environment, 8K HDR',
+    quality:'ultra realistic premium natural editorial realism, authentic skin and genuine environment, 8K HDR',
     mk:'natural_clean', ancient:false
   },
   modern_lady: {
@@ -841,8 +841,8 @@ const TPLS = {
     outfit:'high fashion power dressing — sharp tailored suit, luxury designer coat, premium accessories — high-end contemporary executive styling',
     fx:'glass and steel reflections, city skyline view bokeh, premium material texture — silk, leather, gold details',
     tone:'executive power palette — charcoal, camel, ivory, deep navy, cognac leather, champagne gold',
-    comp:'executive portrait composition — confident commanding pose, premium location clearly conveying status and authority',
-    quality:'premium editorial executive portrait, ultra realistic fashion and architectural interior, 8K HDR',
+    comp:'executive editorial composition — confident commanding pose, premium location clearly conveying status and authority',
+    quality:'premium editorial executive realism, ultra realistic fashion and architectural interior, 8K HDR',
     mk:'editorial', ancient:false
   },
   dynasty_palace: {
@@ -851,8 +851,8 @@ const TPLS = {
     outfit:'full imperial dynasty court attire — complete multi-layer ceremonial robes, dynasty-appropriate crown or headdress, jeweled belt with jade pendants, layered embroidered sleeves, full imperial accessories',
     fx:'gold dust particles, ceremonial fabric motion, palace lantern glow, imperial court ceremonial atmosphere',
     tone:'imperial palette — vermillion red, imperial yellow, jade green, pearl white, deep gold, lacquer black',
-    comp:'premium imperial portrait, full-body or three-quarter editorial composition, complete regal costume silhouette clearly visible, clear face',
-    quality:'premium dynasty imperial portrait, ultra realistic ceremonial costume and headdress texture, 8K HDR',
+    comp:'premium imperial composition, full-body or three-quarter editorial framing, complete regal costume silhouette clearly visible, clear face',
+    quality:'premium dynasty imperial editorial realism, ultra realistic ceremonial costume and headdress texture, 8K HDR',
     mk:'imperial_empress', ancient:true
   },
   classic_lit: {
@@ -861,8 +861,8 @@ const TPLS = {
     outfit:'complete literary-era appropriate costume — dynasty-authentic dress, character-signature accessories, story-faithful styling',
     fx:'story-specific atmospheric effects, period details, emotional literary atmosphere, seasonal character',
     tone:'palette matched to the specific literary world and character emotional register',
-    comp:'premium literary character portrait, clear face, costume and story setting fully readable',
-    quality:'premium classical literature character portrait, ultra realistic costume and environmental detail, 8K HDR',
+    comp:'premium literary character editorial composition, clear face, costume and story setting fully readable',
+    quality:'premium classical literature character editorial realism, ultra realistic costume and environmental detail, 8K HDR',
     mk:'gudian_hong', ancient:true
   },
   china_drama: {
@@ -871,17 +871,17 @@ const TPLS = {
     outfit:'drama-authentic costume design — period court dress, xianxia celestial robes, or wuxia attire matched to the specific drama character',
     fx:'drama-specific atmosphere, character world environment effects, cinematic Chinese drama production quality',
     tone:'palette matched to the specific drama aesthetic — warm palace gold, cool xianxia white-blue, wuxia earth tones',
-    comp:'premium drama character portrait, clear face, complete costume and drama setting readable',
-    quality:'premium Chinese drama character portrait, cinematic production quality, 8K HDR',
+    comp:'premium drama character editorial composition, clear face, complete costume and drama setting readable',
+    quality:'premium Chinese drama character editorial realism, cinematic production quality, 8K HDR',
     mk:'cinematic', ancient:true
   },
   succubus_demon: {
     char:'character exists within a dark supernatural demon-court setting',
     light:'supernatural dark illumination — infernal red or deep violet rim light, selective dark key light on face, dramatic sinister atmosphere',
-    outfit:'dark supernatural elegance — seductive demon attire with dark wings motif, dark gemstone accessories, otherworldly dangerous beauty styling',
+    outfit:'dark supernatural queen couture — black lace gown, deep crimson velvet underlayer, gothic gold filigree armor accents, ruby gemstone jewelry, skull-ornament royal detailing, small black bat-like demon wings behind shoulders or upper back, no horns, no tail',
     fx:'dark supernatural energy, infernal particles, demonic realm atmosphere, sinister elegant effects',
     tone:'deep crimson, dark violet, sinister gold, obsidian black, blood red accent',
-    comp:'premium supernatural character portrait, dramatic full-body or three-quarter composition, clear face, sinister environment readable',
+    comp:'premium supernatural character editorial composition, dramatic full-body or three-quarter framing, clear face, sinister environment readable',
     quality:'premium dark supernatural character concept art quality, ultra realistic dark costume detail, 8K HDR',
     mk:'succubus_alluring', ancient:false
   },
@@ -891,7 +891,7 @@ const TPLS = {
     outfit:'dragon rider armor or mythological beast-bonded costume — scaled armor accents, dragon-motif crown and jewelry, rider gear, fantasy battle styling',
     fx:'dragon breath or elemental power, ice shards or fire embers or storm lightning, environmental scale creature effects',
     tone:'palette matched to dragon type — fire orange-red, ice crystal blue, shadow black-gold, forest emerald-gold',
-    comp:'epic full-body or dramatic portrait, mythological creature presence visible at environmental scale',
+    comp:'epic full-body or dramatic composition, mythological creature presence visible at environmental scale',
     quality:'premium epic fantasy art quality, ultra realistic armor and elemental creature environment, 8K HDR',
     mk:'dragon_epic', ancient:false
   },
@@ -901,18 +901,18 @@ const TPLS = {
     outfit:'beast tamer specialty attire — leather companion gear, mythological companion robes, wildlife-tracker fashion, creature-bonded ceremonial dress',
     fx:'creature companion visible at close or medium range near subject, bond gesture or eye contact between human and beast, habitat environmental atmosphere',
     tone:'palette matched to the beast type — warm amber-gold for forest, cool blue-white for arctic, deep green for jungle, silver-moonlit for night',
-    comp:'environmental portrait showing subject and beast companion together, beast clearly visible and interactive, human-animal bond as the central visual story',
-    quality:'ultra realistic premium fantasy portrait, detailed creature texture and authentic companion interaction, cinematic depth, 8K HDR',
+    comp:'environmental editorial composition showing subject and beast companion together, beast clearly visible and interactive, human-animal bond as the central visual story',
+    quality:'ultra realistic premium fantasy editorial realism, detailed creature texture and authentic companion interaction, cinematic depth, 8K HDR',
     mk:'oriental', ancient:false
   },
   taiwan_travel: {
-    char:'character exists within a Taiwan travel portrait setting',
+    char:'character exists within a Taiwan travel editorial setting',
     light:'natural Taiwan location light — golden afternoon or soft overcast daylight, flattering authentic illumination',
     outfit:'stylish contemporary travel fashion or modern chic attire, coordinated accessories, Taiwan-appropriate styling',
     fx:'iconic Taiwan location atmosphere, local cultural environmental depth, authentic local character',
     tone:'palette matched to the specific Taiwan location — mountain green, ocean blue, warm evening gold, city neon',
     comp:'premium travel editorial, subject with iconic Taiwan landmark or natural scenery, full-body or three-quarter framing',
-    quality:'ultra realistic premium travel portrait, detailed fashion and location texture, natural skin, coherent anatomy, 8K HDR',
+    quality:'ultra realistic premium travel editorial realism, detailed fashion and location texture, natural skin, coherent anatomy, 8K HDR',
     mk:'outdoor_glow', ancient:false
   },
   wedding_diamond: {
@@ -921,7 +921,7 @@ const TPLS = {
     outfit:'elaborate luxury bridal gown — diamond crystal embellishment, dramatic train, bridal veil or crown, matching luxury jewelry',
     fx:'diamond sparkle light effects, bridal flower petals, soft romantic bokeh, bridal bouquet or veil motion',
     tone:'bridal palette — pure white, soft champagne, blush pink, diamond silver, gold accent, romantic ivory',
-    comp:'premium bridal portrait, full-body showing complete gown, or intimate three-quarter bridal framing',
+    comp:'premium bridal editorial composition, full-body showing complete gown, or intimate three-quarter bridal framing',
     quality:'ultra realistic premium bridal editorial, detailed gown fabric and diamond embellishment, natural skin, 8K HDR',
     mk:'wedding', ancient:false
   },
@@ -931,8 +931,8 @@ const TPLS = {
     outfit:'premium full character costume — screen-accurate design, detailed character accessories, weapon or signature prop, professional cosplay production quality',
     fx:'character-world atmosphere effects — game particle effects, anime-inspired magical atmosphere, character-signature visual elements',
     tone:'palette matched to the specific character visual identity and character world',
-    comp:'premium character concept art style portrait, full-body or dramatic three-quarter, complete character costume and accessories visible',
-    quality:'premium cosplay editorial portrait, ultra realistic character costume and signature prop detail, cinematic character concept quality, 8K HDR',
+    comp:'premium character concept art style composition, full-body or dramatic three-quarter, complete character costume and accessories visible',
+    quality:'premium cosplay editorial realism, ultra realistic character costume and signature prop detail, cinematic character concept quality, 8K HDR',
     mk:'character_pop', ancient:false
   },
   mountain_sea: {
@@ -941,7 +941,7 @@ const TPLS = {
     outfit:'premium outdoor fashion or adventure styling — fitted jacket, coordinated travel attire, natural fiber styling appropriate for high altitude or coastal setting',
     fx:'vast natural scale atmospheric effects — mountain mist, ocean spray, cloud movement, wide sky dynamics, epic environmental scale',
     tone:'majestic natural palette — mountain grey-white-blue, ocean turquoise-navy, golden sunset, forest green, snow white',
-    comp:'epic environmental portrait — subject as element within vast natural panorama, wide landscape framing, human scale contrasted against grand natural scene',
+    comp:'epic environmental editorial composition — subject as element within vast natural panorama, wide landscape framing, human scale contrasted against grand natural scene',
     quality:'ultra realistic premium outdoor editorial, detailed natural environment and sky texture, natural skin, coherent anatomy, 8K HDR epic landscape',
     mk:'outdoor_glow', ancient:false
   },
@@ -958,6 +958,42 @@ function getEntry(catID, entryID){
 }
 function getField(entry, tpl, field){
   return entry[field] || tpl[field] || '';
+}
+function getEntrySeries(entry){
+  return entry.series || entry.sub || '未分組';
+}
+function getVisibleEntries(cat){
+  if(!cat) return [];
+  const entries = (cat.entries || []).slice().sort((a,b)=>
+    (a.sort_weight ?? 9999) - (b.sort_weight ?? 9999) ||
+    getEntrySeries(a).localeCompare(getEntrySeries(b),'zh-Hant') ||
+    (a.name||'').localeCompare(b.name||'','zh-Hant')
+  );
+  if(!curSeriesID || curSeriesID === '__all') return entries;
+  return entries.filter(e=>getEntrySeries(e) === curSeriesID);
+}
+function getSeriesOptions(cat){
+  const counts = new Map();
+  for(const entry of (cat?.entries || [])){
+    const series = getEntrySeries(entry);
+    counts.set(series, (counts.get(series)||0)+1);
+  }
+  const order = Array.isArray(cat?.series_order) ? cat.series_order : [];
+  return [...counts.entries()].sort((a,b)=>{
+    const ai = order.includes(a[0]) ? order.indexOf(a[0]) : 999;
+    const bi = order.includes(b[0]) ? order.indexOf(b[0]) : 999;
+    return ai - bi || b[1] - a[1] || a[0].localeCompare(b[0],'zh-Hant');
+  });
+}
+function statusLabel(status){
+  return {
+    core:'核心',
+    official:'正式',
+    supplement:'補充',
+    review:'待審',
+    duplicate:'重複',
+    hidden:'隱藏'
+  }[status] || '';
 }
 
 // ═══════════════════════════════════════════
@@ -1022,16 +1058,41 @@ function renderCatStrip(){
     </div>`).join('');
 }
 
+function renderSeriesFilter(){
+  const cat = getCat(curCatID);
+  const el = document.getElementById('seriesFilter');
+  if(!el || !cat) return;
+  const options = getSeriesOptions(cat);
+  if(options.length <= 1){
+    el.innerHTML = '';
+    return;
+  }
+  const allCount = (cat.entries || []).length;
+  el.innerHTML = [
+    `<div class="series-chip${curSeriesID==='__all'?' active':''}" data-series-id="__all">全部<span class="series-chip-count">${allCount}</span></div>`,
+    ...options.map(([series,count])=>`
+      <div class="series-chip${series===curSeriesID?' active':''}" data-series-id="${series.replace(/"/g,'&quot;')}">${series}<span class="series-chip-count">${count}</span></div>`)
+  ].join('');
+  el.querySelectorAll('.series-chip').forEach(chip=>{
+    chip.addEventListener('click',()=>selSeries(chip.dataset.seriesId || '__all'));
+  });
+}
+
 function renderPresets(){
   const cat = getCat(curCatID);
   if(!cat) return;
+  const entries = getVisibleEntries(cat);
   const countMeta = document.getElementById('presetCountMeta');
-  if(countMeta) countMeta.textContent = `${cat.entries.length} 筆`;
-  document.getElementById('presetGrid').innerHTML = cat.entries.map(e=>`
+  if(countMeta) countMeta.textContent = curSeriesID === '__all' ? `${cat.entries.length} 筆` : `${entries.length} / ${cat.entries.length} 筆`;
+  document.getElementById('presetGrid').innerHTML = entries.map(e=>`
     <div class="preset-card${e.id===curEntryID?' active':''}" onclick="selEntry('${e.id}')">
       <span class="preset-icon">${getDisplayIcon(e.icon, getDisplayIcon(cat.icon,'✦'))}</span>
       <span class="preset-name">${e.name}</span>
       <span class="preset-sub">${e.sub||''}</span>
+      <span class="preset-meta">
+        ${statusLabel(e.ui_status) ? `<span class="preset-tag ${e.ui_status}">${statusLabel(e.ui_status)}</span>` : ''}
+        ${getEntrySeries(e) ? `<span class="preset-tag">${getEntrySeries(e)}</span>` : ''}
+      </span>
     </div>`).join('');
 }
 
@@ -1081,6 +1142,7 @@ function renderBadge(){
 
 function renderAll(){
   renderCatStrip();
+  renderSeriesFilter();
   renderPresets();
   renderMK();
   renderAng();
@@ -1116,18 +1178,35 @@ function _clearRandLabel(){
 
 function selCat(catID){
   curCatID = catID;
+  curSeriesID = '__all';
   _clearRandLabel();
   const cat = getCat(catID);
   if(cat){
-    curEntryID = cat.entries[0].id;
-    const tplKey = cat.entries[0].tpl || cat.tpl;
+    const firstEntry = getVisibleEntries(cat)[0] || cat.entries[0];
+    curEntryID = firstEntry.id;
+    const tplKey = firstEntry.tpl || cat.tpl;
     const tpl = TPLS[tplKey]||TPLS.xianxia;
     if(tpl.mk) curMKID = tpl.mk;
-    applyDefs(cat.entries[0], tplKey);
+    applyDefs(firstEntry, tplKey);
   }
   renderAll();
   const pill = document.querySelector('.cat-pill.active');
   if(pill) pill.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+}
+
+function selSeries(seriesID){
+  const cat = getCat(curCatID);
+  if(!cat) return;
+  curSeriesID = seriesID || '__all';
+  const entries = getVisibleEntries(cat);
+  if(entries.length && !entries.some(e=>e.id===curEntryID)){
+    curEntryID = entries[0].id;
+    applyDefs(entries[0], entries[0].tpl || cat.tpl);
+  }
+  _clearRandLabel();
+  renderSeriesFilter();
+  renderPresets();
+  renderMK(); renderAng(); renderRatio(); renderLens(); renderLight(); renderAtm(); renderCamLang(); renderBadge();
 }
 
 function selEntry(entryID){
@@ -1201,10 +1280,17 @@ function selCamLang(id){
 function doRandom(suppressScroll){
   const catIdx = Math.floor(Math.random()*CATS.length);
   const cat = CATS[catIdx];
-  const entryIdx = Math.floor(Math.random()*cat.entries.length);
-  const entry = cat.entries[entryIdx];
+  const entries = (cat.entries || []).slice().sort((a,b)=>
+    (a.sort_weight ?? 9999) - (b.sort_weight ?? 9999) ||
+    getEntrySeries(a).localeCompare(getEntrySeries(b),'zh-Hant') ||
+    (a.name||'').localeCompare(b.name||'','zh-Hant')
+  );
+  const pool = entries.length ? entries : cat.entries;
+  const entryIdx = Math.floor(Math.random()*pool.length);
+  const entry = pool[entryIdx];
   curCatID = cat.id;
   curEntryID = entry.id;
+  curSeriesID = '__all';
   const tplKey = entry.tpl || cat.tpl;
   const tpl = TPLS[tplKey]||TPLS.xianxia;
   curMKID = entry.mk || tpl.mk || 'xianxia';

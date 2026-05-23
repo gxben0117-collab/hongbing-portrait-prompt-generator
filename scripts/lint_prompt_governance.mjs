@@ -29,9 +29,7 @@ const mappedCategories = categoryRules.flatMap((rule) => rule.categories || []);
 
 assert(governance, "PROMPT_GOVERNANCE is missing");
 assert(lensIds.includes("l_50"), "missing l_50");
-assert(lensIds.includes("l_70"), "missing l_70");
-assert(lensIds.includes("l_80"), "missing l_80");
-assert(lensIds.includes("l_85"), "missing l_85");
+assert(lensIds.length === 1, "lens policy must remain 50mm-only");
 assert(governance.antiPatterns.bannedAngleIds.includes("huimou"), "huimou must remain blocked");
 assert(governance.antiPatterns.bannedAngleIds.includes("yang"), "yang must remain blocked");
 assert(governance.antiPatterns.bannedCameraLanguageIds.includes("cl_travel"), "cl_travel must remain blocked");

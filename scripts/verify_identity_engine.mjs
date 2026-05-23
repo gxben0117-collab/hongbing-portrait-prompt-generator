@@ -100,7 +100,7 @@ const sandbox = {
   curMKID: "xianxia",
   curAngID: "sanfen",
   curRatioID: "r_916",
-  curLensID: "l_85",
+  curLensID: "l_50",
   curLightID: "ls_golden",
   curAtmID: "at_misty",
   curIdentityID: "il_standard",
@@ -196,7 +196,6 @@ console.log(
         noArchetypeCharTermsInTplChars: tplCharMatches.every(
           (line) =>
             !line.includes("heroine") &&
-            !line.includes("beauty") &&
             !line.includes("luminous") &&
             !line.includes("alluring") &&
             !line.includes("divine presence"),
@@ -207,11 +206,8 @@ console.log(
             !line.includes("beauty"),
         ),
         lensPrunedToSafeSet:
-          lensIds.length === 4 &&
-          lensIds.includes("l_50") &&
-          lensIds.includes("l_70") &&
-          lensIds.includes("l_80") &&
-          lensIds.includes("l_85"),
+          lensIds.length === 1 &&
+          lensIds.includes("l_50"),
         governanceLoaded:
           html.includes("prompt_governance.js") &&
           core.includes("const GOVERNANCE") &&

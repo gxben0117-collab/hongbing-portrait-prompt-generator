@@ -34,12 +34,12 @@ window.PROMPT_GOVERNANCE = {
     ],
   },
   replacements: [
-    ['movie trailer camera language', 'controlled portrait camera framing'],
-    ['fashion editorial camera language', 'controlled portrait camera framing'],
-    ['blockbuster visual language', 'natural portrait visual language'],
+    ['movie trailer camera language', 'controlled cinematic camera framing'],
+    ['fashion editorial camera language', 'controlled fashion camera framing'],
+    ['blockbuster visual language', 'natural cinematic visual language'],
     ['blockbuster', 'cinematic quality'],
-    ['vlog', 'location portrait'],
-    ['dramatic hero framing', 'stable portrait framing'],
+    ['vlog', 'location editorial'],
+    ['dramatic hero framing', 'stable cinematic framing'],
     ['looking back over shoulder', 'gentle three-quarter pause with face still readable'],
     ['turn-back glance', 'calm paused glance with face still readable'],
     ['low angle upward shot', 'stable eye-level or slight three-quarter shot'],
@@ -72,30 +72,15 @@ window.PROMPT_GOVERNANCE = {
     ['immortal realm glow', 'soft environmental glow'],
     ['divine radiance', 'warm environmental light'],
     ['xianxia ethereal', 'soft xianxia atmospheric'],
-    ['travel documentary', 'location portrait'],
-    ['candid travel', 'grounded travel portrait'],
+    ['travel documentary', 'location editorial'],
+    ['candid travel', 'grounded travel editorial'],
     ['low-key dramatic', 'controlled dramatic'],
   ],
   lensOptions: [
     {
       id: 'l_50',
       name: '50mm 全身最穩',
-      desc: 'Simulated 50mm full-body fashion photography lens: natural human-eye perspective, minimal distortion, realistic head-to-body proportions, safest for full-body ancient costume, large skirts, robes, armor, and complete outfit display — camera positioned at eye-level or chest height.',
-    },
-    {
-      id: 'l_70',
-      name: '70mm 平衡人像',
-      desc: 'Simulated 70mm balanced portrait lens: mild portrait compression with still-realistic body scale, optimized for three-quarter body, elegant editorial portraits, modern glamour, queenly portraits, and styles that need both a beautiful face and stable head-to-body proportion.',
-    },
-    {
-      id: 'l_80',
-      name: '80mm 角色近景',
-      desc: 'Simulated 80mm character portrait lens: stronger portrait compression than 70mm but safer than 85mm for three-quarter character styling, cosplay, game-inspired looks, and dramatic costume portraits — avoid extreme close framing when full outfit is required.',
-    },
-    {
-      id: 'l_85',
-      name: '85mm 半身美臉',
-      desc: 'Simulated 85mm portrait lens: natural face compression and beautiful background bokeh, optimized for close-up, half-body, bridal beauty, and intimate magazine portraits. Use cautiously for full-body shots because it can compress the body and exaggerate head-to-body ratio.',
+      desc: 'Simulated 50mm full-body fashion photography lens: natural human-eye perspective, minimal distortion, realistic head-to-body proportions, safest for full-body costume, large skirts, robes, armor, and complete outfit display with stable full-body or three-quarter editorial framing.',
     },
   ],
   poseModes: [
@@ -116,25 +101,20 @@ window.PROMPT_GOVERNANCE = {
       lens: 'l_50',
       guidance: 'Ancient costume lens rule: prioritize 50mm for full robe, wide sleeves, hair ornaments, and head-to-body stability.',
     },
-    balancedPortrait: {
+    balancedEditorial: {
       categories: ['queen', 'modern_lady', 'realistic_life', 'reference_styles', 'holy_angel', 'goddess_myth', 'fallen_angel', 'succubus_demon', 'darkfantasy', 'gothic'],
-      lens: 'l_70',
-      guidance: 'Balanced portrait lens rule: use 70mm when the style needs a more beautiful face while still preserving body proportion.',
+      lens: 'l_50',
+      guidance: 'Balanced editorial lens rule: use 50mm to preserve head-to-body proportion while keeping face, outfit, and environment equally readable.',
     },
-    characterClose: {
-      categories: ['game', 'cos_character', 'cyberpunk_sf'],
-      lens: 'l_80',
-      guidance: 'Character lens rule: use 80mm for character detail and costume presence without pushing as close as 85mm.',
-    },
-    bridalBeauty: {
-      categories: ['wedding_diamond'],
-      lens: 'l_85',
-      guidance: 'Bridal lens rule: use 85mm for bridal half-body beauty and close magazine portraits; keep full gown shots stable if selected.',
+    characterStable: {
+      categories: ['game', 'cos_character', 'cyberpunk_sf', 'wedding_diamond'],
+      lens: 'l_50',
+      guidance: 'Character and bridal lens rule: use 50mm to keep costume detail, full-body scale, and face readability stable in one frame.',
     },
     travelStable: {
       categories: ['taiwan_travel', 'europe_travel', 'japan_travel', 'korea_sea', 'world_travel', 'china_mark', 'mountain_sea', 'beast_tamer', 'dragon_beast'],
       lens: 'l_50',
-      guidance: 'Travel lens rule: use 50mm for environmental portraits where the location, outfit, and body scale must stay readable.',
+      guidance: 'Travel lens rule: use 50mm for environmental editorial framing where the location, outfit, and body scale must stay readable.',
     },
   },
 };
