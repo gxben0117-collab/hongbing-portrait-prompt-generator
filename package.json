@@ -9,6 +9,13 @@
     "report:data-gaps": "python scripts/report_data_gaps.py",
     "report:risk-flags": "node scripts/report_risk_flags.mjs",
     "lint:prompt-governance": "node scripts/lint_prompt_governance.mjs",
-    "fill:style-pose-fields": "node scripts/fill_style_pose_fields.mjs"
+    "fill:style-pose-fields": "node scripts/fill_style_pose_fields.mjs",
+    "fill:style-camera-design": "node scripts/fill_style_camera_design.mjs",
+    "fill:markdown-camera-fields": "node scripts/fill_markdown_camera_fields.mjs",
+    "sanitize:style-source-terms": "node scripts/sanitize_style_source_terms.mjs",
+    "reverse:prompts-to-style-md": "node scripts/reverse_prompts_to_style_md.mjs",
+    "sync:reverse-samples": "node scripts/sync_reverse_samples_to_runtime.mjs",
+    "append:v027-backup": "node scripts/append_v027_backup_to_style_md.mjs",
+    "sync:v027-backup": "node scripts/sync_v027_backup_to_runtime.mjs"
   }
 }

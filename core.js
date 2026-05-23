@@ -448,6 +448,16 @@ function buildLensGuidance(cat, lens){
   return [base, selected].filter(Boolean).join(' ');
 }
 
+function buildCameraDesignGuidance({entry, ratio, lens, lightSt, atm, camLang, ang}){
+  const notes = [];
+  if(entry.ratio || entry.lens || entry.light || entry.atm || entry.camLang || entry.ang){
+    notes.push('Style-example camera design takes priority over generic category defaults when it remains identity-safe.');
+  }
+  notes.push(`Image ratio: ${ratio.name}. Lens focal style: ${lens.name}. Lighting style: ${lightSt.name}. Atmosphere: ${atm.name}. Camera language: ${camLang.name}. Angle/framing: ${ang.name}.`);
+  notes.push('Keep the camera at eye level or natural chest height for body shots; never use perspective that enlarges the head or breaks face-neck-shoulder alignment.');
+  return notes.join(' ');
+}
+
 function buildPoseGuidance({cat, entry, camLang, proAction}){
   const guidance = [];
   const posePack = getCategoryPosePack(cat);
@@ -1099,8 +1109,14 @@ function applyDefs(entryOrNull, tplKey){
   if(e.camLang|| defs.camLang) curCamLangID= sanitizeSelectionId(e.camLang || defs.camLang, ANTI_PATTERNS.bannedCameraLanguageIds, 'cl_fashion');
 }
 
+function _clearRandLabel(){
+  const lbl = document.getElementById('randLabel');
+  if(lbl) lbl.style.display = 'none';
+}
+
 function selCat(catID){
   curCatID = catID;
+  _clearRandLabel();
   const cat = getCat(catID);
   if(cat){
     curEntryID = cat.entries[0].id;
@@ -1120,6 +1136,7 @@ function selEntry(entryID){
   const entry = cat.entries.find(e=>e.id===entryID);
   if(!entry) return;
   curEntryID = entryID;
+  _clearRandLabel();
   if(entry.mk) curMKID = entry.mk;
   applyDefs(entry, entry.tpl || cat.tpl);
   document.querySelectorAll('.preset-card').forEach(c=>c.classList.remove('active'));
@@ -1288,6 +1305,7 @@ function buildPrompt(){
     CORE_ELASTICITY,
     proParts.join(' '),
     sanitizedLensGuidance ? `Lens selection guidance: ${sanitizedLensGuidance}.` : '',
+    `Camera design: ${sanitizeCreativeField(buildCameraDesignGuidance({entry, ratio, lens, lightSt, atm, camLang, ang}))}`,
     buildAntiPatternGuidance(),
     sanitizeCreativeField(`[${cat.name} — ${entry.name}${entry.sub?' · '+entry.sub:''}]`),
     sceneDesc ? `Scene: ${sceneDesc}.` : '',
@@ -1326,16 +1344,33 @@ function generateAndCopy(){
   setTimeout(()=>{ doCopy(); }, 80);
 }
 
+function _showCopyDone(){
+  const btn = document.getElementById('copyBtn');
+  if(!btn) return;
+  btn.textContent = '✅ 已複製！';
+  btn.classList.add('done');
+  setTimeout(()=>{btn.textContent='📋 複製咒語';btn.classList.remove('done');},2000);
+}
+
 function doCopy(){
   const txt = document.getElementById('out').textContent;
   if(!txt||txt.includes('選好風格')) return;
-  navigator.clipboard.writeText(txt).then(()=>{
-    const btn = document.getElementById('copyBtn');
-    if(!btn) return;
-    btn.textContent = '✅ 已複製！';
-    btn.classList.add('done');
-    setTimeout(()=>{btn.textContent='📋 複製咒語';btn.classList.remove('done');},2000);
-  });
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(_showCopyDone).catch(()=>_fallbackCopy(txt));
+  } else {
+    _fallbackCopy(txt);
+  }
+}
+
+function _fallbackCopy(txt){
+  const ta = document.createElement('textarea');
+  ta.value = txt;
+  ta.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try{ if(document.execCommand('copy')) _showCopyDone(); } catch(e){}
+  document.body.removeChild(ta);
 }
 
 function doClear(){
@@ -1347,11 +1382,7 @@ function doClear(){
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-// Init — apply defaults for initial category
-(function(){
-  const cat = getCat(curCatID);
-  if(cat) applyDefs(cat.entries[0], cat.entries[0].tpl || cat.tpl);
-})();
-renderAll();
+// Note: CATS and state vars are defined in index.html after this file loads.
+// Initialization is handled by the inline script at the bottom of index.html.
 
 
