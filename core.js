@@ -145,7 +145,7 @@ const CATEGORY_POSE_LIBRARY = {
     ],
     comp: [
       'vertical bridal portrait with clear face, readable gown silhouette, and soft foreground layering from flowers, veil, or fabric without obscuring the subject',
-      'vertical three-quarter to full-body wedding composition, face large enough to preserve identity, skirt and train clearly visible, elegant depth behind the subject',
+      'vertical three-quarter to full-body wedding composition, face clearly readable while preserving identity, skirt and train clearly visible, elegant depth behind the subject',
     ],
   },
   hanfu: {
@@ -547,7 +547,7 @@ const TPLS = {
     outfit:'complete xianxia couture styling — distinct outfit silhouette, elaborate hairpins and step-shake ornaments, trailing wide sleeves, jade ornaments, flowing silk',
     fx:'story-specific xianxia atmosphere, fabric motion, environmental particles, cinematic effects that support the face without covering it',
     tone:'coherent palette built for the specific story setting, refined cinematic color grading',
-    comp:'full-body or three-quarter editorial composition, clear face, readable costume silhouette, decisive story pose, poster-like framing',
+    comp:'full-body or three-quarter editorial composition, clear face, readable costume silhouette, decisive story pose, editorial framing with natural proportions',
     quality:'ultra realistic premium travel portrait, detailed costume texture, natural skin, coherent anatomy, high-end editorial finish, 8K HDR',
     mk:'xianxia', ancient:true
   },
@@ -575,7 +575,7 @@ const TPLS = {
   },
   gothic: {
     char:'character exists within a dark gothic fantasy setting',
-    light:'low-key cinematic lighting, controlled face key light, deep shadows, crimson or violet rim light',
+    light:'controlled studio lighting with atmospheric shadows, precise face key light, deep selective highlights with dark crimson or violet rim',
     outfit:'gothic couture — dark velvet or lace gown, dramatic silhouette, dark jewelry and accessories, elegant cape or veil',
     fx:'dark velvet shadows, subtle magic smoke, crimson or violet particles, candle bokeh, cinematic low-key atmosphere',
     tone:'black, burgundy, antique silver, deep violet, candle gold',
@@ -638,7 +638,7 @@ const TPLS = {
   },
   darkfantasy: {
     char:'character exists within a dark fantasy setting',
-    light:'dramatic low-key cinematic lighting, strong atmospheric rim, deep shadows with selective highlights, sinister or moonlit atmospheric haze',
+    light:'dramatic controlled studio lighting, strong atmospheric rim, deep shadows with selective highlights, sinister atmospheric depth',
     outfit:'dark fantasy costume — elaborate dark robes or armor, sinister accessories, dramatic silhouette, dark crown or headdress',
     fx:'dark energy particles, atmospheric haze, shadow effects, moonlit particles, dramatic sinister light',
     tone:'deep black, blood red, dark purple, sinister gold, shadow atmosphere',
@@ -652,13 +652,13 @@ const TPLS = {
     outfit:'deep crimson flowing hanfu battle dress, oversized long sleeves, embroidered gold trim, wide flying skirt train, ornate golden hair crown, long hair moving in wind',
     fx:'massive crimson skirt flying dramatically, wind-blown hair, fabric trails, dust or petals, epic xianxia drama atmosphere',
     tone:'deep crimson red against cold grey, ink blue, snow white, desert gold, or night lantern amber',
-    comp:'ultra wide full-body epic xianxia drama composition, low-angle or dynamic side framing, subject small enough to show the grand environment, face still clear and readable',
+    comp:'ultra wide full-body epic xianxia drama composition, eye-level or dynamic side framing, subject small enough to show the grand environment, face still clear and readable',
     quality:'Chinese xianxia costume-drama cinematic poster, Lost You Forever inspired red-dress grand-scene mood, ultra realistic fabric motion, 8K HDR, shallow depth of field',
     mk:'cinematic', ancient:true
   },
   queen: {
     char:'character exists within a regal palace or sovereign setting',
-    light:'cinematic face key light, atmosphere-matched rim light, premium period-drama lighting, clear readable facial identity',
+    light:'controlled face key light, atmosphere-matched rim light, premium period-drama lighting, clear readable facial identity',
     outfit:'majestic queen couture — structured royal gown, jeweled crown, embroidered cape, ceremonial jewelry, powerful silhouette',
     fx:'gold dust, banners, throne glow, ceremonial wind through cape',
     tone:'palette matched to the story, refined cinematic grading, strong costume-location harmony',
@@ -668,7 +668,7 @@ const TPLS = {
   },
   spirits: {
     char:'character exists within a mythological spirit-court setting',
-    light:'cinematic face key light, atmosphere-matched rim light, premium period-drama lighting, clear readable facial identity',
+    light:'controlled face key light, atmosphere-matched rim light, premium period-drama lighting, clear readable facial identity',
     outfit:'elaborate spirit-queen or enchantress couture — luxurious court robes with mythological motifs, ornate hairpins, long sleeves, jeweled belt, elegant dangerous styling',
     fx:'spirit fire, mystical smoke, palace lantern shadows, golden sparks, translucent spirit effects',
     tone:'palette matched to the myth or history story, refined cinematic grading, strong costume-location harmony',
