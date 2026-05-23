@@ -47,6 +47,7 @@
 - `versions/index_v0.46.html`：批次擴充風格範例並加入分類/主題數量顯示後快照
 - `versions/index_v0.47.html`：第四輪 curated 擴充、icon fallback 與八行分類列後快照
 - `versions/index_v0.48.html`：第五輪 curated 擴充 1000 組、全分類 icon 寫入與九行分類列後快照
+- `versions/index_v1.0.0.html`：v1.0.0 正式上架快照
 - `核心資料/核心咒語規範.md`：專案核心規則來源
 - `核心資料/風格範例.md`：大型風格範例資料來源
 - `docs/`：文件中心
@@ -71,6 +72,7 @@
 - 可使用 `node scripts/fill_style_pose_fields.mjs` 重新為缺漏條目補安全姿勢與構圖欄位
 - 可使用 `python scripts/report_data_gaps.py` 驗證目前是否仍有缺漏欄位
 - prompt engine 已導入 identity-first 核心排序，重點放在鎖臉、姿勢協調、頭身比例與反模式清洗
+- 目前正式版號：`v1.0.0`
 - `TASK-001` 後新增 `臉部特徵（選填）` 欄位，會把臉部文字錨點插入 prompt 第 2 段
 - `Avoid:` 負面保護已前移到 prompt 第 3 段，避免尾段權重衰減
 - `TPLS.char` 已改成純世界觀描述，不再用 heroine / beauty 等 archetype 詞覆蓋身份
@@ -102,3 +104,4 @@
 - `docs/development-log/V1.12.md`
 - `docs/development-log/V1.13.md`
 - `docs/development-log/V1.14.md`
+- `docs/development-log/V1.28.md`
