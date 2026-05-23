@@ -1,5 +1,5 @@
 ﻿// ═══════════════════════════════════════════
-// 核心咒語規範 v1.5 (2026-05-23)
+// 核心咒語規範 v1.6 (2026-05-23)
 // 來源文件：核心資料/核心咒語規範.md — 此為專案規範，任何修改請先更新 .md 文件
 // ═══════════════════════════════════════════
 //
@@ -27,7 +27,7 @@ const CORE_GATE = `MANDATORY: Check for an uploaded reference photo before proce
 
 const CORE_IDENTITY = `IDENTITY LOCK (CRITICAL): The uploaded photo is the only identity reference. Preserve exact facial geometry, eye shape, nose structure, mouth shape, skin identity, and recognizable likeness across all styling, costume, and lighting variations. Makeup is surface cosmetics only — color, texture, mood — never alters eye shape, brow bone, lip shape, jaw, or facial proportions. Style keywords (fantasy, luxury, goddess, heroine, celebrity) describe costume and environment only — they must never reconstruct or replace the uploaded person's face. The uploaded photo overrides all style, cinematic, and beauty directions. Final image must feel like a real photograph of this specific person.`;
 
-const CORE_SAFETY = `BEAUTY & ANATOMY SAFETY: Avoid identity drift, AI beauty templates, influencer face replacement, plastic skin, over-smoothed renders. Preserve natural asymmetry, real skin texture, and original facial uniqueness. Maintain realistic adult anatomy — natural limb proportions, correct fingers, believable body balance. Head-to-body proportion must be realistic: no oversized head, no chibi proportions, no cranial enlargement from hair ornaments or heavy costume. Face-to-neck-to-shoulder alignment must stay physically natural — when pose drama conflicts with face stability, reduce pose drama. Facial identity remains readable in all poses.`;
+const CORE_SAFETY = `BEAUTY & ANATOMY SAFETY: Avoid identity drift, AI beauty templates, influencer face replacement, plastic skin, over-smoothed renders. Preserve natural asymmetry, real skin texture, and original facial uniqueness. Maintain realistic adult anatomy — natural limb proportions, correct fingers, believable body balance. Head-to-body proportion must be realistic: no oversized head, no chibi proportions, no cranial enlargement from hair ornaments or heavy costume. Face-to-neck-to-shoulder alignment must stay physically natural — when pose drama conflicts with face stability, reduce pose drama. Body proportion priority over cinematic exaggeration — do not sacrifice limb length or torso scale for dramatic effect. Camera at eye-level or chest height for full-body shots — avoid forced perspective that enlarges the head relative to the body. Facial identity remains readable in all poses.`;
 
 const CORE_ELASTICITY = `Natural variation is encouraged: hair movement, candid posing, environmental interaction, photographic imperfection. Facial bone structure, eye shape, nose geometry, and recognizable features remain fixed regardless of pose or scene.`;
 
@@ -80,8 +80,8 @@ const RATIO = [
   {id:'r_239', name:'2.39:1 超寬幕',desc:'Generate in 2.39:1 ultra-wide cinematic letterbox format — maximum cinematic scope for epic scenes.'},
 ];
 const LENS = [
-  {id:'l_85',  name:'85mm 人像',  desc:'Simulated 85mm portrait lens: natural face compression, beautiful background bokeh, flattering facial proportions — ideal for close-up and half-body portraits.'},
-  {id:'l_50',  name:'50mm 標準',  desc:'Simulated 50mm standard lens: natural human-eye perspective, minimal distortion — versatile for both portrait and environmental shots.'},
+  {id:'l_85',  name:'85mm 人像',  desc:'Simulated 85mm portrait lens: natural face compression, beautiful background bokeh — for close-up and half-body portraits only. Avoid for full-body shots as it compresses the body and exaggerates head-to-body ratio.'},
+  {id:'l_50',  name:'50mm 標準',  desc:'Simulated 50mm full-body fashion photography lens: natural human-eye perspective, minimal distortion, realistic head-to-body proportions — camera positioned at eye-level or chest height, balanced full-body and three-quarter editorial framing.'},
 ];
 const LIGHT_STYLE = [
   {id:'ls_golden',   name:'黃金時刻', desc:'Golden hour editorial lighting: warm amber and orange sunlight at low angle, long soft shadows, glowing skin tones, romantic warmth.'},
@@ -103,7 +103,7 @@ const IDENTITY_LOCK = [
 ];
 const CAMERA_LANG = [
   {id:'cl_fashion',  name:'時尚大片', desc:'Fashion editorial camera language: precise controlled composition with deliberate pose and gaze, high-end magazine visual grammar, luxury fashion photography aesthetic.'},
-  {id:'cl_magazine', name:'雜誌封面', desc:'Magazine cover camera language: clean bold composition optimized for cover placement, subject large in frame, strong eye contact, graphic clarity.'},
+  {id:'cl_magazine', name:'雜誌封面', desc:'Magazine cover camera language: clean bold composition with balanced full-body editorial framing, natural human head-to-body proportions, strong eye contact and graphic clarity — body proportion priority over cover-style close framing.'},
   {id:'cl_social',   name:'社群美圖', desc:'Social media optimized camera language: visually appealing clean composition, strong subject presence, shareable aesthetic quality, modern lifestyle visual.'},
 ];
 
@@ -170,7 +170,7 @@ const CATEGORY_POSE_LIBRARY = {
     ],
     comp: [
       'vertical regal portrait with throne, steps, or architectural axis reinforcing authority, face clearly readable, body posed in a stable commanding silhouette',
-      'vertical queenly composition with subtle low angle or central axis, strong facial clarity, costume and power symbols fully legible without overcomplicated action',
+      'vertical queenly composition with eye-level or central-axis framing, natural human proportions, strong facial clarity, costume and power symbols fully legible, body proportion priority over cinematic exaggeration',
     ],
   },
   gothic: {
@@ -449,15 +449,15 @@ const TPL_DEFAULTS = {
   xianxia:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   hanfu:         {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   oriental:      {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  gothic:        {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
+  gothic:        {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
   myth:          {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   fantasy:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   water:         {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   reference_styles:{ang:'sanfen', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   game:          {ang:'quan',     ratio:'r_23',  lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
-  darkfantasy:   {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
+  darkfantasy:   {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
   drama:         {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  queen:         {ang:'sanfen',   ratio:'r_34',  lens:'l_85',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_magazine'},
+  queen:         {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_magazine'},
   spirits:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   europe_travel: {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   japan_travel:  {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
@@ -466,7 +466,7 @@ const TPL_DEFAULTS = {
   china_mark:    {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
   jinyong:       {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   chinese_story: {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  fallen_angel:  {ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
+  fallen_angel:  {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
   holy_angel:    {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_natural',   atm:'at_misty',    camLang:'cl_magazine'},
   goddess_myth:  {ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   cyberpunk_sf:  {ang:'sanfen',   ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
@@ -477,9 +477,9 @@ const TPL_DEFAULTS = {
   dynasty_palace:{ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   classic_lit:   {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
   china_drama:   {ang:'sanfen',   ratio:'r_34',  lens:'l_50',  light:'ls_golden',    atm:'at_misty',    camLang:'cl_magazine'},
-  succubus_demon:{ang:'sanfen',   ratio:'r_23',  lens:'l_85',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
+  succubus_demon:{ang:'sanfen',   ratio:'r_23',  lens:'l_50',  light:'ls_cinematic', atm:'at_moody',    camLang:'cl_fashion'},
   taiwan_travel: {ang:'huanjing', ratio:'r_916', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
-  wedding_diamond:{ang:'sanfen',  ratio:'r_34',  lens:'l_85',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_magazine'},
+  wedding_diamond:{ang:'sanfen',  ratio:'r_34',  lens:'l_50',  light:'ls_studio',    atm:'at_warm',     camLang:'cl_magazine'},
   cos_character: {ang:'quan',     ratio:'r_23',  lens:'l_85',  light:'ls_studio',    atm:'at_clear',    camLang:'cl_magazine'},
   mountain_sea:  {ang:'huanjing', ratio:'r_169', lens:'l_50',  light:'ls_natural',   atm:'at_clear',    camLang:'cl_magazine'},
 };
