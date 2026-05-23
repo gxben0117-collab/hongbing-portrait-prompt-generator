@@ -6,6 +6,7 @@
 
 - `project/專案總覽.md`
 - `project/正式工程路線圖.md`
+- `project/2026-05-23_文件檔案整理報告.md`
 - `architecture/系統架構與模組規劃.md`
 - `architecture/Identity-First Prompt 架構規格.md`
 - `architecture/風格範例資料結構規格 v1.0.md`
