@@ -1,7 +1,7 @@
 {
   "name": "hongbing-portrait-prompt-generator",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Hongbing portrait prompt generator engineering workspace",
   "scripts": {
     "build": "npm run build:dist",
@@ -32,6 +32,10 @@
     "reverse:prompts-to-style-md": "node scripts/reverse_prompts_to_style_md.mjs",
     "sync:reverse-samples": "node scripts/sync_reverse_samples_to_runtime.mjs",
     "append:v027-backup": "node scripts/append_v027_backup_to_style_md.mjs",
-    "sync:v027-backup": "node scripts/sync_v027_backup_to_runtime.mjs"
+    "sync:v027-backup": "node scripts/sync_v027_backup_to_runtime.mjs",
+    "deploy": "gh-pages -d dist"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
   }
 }
