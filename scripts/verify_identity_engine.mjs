@@ -143,6 +143,12 @@ const tests = [
     entryId: "hs_01",
     faceDesc: "defined eyelid structure, narrower lip width, longer philtrum, delicate jaw curvature, realistic skin texture",
   },
+  {
+    name: "londonTravel",
+    catId: "theme_12",
+    entryId: "v027_eu_16",
+    faceDesc: "natural eye spacing, original eyelid structure, reference nose geometry, natural lip shape, real skin detail",
+  },
 ];
 
 const output = {};
@@ -169,12 +175,7 @@ fs.writeFileSync(
   "utf8",
 );
 
-console.log(
-  JSON.stringify(
-    {
-      outputFile: "temp/identity_engine_verification.json",
-      tests: tests.map((test) => test.name),
-      checks: {
+const checks = {
         promptOrderCorrect:
           baiqianSegments[0]?.includes("MANDATORY: Check for an uploaded reference photo") &&
           baiqianSegments[1]?.includes("IDENTITY & FACE PRIORITY CLAUSE") &&
@@ -234,13 +235,49 @@ console.log(
         faceDescGuidanceUpdated:
           html.includes("優先填：眼型（單/雙/丹鳳眼）") &&
           html.includes("填越具體越能鎖住本人五官"),
+        londonTravelNoCommercialBeautyTokens:
+          [
+            "magazine cover",
+            "camera language: 雜誌封面",
+            "camera language: 時尚大片",
+            "cinematic glow makeup",
+            "glow makeup",
+            "camera-ready",
+            "premium world travel",
+            "premium travel",
+            "editorial realism",
+            "travel editorial",
+            "environmental portrait",
+            "fashion",
+            "beauty templates",
+            "softly defined brows",
+            "defined lashes",
+            "healthy peach or rose lip",
+            "ultra realistic",
+            "8k hdr",
+            "vivid colors",
+            "crisp clean air",
+          ].every((term) => !output.londonTravel.toLowerCase().includes(term.toLowerCase())),
+        londonTravelUsesDocumentaryLanguage:
+          output.londonTravel.toLowerCase().includes("documentary") &&
+          output.londonTravel.toLowerCase().includes("real tourist") &&
+          output.londonTravel.toLowerCase().includes("natural dynamic range") &&
+          output.londonTravel.toLowerCase().includes("unretouched"),
         ancientBoostUnder100Words:
           ((core.match(/const ANCIENT_BOOST = `([\s\S]*?)`;/) || [])[1] || "")
             .split(/\s+/)
             .filter(Boolean).length < 100,
-      },
-    },
-    null,
-    2,
-  ),
-);
+};
+
+const report = {
+  outputFile: "temp/identity_engine_verification.json",
+  tests: tests.map((test) => test.name),
+  checks,
+};
+
+console.log(JSON.stringify(report, null, 2));
+
+const failed = Object.entries(checks).filter(([, ok]) => !ok).map(([name]) => name);
+if (failed.length) {
+  throw new Error(`Identity engine verification failed: ${failed.join(", ")}`);
+}
