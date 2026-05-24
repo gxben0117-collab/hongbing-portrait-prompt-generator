@@ -1,3 +1,22 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+
+function loadGovernance() {
+  const governancePath = path.join(ROOT, 'prompt_governance.js');
+  if (!fs.existsSync(governancePath)) return {};
+  const sandbox = { window: {} };
+  vm.createContext(sandbox);
+  vm.runInContext(fs.readFileSync(governancePath, 'utf8'), sandbox);
+  return sandbox.window.PROMPT_GOVERNANCE || {};
+}
+
+export const PROMPT_GOVERNANCE = loadGovernance();
+export const SANITIZE_TIERS = PROMPT_GOVERNANCE.sanitizeTiers || [];
+
 export const IDENTITY_SAFETY_RULES = [
   {
     flag: 'beauty_template_risk',
@@ -186,9 +205,27 @@ export const IDENTITY_SAFE_REPLACEMENTS = [
   [/\beditorial\b/gi, 'real-person photographic'],
 ];
 
+export const TIER_SAFE_REPLACEMENTS = SANITIZE_TIERS.flatMap((tier) =>
+  (tier.replacements || []).map(([from, to]) => [
+    new RegExp(String(from).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'),
+    to,
+  ]),
+);
+
+export const TIER_SAFETY_RULES = SANITIZE_TIERS.map((tier) => ({
+  flag: tier.id,
+  severity: tier.id === 'tier01_identity_sovereignty' || tier.id === 'tier02_beauty_template' ? 3 : 2,
+  patterns: (tier.bannedTerms || []).map((term) =>
+    new RegExp(String(term).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'),
+  ),
+}));
+
 export function applyIdentitySafeReplacements(text) {
   let next = String(text || '');
   for (const [pattern, replacement] of IDENTITY_SAFE_REPLACEMENTS) {
+    next = next.replace(pattern, replacement);
+  }
+  for (const [pattern, replacement] of TIER_SAFE_REPLACEMENTS) {
     next = next.replace(pattern, replacement);
   }
   return next.replace(/\s{2,}/g, ' ').trim();
@@ -200,7 +237,7 @@ export function analyzeIdentitySafety(text) {
   let score = 0;
   const hits = [];
 
-  for (const rule of IDENTITY_SAFETY_RULES) {
+  for (const rule of [...IDENTITY_SAFETY_RULES, ...TIER_SAFETY_RULES]) {
     for (const rawPattern of rule.patterns) {
       const pattern = new RegExp(rawPattern.source, rawPattern.flags);
       const matches = [...source.matchAll(pattern)];

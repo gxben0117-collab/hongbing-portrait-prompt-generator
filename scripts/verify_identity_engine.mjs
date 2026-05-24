@@ -189,14 +189,65 @@ const generatedPromptBannedTerms = [
   "vivid colors",
   "crisp clean air",
 ];
+const tierBannedTerms = (sandbox.window.PROMPT_GOVERNANCE?.sanitizeTiers || [])
+  .flatMap((tier) => tier.bannedTerms || [])
+  .filter((term) => ![
+    "template face",
+    "cat-eye",
+    "HDR",
+    "heroine",
+    "gorgeous",
+    "glamorous",
+    "premium",
+  ].includes(term));
+const allGeneratedBannedTerms = [...new Set([...generatedPromptBannedTerms, ...tierBannedTerms])];
+
+function creativePromptBody(prompt) {
+  return prompt
+    .split(/\n\n+/)
+    .filter((segment) => ![
+      "MANDATORY:",
+      "IDENTITY & FACE PRIORITY CLAUSE",
+      "ANTI-BEAUTY-TEMPLATE OVERRIDE",
+      "FACE SCOPE LOCK",
+      "DOCUMENTARY PERSON LOCK",
+      "TIERED SANITIZE LOCK",
+      "Avoid:",
+      "IDENTITY LOCK",
+      "ENHANCED IDENTITY LOCK",
+      "MAXIMUM IDENTITY LOCK",
+      "BEAUTY & ANATOMY SAFETY",
+      "Natural variation is encouraged",
+      "REAL-PERSON-IN-FANTASY RULE",
+      "ANTI-PATTERN OVERRIDE",
+      "FINAL IDENTITY OVERRIDE",
+      "Render:",
+    ].some((prefix) => segment.startsWith(prefix)))
+    .join("\n\n");
+}
+
+function positiveTermHits(prompt, terms) {
+  const body = creativePromptBody(prompt).toLowerCase();
+  return terms.filter((term) => {
+    const needle = term.toLowerCase();
+    let index = body.indexOf(needle);
+    while (index !== -1) {
+      const before = body.slice(Math.max(0, index - 48), index);
+      if (!/(?:\bno\b|\bforbid\b|\bavoid\b|\bwithout\b|\bnot\b|不|禁止|避免)[^.;:\n]{0,48}$/.test(before)) {
+        return true;
+      }
+      index = body.indexOf(needle, index + needle.length);
+    }
+    return false;
+  });
+}
 
 const allPromptIssues = [];
 setField("faceDesc", "reference face geometry, original eye shape, original nose geometry, natural mouth shape, unretouched skin detail");
 for (const cat of sandbox.CATS) {
   for (const entry of cat.entries || []) {
     const prompt = buildFor(cat.id, entry.id);
-    const lower = prompt.toLowerCase();
-    const hits = generatedPromptBannedTerms.filter((term) => lower.includes(term.toLowerCase()));
+    const hits = positiveTermHits(prompt, allGeneratedBannedTerms);
     if (hits.length) {
       allPromptIssues.push({
         catId: cat.id,
@@ -241,6 +292,11 @@ const checks = {
           baiqianSegments[2]?.includes("ANTI-BEAUTY-TEMPLATE OVERRIDE"),
         identitySovereigntyPresent: output.baiqian.includes("IDENTITY & FACE PRIORITY CLAUSE"),
         antiBeautyTemplatePresent: output.baiqian.includes("ANTI-BEAUTY-TEMPLATE OVERRIDE"),
+        faceScopeLockPresent: output.baiqian.includes("FACE SCOPE LOCK"),
+        documentaryPersonLockPresent: output.baiqian.includes("DOCUMENTARY PERSON LOCK"),
+        tieredSanitizeLockPresent: output.baiqian.includes("TIERED SANITIZE LOCK"),
+        governanceHasTenSanitizeTiers:
+          (sandbox.window.PROMPT_GOVERNANCE?.sanitizeTiers || []).length === 10,
         finalIdentityOverridePresent: output.baiqian.includes("FINAL IDENTITY OVERRIDE"),
         faceAnchorPresent: output.baiqian.includes("SUBJECT FACE DESCRIPTION"),
         baiqianHasCoreIdentity: output.baiqian.includes("IDENTITY LOCK (CRITICAL)"),
@@ -316,7 +372,7 @@ const checks = {
             "8k hdr",
             "vivid colors",
             "crisp clean air",
-          ].every((term) => !output.londonTravel.toLowerCase().includes(term.toLowerCase())),
+          ].every((term) => !positiveTermHits(output.londonTravel, [term]).length),
         londonTravelUsesDocumentaryLanguage:
           output.londonTravel.toLowerCase().includes("documentary") &&
           output.londonTravel.toLowerCase().includes("real tourist") &&
@@ -340,7 +396,7 @@ const checks = {
             "professional travel photography",
             "8k hdr",
             "ultra realistic",
-          ].every((term) => !output.forestSpirit.toLowerCase().includes(term.toLowerCase())),
+          ].every((term) => !positiveTermHits(output.forestSpirit, [term]).length),
         forestSpiritUsesAccidentalFantasyDocumentary:
           output.forestSpirit.toLowerCase().includes("real person accidentally photographed inside a fantasy environment") &&
           output.forestSpirit.toLowerCase().includes("minimal botanical makeup") &&

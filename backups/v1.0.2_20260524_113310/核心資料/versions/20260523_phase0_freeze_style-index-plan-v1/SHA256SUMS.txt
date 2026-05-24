@@ -1,0 +1,5 @@
+2F4834AAF36D53F746137D77013789E0CDFC93D89DCDF1F7782D360953064F42  核心資料\風格範例.md  ->  核心資料\versions\20260523_phase0_freeze_style-index-plan-v1\風格範例.md
+A6490EC197E379887DFD1EB5948421FFC28B100849105AFD417FD02E691DE06A  index.html  ->  核心資料\versions\20260523_phase0_freeze_style-index-plan-v1\index.html
+07656F81387E720D4E623ED266863D69872868B01E2AE1DF66FD631D21E8FBFC  core.js  ->  核心資料\versions\20260523_phase0_freeze_style-index-plan-v1\core.js
+5D0D17B8BF3CF359A319F7CFF713F426C81E384D818674CE5B8E837F9B94195A  prompt_governance.js  ->  核心資料\versions\20260523_phase0_freeze_style-index-plan-v1\prompt_governance.js
+CBD2A5EE57733AD269C7492E221EEF9407FE23530B9EDE4CF255E633E47C8116  ai-task.md  ->  核心資料\versions\20260523_phase0_freeze_style-index-plan-v1\ai-task.md

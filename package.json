@@ -1,12 +1,12 @@
 {
   "name": "hongbing-portrait-prompt-generator",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Hongbing portrait prompt generator engineering workspace",
   "scripts": {
     "build": "npm run build:dist",
     "lint": "npm run lint:prompt-governance && npm run audit:style-examples && npm run audit:identity-contamination && npm run audit:style-index && npm run report:risk-flags",
-    "test": "npm run verify:identity-engine && npm run verify:ui-static && npm run verify:headless-browser",
+    "test": "npm run verify:identity-engine && npm run verify:identity-prompt-samples && npm run verify:ui-static && npm run verify:headless-browser",
     "check:structure": "python scripts/check_structure.py",
     "build:dist": "python scripts/build_dist.py",
     "report:data-gaps": "python scripts/report_data_gaps.py",
@@ -21,6 +21,7 @@
     "sync:style-data": "node scripts/build_style_data.mjs --write-html",
     "verify:ui-static": "node scripts/verify_ui_static.mjs",
     "verify:identity-engine": "node scripts/verify_identity_engine.mjs",
+    "verify:identity-prompt-samples": "node scripts/verify_identity_prompt_samples.mjs",
     "verify:headless-browser": "node scripts/verify_headless_browser.mjs",
     "report:risk-flags": "node scripts/report_risk_flags.mjs",
     "lint:prompt-governance": "node scripts/lint_prompt_governance.mjs",
