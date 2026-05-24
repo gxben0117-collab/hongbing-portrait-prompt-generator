@@ -177,8 +177,11 @@ console.log(
       checks: {
         promptOrderCorrect:
           baiqianSegments[0]?.includes("MANDATORY: Check for an uploaded reference photo") &&
-          baiqianSegments[1]?.includes("SUBJECT FACE DESCRIPTION") &&
-          baiqianSegments[2]?.startsWith("Avoid: "),
+          baiqianSegments[1]?.includes("IDENTITY & FACE PRIORITY CLAUSE") &&
+          baiqianSegments[2]?.includes("ANTI-BEAUTY-TEMPLATE OVERRIDE"),
+        identitySovereigntyPresent: output.baiqian.includes("IDENTITY & FACE PRIORITY CLAUSE"),
+        antiBeautyTemplatePresent: output.baiqian.includes("ANTI-BEAUTY-TEMPLATE OVERRIDE"),
+        finalIdentityOverridePresent: output.baiqian.includes("FINAL IDENTITY OVERRIDE"),
         faceAnchorPresent: output.baiqian.includes("SUBJECT FACE DESCRIPTION"),
         baiqianHasCoreIdentity: output.baiqian.includes("IDENTITY LOCK (CRITICAL)"),
         baiqianHasProportionCore: output.baiqian.includes("Head-to-body proportion must be realistic"),

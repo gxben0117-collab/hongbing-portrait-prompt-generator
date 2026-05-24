@@ -25,21 +25,27 @@
 // ── 核心規則（已整合壓縮，保留所有關鍵約束）──
 const CORE_GATE = `MANDATORY: Check for an uploaded reference photo before proceeding. No reference photo — stop and ask for one. Never invent a face or generate from text alone.`;
 
+const CORE_IDENTITY_SOVEREIGNTY = `IDENTITY & FACE PRIORITY CLAUSE (CRITICAL): The uploaded face identity overrides all style, costume, role, beauty, and cinematic directions. Face identity priority over fantasy styling. Do not beautify, reshape, slim, sharpen, lift, smooth, redesign, reconstruct, idealize, or reinterpret facial structure, eye shape, nose geometry, mouth shape, jawline, cheek volume, forehead height, skin age detail, or recognizable likeness. Fantasy styling may affect environment, costume, props, lighting, atmosphere, and color palette only; it must not affect the face. The output must feel like a documentary-real photograph of this exact uploaded person inside a designed fantasy environment, not a generated fantasy character based on the reference photo.`;
+
+const CORE_ANTI_BEAUTY_TEMPLATE = `ANTI-BEAUTY-TEMPLATE OVERRIDE: Forbid influencer-face reconstruction, fantasy queen face template, actress-face conversion, xianxia heroine face, doll-like symmetry, V-shape jaw, sharpened chin, enlarged eyes, ultra-smooth skin, cinematic beauty reconstruction, AI glamour-face replacement, and commercial retouching that changes identity. Preserve natural asymmetry, natural age detail, original eye spacing, eyelid structure, nose bridge and nostril geometry, mouth structure, cheek volume, jaw width, and authentic skin texture.`;
+
 const CORE_IDENTITY = `IDENTITY LOCK (CRITICAL): The uploaded photo is the only identity reference. Preserve exact facial geometry, eye shape, nose structure, mouth shape, skin identity, and recognizable likeness across all styling, costume, and lighting variations. Makeup is surface cosmetics only — color, texture, mood — never alters eye shape, brow bone, lip shape, jaw, or facial proportions. Style keywords describe costume, role, mood, lighting, and environment only — they must never reconstruct or replace the uploaded person's face. The uploaded photo overrides all style and cinematic directions. Final image must feel like a real photograph of this specific person.`;
 
-const CORE_SAFETY = `BEAUTY & ANATOMY SAFETY: Avoid identity drift, AI beauty templates, influencer face replacement, plastic skin, over-smoothed renders. Preserve natural asymmetry, real skin texture, and original facial uniqueness. Maintain realistic adult anatomy — natural limb proportions, correct fingers, believable body balance. Head-to-body proportion must be realistic: no oversized head, no chibi proportions, no cranial enlargement from hair ornaments or heavy costume. Face-to-neck-to-shoulder alignment must stay physically natural — when pose drama conflicts with face stability, reduce pose drama. Body proportion priority over cinematic exaggeration — do not sacrifice limb length or torso scale for dramatic effect. Camera at eye-level or chest height for full-body shots — avoid forced perspective that enlarges the head relative to the body. Facial identity remains readable in all poses.`;
+const CORE_SAFETY = `BEAUTY & ANATOMY SAFETY: Avoid identity drift, AI beauty templates, influencer face replacement, plastic skin, over-smoothed renders. Preserve natural asymmetry, real skin texture, and original facial uniqueness. Maintain realistic adult anatomy — natural limb proportions, correct fingers, believable body balance. Head-to-body proportion must be realistic: no oversized head, no chibi proportions, no cranial enlargement from hair ornaments or heavy costume. Head must not dominate the frame. Maintain balanced head-to-shoulder-to-torso proportion. Use enough camera distance to keep body scale natural. Avoid close-up portrait compression or beauty-camera framing. Face-to-neck-to-shoulder alignment must stay physically natural — when pose drama conflicts with face stability, reduce pose drama. Body proportion priority over cinematic exaggeration — do not sacrifice limb length or torso scale for dramatic effect. Camera at eye-level or chest height for full-body shots — avoid forced perspective that enlarges the head relative to the body. Facial identity remains readable in all poses.`;
 
 const CORE_ELASTICITY = `Natural variation is encouraged: hair movement, candid posing, environmental interaction, photographic imperfection. Facial bone structure, eye shape, nose geometry, and recognizable features remain fixed regardless of pose or scene.`;
 
-const CORE_STRUCTURE = `Render: scene → lighting → character context → makeup → costume → action/props → composition → effects → tone → quality → specs. Identity preservation overrides all style direction.`;
+const CORE_FINAL_OVERRIDE = `FINAL IDENTITY OVERRIDE: If any style, camera, makeup, costume, role, title, quality, or atmosphere instruction conflicts with identity preservation, ignore that style instruction and preserve the uploaded person's real face.`;
+
+const CORE_STRUCTURE = `Render: identity priority → anti-beauty-template override → anatomy and head-body lock → scene → lighting → real-person character context → surface-only makeup → costume → identity-safe action/props → balanced composition → effects → tone → real-person photographic quality → specs. Identity preservation overrides all style direction.`;
 
 // ── 禁止詞列表（已精簡）──
-const AVOID_LOCK = `identity drift, replaced face, template face, standardized facial features, over-smoothed skin, reshaped jawline, doll-like face, artificial skin filter, eye-reshaping liner, heavy eyeliner distortion, mannequin poses, artificial symmetry, anatomy distortion, floating limbs, deformed fingers, oversized head, chibi proportions, forced-perspective hero shots, face-hidden poses, trailer-style staging, low quality, watermarks`;
+const AVOID_LOCK = `identity drift, replaced face, template face, standardized facial features, fantasy queen face template, xianxia heroine face template, actress-face conversion, influencer-face reconstruction, AI glamour-face replacement, enlarged eyes, sharpened chin, V-shape jaw, over-smoothed skin, reshaped jawline, doll-like face, artificial skin filter, eye-reshaping liner, heavy eyeliner distortion, contouring that changes cheekbone or jawline, mannequin poses, artificial symmetry, anatomy distortion, floating limbs, deformed fingers, oversized head, chibi proportions, forced-perspective hero shots, face-hidden poses, trailer-style staging, beauty-camera close-up compression, low quality, watermarks`;
 
 // ── 古裝加強（精簡版）──
 const ANCIENT_BOOST = `Ancient Chinese costume: traditional updo with 2-3 accessories only (hairpins or step-shake ornaments) that do not enlarge head silhouette. Layered robes with wide sleeves, embroidered waist ornament, one era-appropriate hand prop. Setting: ancient Chinese architecture, classical gardens, or mythological environment.`;
 
-const QUALITY_BASE = `cinematic quality, photorealistic rendering, detailed costume and environment texture, 8K HDR`;
+const QUALITY_BASE = `natural cinematic realism, real-person photographic quality, authentic human skin texture, detailed costume and environment texture, high-resolution natural photographic detail`;
 const GOVERNANCE = (typeof window !== 'undefined' && window.PROMPT_GOVERNANCE) ? window.PROMPT_GOVERNANCE : {};
 const ANTI_PATTERNS = GOVERNANCE.antiPatterns || {
   bannedCameraLanguageIds: ['cl_movie', 'cl_travel'],
@@ -51,9 +57,39 @@ const ANTI_PATTERNS = GOVERNANCE.antiPatterns || {
     'looking back over shoulder',
     'low angle upward shot',
     'perfect beauty',
+    'beauty',
+    'gorgeous',
+    'glamorous',
     'flawless',
+    'perfect skin',
+    'porcelain skin',
+    'model face',
+    'influencer face',
     'luxury beauty',
+    'fantasy beauty',
+    'succubus queen',
+    'succubus woman',
+    'demon queen',
+    'demon sovereign',
+    'fantasy queen',
+    'fantasy empress',
+    'goddess face',
+    'goddess aura',
+    'immortal aesthetic',
+    'xianxia heroine',
+    'dark fantasy heroine',
+    'magazine cover',
+    'magazine beauty',
+    'editorial realism',
+    'character editorial realism',
+    'premium fantasy editorial realism',
+    'concept art quality',
+    'character concept art',
     'cat-eye',
+    'fox-eye',
+    'sharp winged eyeliner',
+    'dark regal contour',
+    'contouring',
     'heavy smoky eye',
     'extreme pose',
     'jumping',
@@ -65,6 +101,15 @@ const ANTI_PATTERNS = GOVERNANCE.antiPatterns || {
     'low-key dramatic',
     'ethereal atmosphere',
     'celestial mist',
+    'looking upward',
+    'looking upwards',
+    'dramatic side profile',
+    'side profile',
+    'over-the-shoulder',
+    'half-body close portrait',
+    'waist-up portrait',
+    'face-readable close framing',
+    'beauty-camera framing',
   ],
 };
 const TEXT_REPLACEMENTS = GOVERNANCE.replacements || [];
@@ -102,9 +147,9 @@ const IDENTITY_LOCK = [
   {id:'il_maximum',  name:'最強鎖定', boost:'MAXIMUM IDENTITY LOCK (CRITICAL OVERRIDE): The uploaded person\'s face is the absolute ground truth. Every facial feature — eye shape, eye spacing, nose geometry, lip shape, chin profile, jaw line, cheekbone structure — must be reproduced with zero deviation from the reference photo. Any AI tendency toward beauty standardization, face symmetrization, skin smoothing, or feature idealization must be completely suppressed. The person must be immediately recognizable as the same individual from the reference photo.'},
 ];
 const CAMERA_LANG = [
-  {id:'cl_fashion',  name:'時尚大片', desc:'Fashion editorial camera language: precise controlled composition with deliberate pose and gaze, high-end magazine visual grammar, luxury fashion photography aesthetic.'},
-  {id:'cl_magazine', name:'雜誌封面', desc:'Magazine cover camera language: clean bold composition with balanced full-body editorial framing, natural human head-to-body proportions, strong eye contact and graphic clarity — body proportion priority over cover-style close framing.'},
-  {id:'cl_social',   name:'社群美圖', desc:'Social media optimized camera language: visually appealing clean composition, strong subject presence, shareable aesthetic quality, modern lifestyle visual.'},
+  {id:'cl_fashion',  name:'時尚大片', desc:'Controlled real-person environmental camera framing: precise composition with deliberate pose and gaze, natural body scale, complete outfit readability, and no commercial beauty-face reconstruction.'},
+  {id:'cl_magazine', name:'雜誌封面', desc:'Natural environmental portrait photography language: clean bold composition with balanced full-body or medium three-quarter framing, natural human head-to-body proportions, strong eye contact, and no cover-style close-up compression.'},
+  {id:'cl_social',   name:'社群美圖', desc:'Social media optimized real-person photography language: clean readable composition, natural subject presence, shareable lifestyle clarity, and authentic skin texture.'},
 ];
 
 const SAFE_POSE_VARIANTS = [
@@ -358,29 +403,74 @@ function sanitizePromptText(text){
   });
   return next
     .replace(/movie trailer camera language/gi, 'controlled cinematic camera framing')
-    .replace(/fashion editorial camera language/gi, 'controlled fashion camera framing')
+    .replace(/fashion editorial camera language/gi, 'controlled real-person environmental camera framing')
+    .replace(/magazine cover camera language/gi, 'natural environmental portrait photography language')
     .replace(/blockbuster visual language/gi, 'natural cinematic visual language')
     .replace(/\bblockbuster\b/gi, 'cinematic quality')
-    .replace(/\bvlog\b/gi, 'location editorial')
+    .replace(/\bvlog\b/gi, 'location-based real-person photography')
     .replace(/dramatic hero framing/gi, 'stable cinematic framing')
-    .replace(/looking back over shoulder/gi, 'gentle three-quarter pause')
-    .replace(/turn-back glance/gi, 'calm paused glance')
+    .replace(/looking curious toward the side/gi, 'gentle natural eye contact toward camera')
+    .replace(/looking upwards thoughtfully/gi, 'soft neutral gaze slightly above camera level')
+    .replace(/looking upward/gi, 'camera-level gaze with stable face orientation')
+    .replace(/looking upwards/gi, 'camera-level gaze with stable face orientation')
+    .replace(/dramatic side profile/gi, 'mild three-quarter face angle with stable facial geometry')
+    .replace(/side profile/gi, 'mild three-quarter face angle with stable facial geometry')
+    .replace(/over-the-shoulder turn-back pose/gi, 'mild body turn while face remains camera-level and structurally readable')
+    .replace(/turning back over the shoulder/gi, 'mild body turn while face remains directed toward camera')
+    .replace(/looking back over shoulder/gi, 'mild body turn while face remains directed toward camera')
+    .replace(/turn-back glance/gi, 'calm paused glance with face still readable')
+    .replace(/low-angle hero shot/gi, 'eye-level or natural chest-height shot')
+    .replace(/heroic angle/gi, 'stable eye-level camera angle')
+    .replace(/forced-perspective hero shot/gi, 'stable eye-level camera angle without forced perspective')
     .replace(/low angle upward shot/gi, 'stable eye-level or slight three-quarter shot')
     .replace(/low angle/gi, 'eye-level')
     .replace(/low-angle/gi, 'stable eye-level')
     .replace(/ultra-wide/gi, 'wide environmental')
     .replace(/wide-angle/gi, 'wide environmental')
-    .replace(/perfect beauty reconstruction/gi, 'natural appearance')
-    .replace(/perfect beauty/gi, 'natural appearance')
+    .replace(/half-body close portrait/gi, 'medium three-quarter portrait with balanced body proportion')
+    .replace(/half-body portrait from waist up/gi, 'medium three-quarter portrait with balanced head-to-shoulder-to-torso proportion')
+    .replace(/waist-up portrait/gi, 'medium three-quarter body composition')
+    .replace(/face-readable half-body/gi, 'identity-readable three-quarter portrait without enlarging the head')
+    .replace(/face-readable close framing/gi, 'identity-readable medium framing without enlarging the head')
+    .replace(/upper costume details/gi, 'complete upper-body silhouette')
+    .replace(/beauty-camera framing/gi, 'real-person camera framing with natural body scale')
+    .replace(/perfect beauty reconstruction/gi, 'authentic real-person appearance')
+    .replace(/perfect beauty/gi, 'authentic real-person appearance')
+    .replace(/perfect skin/gi, 'natural skin texture with real imperfections')
+    .replace(/flawless skin/gi, 'natural skin texture with real imperfections')
     .replace(/flawless/gi, 'natural')
+    .replace(/porcelain skin/gi, 'authentic human skin texture')
+    .replace(/model face/gi, 'authentic real-person appearance')
+    .replace(/influencer face/gi, 'authentic real-person appearance')
+    .replace(/glamorous beauty/gi, 'authentic real-person appearance')
+    .replace(/\bgorgeous\b/gi, 'authentic')
+    .replace(/\bglamorous\b/gi, 'refined')
     .replace(/luxury beauty enhancement/gi, 'natural styling')
     .replace(/luxury beauty/gi, 'natural styling')
-    .replace(/\bgoddess\b/gi, 'regal figure')
-    .replace(/\bheroine\b/gi, 'central character')
+    .replace(/fantasy beauty/gi, 'real-person portrait in a fantasy environment')
+    .replace(/succubus queen/gi, 'uploaded real person in dark supernatural costume styling')
+    .replace(/succubus woman/gi, 'uploaded real person wearing dark supernatural costume styling')
+    .replace(/demon queen/gi, 'real woman inside a dark supernatural environment')
+    .replace(/demon sovereign/gi, 'real woman in dark supernatural royal styling')
+    .replace(/fantasy queen/gi, 'uploaded real person wearing fantasy-inspired royal costume styling')
+    .replace(/fantasy empress/gi, 'uploaded real person wearing fantasy-inspired royal costume styling')
+    .replace(/goddess face/gi, 'mythic environment styling, no facial redesign')
+    .replace(/goddess aura/gi, 'mythic atmosphere around the environment')
+    .replace(/immortal aesthetic/gi, 'xianxia-inspired environment, not facial styling')
+    .replace(/dark fantasy heroine/gi, 'real person inside a dark fantasy environment')
+    .replace(/xianxia heroine/gi, 'real person inside a xianxia-inspired environment')
+    .replace(/\bgoddess\b/gi, 'mythic figure styling around the uploaded real person')
+    .replace(/\bheroine\b/gi, 'central real person')
     .replace(/\bcelebrity\b/gi, 'reference subject')
-    .replace(/cat-eye liner reshaping/gi, 'soft liner reshaping')
-    .replace(/cat-eye/gi, 'soft liner')
-    .replace(/heavy smoky eye/gi, 'controlled smoky eye')
+    .replace(/cat-eye liner reshaping/gi, 'soft liner color following the original eye shape')
+    .replace(/cat-eye/gi, 'soft liner following the original eye shape')
+    .replace(/fox-eye/gi, 'soft liner following the original eye shape')
+    .replace(/sharp winged eyeliner/gi, 'soft eyeliner color only, no eye-shape-changing liner')
+    .replace(/dark regal contour/gi, 'surface-only shadow toning, no facial reshaping')
+    .replace(/contouring/gi, 'surface color toning only, no facial reshaping')
+    .replace(/\bcontour\b/gi, 'surface color toning only')
+    .replace(/blackened red smoky eyes/gi, 'subtle dark red smoky makeup, surface-only')
+    .replace(/heavy smoky eye/gi, 'controlled smoky eye kept surface-only')
     .replace(/extreme pose/gi, 'controlled pose')
     .replace(/jumping/gi, 'grounded motion')
     .replace(/spinning/gi, 'gentle movement')
@@ -390,8 +480,19 @@ function sanitizePromptText(text){
     .replace(/immortal realm glow/gi, 'soft environmental glow')
     .replace(/divine radiance/gi, 'warm environmental light')
     .replace(/xianxia ethereal/gi, 'soft xianxia atmospheric')
-    .replace(/travel documentary/gi, 'location editorial')
-    .replace(/candid travel/gi, 'grounded travel editorial')
+    .replace(/premium fantasy editorial realism/gi, 'natural cinematic realism with real-person identity fidelity')
+    .replace(/premium ([a-z\s-]*?)character editorial realism/gi, 'natural cinematic environmental realism with real-person identity fidelity')
+    .replace(/premium ([a-z\s-]*?)editorial realism/gi, 'natural cinematic realism with real-person identity fidelity')
+    .replace(/editorial realism/gi, 'natural cinematic realism')
+    .replace(/magazine cover/gi, 'natural environmental portrait photography')
+    .replace(/concept art quality/gi, 'real-person photographic quality')
+    .replace(/character concept art/gi, 'real photograph of the uploaded person inside a designed environment')
+    .replace(/fashion beauty portrait/gi, 'controlled real-person portrait photography')
+    .replace(/travel documentary/gi, 'location-based real-person photography')
+    .replace(/candid travel/gi, 'grounded location-based real-person photography')
+    .replace(/location editorial/gi, 'location-based real-person photography')
+    .replace(/travel editorial/gi, 'location-based real-person photography')
+    .replace(/\beditorial\b/gi, 'real-person photographic')
     .replace(/low-key dramatic/gi, 'controlled dramatic')
     .replace(/ethereal atmosphere/gi, 'soft atmosphere')
     .replace(/celestial mist/gi, 'light atmospheric mist');
@@ -402,7 +503,7 @@ function escapeRegExp(text){
 }
 
 function buildAntiPatternGuidance(){
-  return 'ANTI-PATTERN OVERRIDE: no forced-perspective hero shots, face-hidden poses, trailer-style staging, eye-shape-changing liner, or extreme choreography — replace with face-readable, identity-safe alternatives.';
+  return 'ANTI-PATTERN OVERRIDE: no forced-perspective hero shots, face-hidden poses, trailer-style staging, eye-shape-changing liner, extreme choreography, fantasy queen face templates, commercial beauty reconstruction, or close-up beauty-camera compression — replace with camera-level, identity-readable, real-person alternatives.';
 }
 
 function sanitizeCreativeField(text){
@@ -410,7 +511,53 @@ function sanitizeCreativeField(text){
   return sanitizePromptText(text)
     .replace(/bold eyeliner/gi, 'controlled eyeliner')
     .replace(/high-fashion/gi, 'refined')
-    .replace(/luxury fashion/gi, 'refined styling');
+    .replace(/luxury fashion/gi, 'refined styling')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function sanitizeSurfaceMakeupOnly(text){
+  const base = sanitizeCreativeField(text)
+    .replace(/sculptural/gi, 'surface color')
+    .replace(/luminous skin/gi, 'natural skin texture with controlled highlight')
+    .replace(/radiant skin/gi, 'natural skin texture with controlled highlight')
+    .replace(/immaculate ceremonial base/gi, 'controlled ceremonial surface base')
+    .replace(/painted high arch brows/gi, 'brow color following the original brow structure')
+    .replace(/defined arch brows/gi, 'defined brow color following the original brow structure')
+    .replace(/slanted eyeliner/gi, 'soft liner following the original eye shape');
+  return `${base}. Makeup affects color, texture, and surface finish only; no contouring, no eye-shape enhancement, no lip reshaping, no jaw or cheekbone reconstruction`;
+}
+
+function sanitizeIdentitySafeCharacterContext(text){
+  const cleaned = sanitizeCreativeField(text)
+    .replace(/^character exists within/i, 'uploaded real person is photographed within')
+    .replace(/^character exists/i, 'uploaded real person is photographed')
+    .replace(/central character/gi, 'uploaded real person');
+  return cleaned || 'uploaded real person photographed inside the selected environment';
+}
+
+function sanitizeIdentitySafeCameraLanguage(text){
+  return sanitizeCreativeField(text)
+    .replace(/fashion photography lens/gi, 'real-person photography lens')
+    .replace(/cover-style close framing/gi, 'close framing that preserves natural body scale');
+}
+
+function sanitizeIdentitySafeQuality(text){
+  const cleaned = sanitizeCreativeField(text)
+    .replace(/ultra realistic fantasy character/gi, 'realistic environmental portrait of the uploaded person')
+    .replace(/premium cosplay/gi, 'real-person costume photography')
+    .replace(/premium mythological figure art/gi, 'real-person mythic environment photography')
+    .replace(/premium dark celestial/gi, 'dark celestial real-person photography')
+    .replace(/premium holy celestial/gi, 'holy celestial real-person photography')
+    .replace(/premium epic fantasy art/gi, 'real-person fantasy environment photography')
+    .replace(/cinematic production quality/gi, 'natural cinematic photographic quality');
+  return `${cleaned || QUALITY_BASE}, authentic skin texture, documentary-real identity fidelity`;
+}
+
+function sanitizeHeadScaleRisk(text){
+  if(!text) return '';
+  const cleaned = sanitizeCreativeField(text);
+  return `${cleaned}. Head must not dominate the frame. Maintain balanced head-to-shoulder-to-torso proportion. Use enough camera distance to keep body scale natural. Avoid close-up portrait compression or beauty-camera framing`;
 }
 
 function buildFaceAnchor(desc){
@@ -996,6 +1143,17 @@ function statusLabel(status){
   }[status] || '';
 }
 
+function identityRiskLabels(entry){
+  const labels = [];
+  if(entry.rewrite_needed || entry.style_contamination_risk === 'high') labels.push('需身份改寫');
+  if(entry.beauty_template_risk && entry.beauty_template_risk !== 'low') labels.push('高美化風險');
+  if(entry.archetype_face_risk && entry.archetype_face_risk !== 'low') labels.push('角色模板風險');
+  if(entry.editorial_beauty_risk && entry.editorial_beauty_risk !== 'low') labels.push('商業修臉風險');
+  if(entry.dynamic_angle_identity_risk && entry.dynamic_angle_identity_risk !== 'low') labels.push('角度換臉風險');
+  if(entry.head_scale_risk && entry.head_scale_risk !== 'low') labels.push('大頭構圖風險');
+  return [...new Set(labels)].slice(0, 3);
+}
+
 function escapeHtml(value){
   return String(value ?? '').replace(/[&<>"']/g, ch => ({
     '&':'&amp;',
@@ -1125,6 +1283,7 @@ function renderPresets(){
       <span class="preset-meta">
         ${statusLabel(e.ui_status) ? `<span class="preset-tag ${e.ui_status}">${statusLabel(e.ui_status)}</span>` : ''}
         ${getEntrySeries(e) ? `<span class="preset-tag">${escapeHtml(getEntrySeries(e))}</span>` : ''}
+        ${identityRiskLabels(e).map(label=>`<span class="preset-tag risk">${escapeHtml(label)}</span>`).join('')}
       </span>
     </div>`).join('');
 }
@@ -1156,6 +1315,8 @@ function renderBadge(){
   const light = LIGHT_STYLE.find(l=>l.id===sanitizeLightId(curLightID)) || LIGHT_STYLE[0];
   const identity = IDENTITY_LOCK.find(i=>i.id===curIdentityID);
   badge.innerHTML=`
+    <span class="badge-item">🔒 身份主權模式</span>
+    <span class="badge-sep">›</span>
     <span class="badge-item">${getDisplayIcon(cat.icon,'✦')} ${cat.name}</span>
     <span class="badge-sep">›</span>
     <span class="badge-item">${getDisplayIcon(entry.icon, getDisplayIcon(cat.icon,'✦'))} ${entry.name}</span>
@@ -1170,7 +1331,8 @@ function renderBadge(){
     <span class="badge-sep">›</span>
     <span class="badge-item">💡 ${light?light.name:''}</span>
     <span class="badge-sep">›</span>
-    <span class="badge-item">🔒 ${identity?identity.name:''}</span>`;
+    <span class="badge-item">🔒 ${identity?identity.name:''}</span>
+    ${identityRiskLabels(entry).map(label=>`<span class="badge-sep">›</span><span class="badge-item">${escapeHtml(label)}</span>`).join('')}`;
 }
 
 function renderAll(){
@@ -1403,23 +1565,30 @@ function buildPrompt(){
   if(proCustom) proParts.push(sanitizeCreativeField(proCustom));
 
   const sanitizedLight = sanitizeCreativeField(f('light'));
-  const sanitizedChar = sanitizeCreativeField(f('char'));
+  const sanitizedChar = sanitizeIdentitySafeCharacterContext(f('char'));
   const sanitizedOutfit = sanitizeCreativeField(f('outfit'));
   const sanitizedProp = sanitizeCreativeField(f('prop'));
-  const sanitizedComp = sanitizeCreativeField(f('comp'));
+  const sanitizedComp = sanitizeHeadScaleRisk(f('comp'));
   const sanitizedFx = sanitizeCreativeField(f('fx'));
   const sanitizedTone = sanitizeCreativeField(f('tone'));
-  const sanitizedQuality = sanitizeCreativeField(f('quality'));
+  const sanitizedQuality = sanitizeIdentitySafeQuality(f('quality'));
   const sanitizedTxtLine = sanitizeCreativeField(txtLine);
   const sanitizedExtras = sanitizeCreativeField(extras);
-  const sanitizedCamLang = sanitizeCreativeField(camLang.desc);
+  const sanitizedCamLang = sanitizeIdentitySafeCameraLanguage(camLang.desc);
   const sanitizedAngleDesc = sanitizeCreativeField(ang.desc);
-  const sanitizedLensGuidance = sanitizeCreativeField(buildLensGuidance(cat, lens));
+  const sanitizedLensGuidance = sanitizeIdentitySafeCameraLanguage(buildLensGuidance(cat, lens));
   const fallbackProp = !sanitizedProp && posePack ? sanitizeCreativeField(pickRandom(posePack.prop)) : '';
-  const fallbackComp = !sanitizedComp && posePack ? sanitizeCreativeField(pickRandom(posePack.comp)) : '';
+  const fallbackComp = !sanitizedComp && posePack ? sanitizeHeadScaleRisk(pickRandom(posePack.comp)) : '';
+  const sanitizedMakeup = sanitizeSurfaceMakeupOnly(mk.desc);
+  const safeRatioDesc = sanitizeHeadScaleRisk(ratio.desc);
+  const safeLensDesc = sanitizeIdentitySafeCameraLanguage(lens.desc);
+  const safeLightDesc = sanitizeCreativeField(lightSt.desc);
+  const safeAtmDesc = sanitizeCreativeField(atm.desc);
 
   const parts = [
     CORE_GATE,
+    CORE_IDENTITY_SOVEREIGNTY,
+    CORE_ANTI_BEAUTY_TEMPLATE,
     buildFaceAnchor(faceDesc),
     `Avoid: ${AVOID_LOCK}.`,
     CORE_IDENTITY,
@@ -1433,7 +1602,7 @@ function buildPrompt(){
     sanitizeCreativeField(`[${cat.name} — ${entry.name}${entry.sub?' · '+entry.sub:''}]`),
     sceneDesc ? `Scene: ${sceneDesc}.` : '',
     [sanitizedLight ? `Lighting: ${sanitizedLight}.` : '', sanitizedChar ? `Character context: ${sanitizedChar}.` : ''].filter(Boolean).join(' '),
-    `Makeup: ${mk.desc}.`,
+    `Makeup & skin: ${sanitizedMakeup}.`,
     tpl.ancient ? ANCIENT_BOOST : '',
     sanitizedOutfit ? `Costume: ${sanitizedOutfit}.` : '',
     sanitizedProp ? `Action and props: ${sanitizedProp}.` : (fallbackProp ? `Action: ${fallbackProp}.` : ''),
@@ -1443,7 +1612,8 @@ function buildPrompt(){
     sanitizedQuality ? `${sanitizedQuality}.` : QUALITY_BASE,
     sanitizedTxtLine ? `Typography: ${sanitizedTxtLine}.` : '',
     sanitizedExtras ? `Note: ${sanitizedExtras}.` : '',
-    `Format: ${ratio.desc} | Lens: ${lens.desc} | Light: ${lightSt.desc} | Atmosphere: ${atm.desc} | Camera: ${sanitizedCamLang}`,
+    `Format: ${safeRatioDesc} | Lens: ${safeLensDesc} | Light: ${safeLightDesc} | Atmosphere: ${safeAtmDesc} | Camera: ${sanitizedCamLang}`,
+    CORE_FINAL_OVERRIDE,
     CORE_STRUCTURE,
   ].filter(l=>l&&l.trim().length>0);
 

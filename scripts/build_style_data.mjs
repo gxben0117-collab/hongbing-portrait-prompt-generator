@@ -53,6 +53,16 @@ const rebuiltCats = uiCats.map((cat) => {
         source_type: indexEntry.source_type,
         source_batch: indexEntry.source_batch,
         risk_flags: indexEntry.risk_flags || [],
+        identity_mode: indexEntry.identity_mode || 'identity_sovereign',
+        identity_risk_score: indexEntry.identity_risk_score || 0,
+        style_contamination_risk: indexEntry.style_contamination_risk || 'low',
+        beauty_template_risk: indexEntry.beauty_template_risk || 'low',
+        archetype_face_risk: indexEntry.archetype_face_risk || 'low',
+        editorial_beauty_risk: indexEntry.editorial_beauty_risk || 'low',
+        dynamic_angle_identity_risk: indexEntry.dynamic_angle_identity_risk || 'low',
+        head_scale_risk: indexEntry.head_scale_risk || 'low',
+        makeup_restructure_risk: indexEntry.makeup_restructure_risk || 'low',
+        rewrite_needed: Boolean(indexEntry.rewrite_needed),
       };
     })
     .filter(Boolean)

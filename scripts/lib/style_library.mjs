@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { analyzeIdentitySafety, identityRiskFields } from './identity_safety.mjs';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const STYLE_MD_PATH = path.join(ROOT, '核心資料', '風格範例.md');
@@ -476,10 +477,17 @@ export function inferRiskFlags(card, duplicateInfo) {
   if (/rev_\d+/.test(card.id) || card.sourceHint === 'rev/image-analysis') flags.push('reverse_sample');
   if (/v0\.27|v027_/.test(text)) flags.push('v0.27');
   if (/(heroine|beauty|goddess face|celebrity|perfect beauty|flawless|luxury beauty|actress template|influencer face)/i.test(text)) flags.push('identity_risk');
+  const identityAnalysis = analyzeIdentitySafety(text);
+  flags.push(...identityAnalysis.flags);
+  if (identityAnalysis.level !== 'low') flags.push('identity_rewrite_needed');
   if (/(仰拍|回眸|back-facing|jumping|spinning|arms overhead|covering face|遮臉)/i.test(text)) flags.push('pose_risk');
   if (/(movie trailer|cinematic trailer|超廣角|廣角仰拍|人物渺小|bird's-eye tiny subject|epic scale subject tiny)/i.test(text)) flags.push('camera_risk');
   if (/(UE5 cinematic|仙氣縹緲|女神感|純淨無瑕|冷豔絕世|光芒萬丈)/i.test(text)) flags.push('legacy_style_drift');
   return [...new Set(flags)];
+}
+
+export function inferIdentityRiskFields(card) {
+  return identityRiskFields(`${card.title}\n${card.block || ''}`);
 }
 
 export function inferUiStatus(card, uiEntry, duplicateInfo) {
@@ -500,6 +508,13 @@ export function isCoreCandidate(indexEntry, perThemeSeenCount) {
     'duplicate_id',
     'reverse_sample',
     'identity_risk',
+    'identity_rewrite_needed',
+    'beauty_template_risk',
+    'archetype_face_risk',
+    'editorial_beauty_risk',
+    'dynamic_angle_identity_risk',
+    'head_scale_risk',
+    'makeup_restructure_risk',
     'pose_risk',
     'camera_risk',
   ]);

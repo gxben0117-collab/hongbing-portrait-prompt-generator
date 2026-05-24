@@ -9,6 +9,7 @@ import {
   entrySort,
   flattenUiEntries,
   inferRiskFlags,
+  inferIdentityRiskFields,
   inferSeries,
   inferSourceBatch,
   inferSourceType,
@@ -38,6 +39,7 @@ const rawEntries = cards.map((card) => {
   const theme = THEME_BY_ID[themeId] || THEME_DEFS[12];
   const series = inferSeries(card, themeId, uiEntry);
   const riskFlags = inferRiskFlags(card, duplicateInfo);
+  const identityRisk = inferIdentityRiskFields(card);
   const uiStatus = inferUiStatus(card, uiEntry, duplicateInfo);
   const parts = card.title.split('·').map((part) => part.trim()).filter(Boolean);
   return {
@@ -57,11 +59,12 @@ const rawEntries = cards.map((card) => {
     source_batch: inferSourceBatch(card),
     sort_weight: 0,
     tags: makeTags(card, series, theme),
-    risk_flags: riskFlags,
+    risk_flags: [...new Set([...riskFlags, ...identityRisk.identity_risk_flags])],
+    ...identityRisk,
     missing_fields: missingFields(card),
     ui_included: Boolean(uiEntry),
     source_line: card.startLine,
-    notes: makeNotes(card, uiEntry, riskFlags),
+    notes: makeNotes(card, uiEntry, riskFlags, identityRisk),
   };
 });
 
@@ -145,6 +148,8 @@ const summaryRows = THEME_DEFS.map((theme) => {
 });
 
 const statusRows = Object.entries(countStatuses(index.entries)).sort((a, b) => a[0].localeCompare(b[0]));
+const identityRiskRows = Object.entries(countBy(index.entries, (entry) => entry.style_contamination_risk)).sort((a, b) => a[0].localeCompare(b[0]));
+const rewriteNeededCount = index.entries.filter((entry) => entry.rewrite_needed).length;
 const missingUiRows = index.entries
   .filter((entry) => !entry.ui_included)
   .slice()
@@ -165,11 +170,18 @@ const report = [
   '',
   markdownTable(statusRows, ['ui_status', '數量']),
   '',
-  '## 3. UI 未收錄母庫卡片初判',
+  '## 3. 身份污染風險總覽',
+  '',
+  markdownTable([
+    ['rewrite_needed', rewriteNeededCount],
+    ...identityRiskRows,
+  ], ['風險類型 / 等級', '數量']),
+  '',
+  '## 4. UI 未收錄母庫卡片初判',
   '',
   markdownTable(missingUiRows, ['ID', 'theme_id', 'series', 'ui_status', '標題', 'risk_flags']),
   '',
-  '## 4. Phase 3/4 結論',
+  '## 5. Phase 3/4 結論',
   '',
   '- 15 大主題 ID 已固定於索引 `themes`。',
   '- 每筆母庫卡片已取得 `theme_id`、`series`、`ui_status` 與 `sort_weight`。',
@@ -200,7 +212,7 @@ function makeTags(card, series, theme) {
   return [...new Set(tags)];
 }
 
-function makeNotes(card, uiEntry, riskFlags) {
+function makeNotes(card, uiEntry, riskFlags, identityRisk) {
   const notes = [];
   if (!uiEntry) notes.push('母庫有但目前 UI 未收錄');
   if (card.sourceHint === 'rev/image-analysis') notes.push('圖片逆推來源，預設待審');
@@ -208,6 +220,7 @@ function makeNotes(card, uiEntry, riskFlags) {
   if (uiEntry && uiEntry.id !== card.id) notes.push(`UI runtime ID 目前為 ${uiEntry.id}，母庫 ID 為 ${card.id}`);
   if (riskFlags.includes('duplicate_title')) notes.push('疑似重複標題');
   if (riskFlags.includes('duplicate_id')) notes.push('疑似重複 ID');
+  if (identityRisk.rewrite_needed) notes.push(`身份污染風險 ${identityRisk.style_contamination_risk}，需身份安全改寫`);
   return notes.join('；');
 }
 
@@ -219,6 +232,15 @@ function countStatuses(entries) {
   const counts = {};
   for (const entry of entries) {
     counts[entry.ui_status] = (counts[entry.ui_status] || 0) + 1;
+  }
+  return counts;
+}
+
+function countBy(items, keyFn) {
+  const counts = {};
+  for (const item of items) {
+    const key = keyFn(item) || '(空)';
+    counts[key] = (counts[key] || 0) + 1;
   }
   return counts;
 }
