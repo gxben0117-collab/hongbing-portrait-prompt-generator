@@ -37,7 +37,13 @@ const CORE_DOCUMENTARY_PERSON_LOCK = `DOCUMENTARY PERSON LOCK: The subject must 
 
 const CORE_TIERED_SANITIZE_LOCK = `TIERED SANITIZE LOCK: Apply identity-safe rewrite priority before rendering: identity sovereignty, beauty-template downgrade, editorial-commercial downgrade, fantasy-archetype containment, surface-only makeup, camera-angle stability, head-body scale protection, quality-retouch downgrade, pose-obstruction safety, and scope-language control.`;
 
-const CORE_SAFETY = `BEAUTY & ANATOMY SAFETY: Avoid identity drift, AI face templates, influencer face replacement, plastic skin, over-smoothed renders. Preserve natural asymmetry, real skin texture, and original facial uniqueness. Maintain realistic adult anatomy — natural limb proportions, correct fingers, believable body balance. Head-to-body proportion must be realistic: no oversized head, no chibi proportions, no cranial enlargement from hair ornaments or heavy costume. Head must not dominate the frame. Maintain balanced head-to-shoulder-to-torso proportion. Use enough camera distance to keep body scale natural. Avoid close-up portrait compression or face-polishing camera framing. Face-to-neck-to-shoulder alignment must stay physically natural — when pose drama conflicts with face stability, reduce pose drama. Body proportion priority over visual exaggeration — do not sacrifice limb length or torso scale for dramatic effect. Camera at eye-level or chest height for full-body shots — avoid forced perspective that enlarges the head relative to the body. Facial identity remains readable in all poses.`;
+const CORE_IDENTITY_SKELETON = `IDENTITY SKELETON LOCK (GENERATION ORDER): Human identity and anatomy generation occur before style generation. First establish: facial geometry, skull proportion, eye spacing, jaw width, neck alignment, shoulder width, realistic adult anatomy, stable head-to-body ratio. All styling layers are applied only after facial geometry, body proportion, pose stability, and head-to-body realism are resolved.`;
+
+const CORE_POSE_ADAPTATION = `POSE ADAPTATION RULE: Pose must adapt to preserved facial identity. If pose conflicts with identity stability, reduce pose intensity. Face-to-neck-to-shoulder alignment must stay physically natural — when pose drama conflicts with face stability, reduce pose drama. Pose serves face, not face serves pose.`;
+
+const CORE_HEAD_BODY_PROPORTION_LOCK = `HEAD-BODY PROPORTION LOCK: torso scale priority over facial emphasis, body proportion priority over portrait aesthetics, head occupies a realistic portion of the frame, body remains visually dominant over face, camera distance preserves realistic body scale, balanced torso-to-head ratio, no portrait compression, no beauty-shot framing, no close-up composition, no fashion-editorial face emphasis, no hero-shot perspective.`;
+
+const CORE_SAFETY = `BEAUTY & ANATOMY SAFETY: Avoid identity drift, AI face templates, influencer face replacement, plastic skin, over-smoothed renders. Preserve natural asymmetry, real skin texture, and original facial uniqueness. Maintain realistic adult anatomy — natural limb proportions, correct fingers, believable body balance. Head-to-body proportion must be realistic: no oversized head, no chibi proportions, no cranial enlargement from hair ornaments or heavy costume. Head must not dominate the frame. Maintain balanced head-to-shoulder-to-torso proportion. Use enough camera distance to keep body scale natural. Avoid close-up portrait compression or face-polishing camera framing. Body proportion priority over visual exaggeration — do not sacrifice limb length or torso scale for dramatic effect. Camera at eye-level or chest height for full-body shots — avoid forced perspective that enlarges the head relative to the body. Facial identity remains readable in all poses.`;
 
 const CORE_ELASTICITY = `Natural variation is encouraged: hair movement, candid posing, environmental interaction, photographic imperfection. Facial bone structure, eye shape, nose geometry, and recognizable features remain fixed regardless of pose or scene.`;
 
@@ -45,7 +51,9 @@ const CORE_REAL_PERSON_IN_FANTASY = `REAL-PERSON-IN-FANTASY RULE: The image shou
 
 const CORE_FINAL_OVERRIDE = `FINAL IDENTITY OVERRIDE: If any style, camera, makeup, costume, role, title, quality, or atmosphere instruction conflicts with identity preservation, ignore that style instruction and preserve the uploaded person's real face.`;
 
-const CORE_STRUCTURE = `Render: identity priority → anti-beauty-template override → anatomy and head-body lock → scene → lighting → real-person character context → surface-only makeup → costume → identity-safe action/props → balanced composition → effects → tone → real-person photographic quality → specs. Identity preservation overrides all style direction.`;
+const CORE_GENERATION_ORDER = `GENERATION ORDER (CRITICAL): Step 1: Generate identity skeleton (facial geometry, body proportion, anatomy foundation). Step 2: Adapt pose to preserved identity (pose must not force facial reconstruction). Step 3: Establish composition safety (camera distance, torso visibility, head-body ratio). Step 4: Inject style (environment, costume, lighting, atmosphere only — face-external). Style affects environment only. Style must not affect facial structure, body proportion, or pose foundation.`;
+
+const CORE_STRUCTURE = `Render: identity skeleton → pose adaptation → composition safety → style injection (face-external only) → effects → tone → real-person photographic quality → specs. Identity preservation overrides all style direction.`;
 
 // ── 禁止詞列表（已精簡）──
 const AVOID_LOCK = `identity drift, replaced face, template face, standardized facial features, fantasy queen face template, xianxia heroine face template, actress-face conversion, influencer-face reconstruction, AI glamour-face replacement, enlarged eyes, sharpened chin, V-shape jaw, over-smoothed skin, reshaped jawline, doll-like face, artificial skin filter, eye-reshaping liner, heavy eyeliner distortion, contouring that changes cheekbone or jawline, mannequin poses, artificial symmetry, anatomy distortion, floating limbs, deformed fingers, oversized head, chibi proportions, forced-perspective hero shots, face-hidden poses, trailer-style staging, beauty-camera close-up compression, low quality, watermarks`;
@@ -1687,38 +1695,63 @@ function buildPrompt(){
   const safeAtmDesc = sanitizeCreativeField(atm.desc);
 
   const parts = [
+    // ========================================
+    // LAYER 1: IDENTITY SKELETON LOCK
+    // ========================================
     CORE_GATE,
+    CORE_IDENTITY_SKELETON,
+    buildFaceAnchor(faceDesc),
     CORE_IDENTITY_SOVEREIGNTY,
     CORE_ANTI_BEAUTY_TEMPLATE,
     CORE_FACE_SCOPE_LOCK,
     CORE_DOCUMENTARY_PERSON_LOCK,
     CORE_TIERED_SANITIZE_LOCK,
-    buildFaceAnchor(faceDesc),
     `Avoid: ${AVOID_LOCK}.`,
     CORE_IDENTITY,
     identity.boost || '',
     CORE_SAFETY,
     CORE_ELASTICITY,
     CORE_REAL_PERSON_IN_FANTASY,
+
+    // ========================================
+    // LAYER 2: POSE ADAPTATION
+    // ========================================
+    CORE_POSE_ADAPTATION,
     proParts.join(' '),
+
+    // ========================================
+    // LAYER 3: COMPOSITION SAFETY
+    // ========================================
+    CORE_HEAD_BODY_PROPORTION_LOCK,
     sanitizedLensGuidance ? `Lens selection guidance: ${sanitizedLensGuidance}.` : '',
     `Camera design: ${sanitizeCreativeField(buildCameraDesignGuidance({entry, ratio, lens, lightSt, atm, camLang, ang}))}`,
     buildAntiPatternGuidance(),
+    sanitizedComp ? `Composition: ${sanitizedComp}. Angle: ${sanitizedAngleDesc}.` : (fallbackComp ? `Composition: ${fallbackComp}. Angle: ${sanitizedAngleDesc}.` : `Angle: ${sanitizedAngleDesc}.`),
+
+    // ========================================
+    // LAYER 4: STYLE INJECTION (face-external only)
+    // ========================================
+    `Style affects environment, costume, lighting, and atmosphere only. Style must not affect facial structure or body proportion.`,
     sanitizeCreativeField(`[${cat.name} — ${entry.name}${entry.sub?' · '+entry.sub:''}]`),
     sceneDesc ? `Scene: ${sceneDesc}.` : '',
-    [sanitizedLight ? `Lighting: ${sanitizedLight}.` : '', sanitizedChar ? `Character context: ${sanitizedChar}.` : ''].filter(Boolean).join(' '),
+    sanitizedLight ? `Lighting: ${sanitizedLight}.` : '',
+    sanitizedChar ? `Character context: ${sanitizedChar}.` : '',
     `Makeup & skin: ${sanitizedMakeup}.`,
     tpl.ancient ? ANCIENT_BOOST : '',
     sanitizedOutfit ? `Costume: ${sanitizedOutfit}.` : '',
     sanitizedProp ? `Action and props: ${sanitizedProp}.` : (fallbackProp ? `Action: ${fallbackProp}.` : ''),
-    sanitizedComp ? `Composition: ${sanitizedComp}. Angle: ${sanitizedAngleDesc}.` : (fallbackComp ? `Composition: ${fallbackComp}. Angle: ${sanitizedAngleDesc}.` : `Angle: ${sanitizedAngleDesc}.`),
     sanitizedFx ? `Effects: ${sanitizedFx}.` : '',
     sanitizedTone ? `Tone: ${sanitizedTone}.` : '',
     sanitizedQuality ? `${sanitizedQuality}.` : QUALITY_BASE,
     sanitizedTxtLine ? `Typography: ${sanitizedTxtLine}.` : '',
     sanitizedExtras ? `Note: ${sanitizedExtras}.` : '',
     `Format: ${safeRatioDesc} | Lens: ${safeLensDesc} | Light: ${safeLightDesc} | Atmosphere: ${safeAtmDesc} | Camera: ${sanitizedCamLang}`,
+
+    // ========================================
+    // FINAL OVERRIDE
+    // ========================================
     CORE_FINAL_OVERRIDE,
+    CORE_GENERATION_ORDER,
     CORE_STRUCTURE,
   ].filter(l=>l&&l.trim().length>0);
 
