@@ -149,6 +149,12 @@ const tests = [
     entryId: "v027_eu_16",
     faceDesc: "natural eye spacing, original eyelid structure, reference nose geometry, natural lip shape, real skin detail",
   },
+  {
+    name: "forestSpirit",
+    catId: "theme_13",
+    entryId: "mh_25",
+    faceDesc: "original eye size, natural eyelid fold, reference nose width, natural smile lines, unretouched skin texture",
+  },
 ];
 
 const output = {};
@@ -263,6 +269,30 @@ const checks = {
           output.londonTravel.toLowerCase().includes("real tourist") &&
           output.londonTravel.toLowerCase().includes("natural dynamic range") &&
           output.londonTravel.toLowerCase().includes("unretouched"),
+        forestSpiritNoFantasyBeautyArchetype:
+          [
+            "flower fairy",
+            "fairy makeup",
+            "luminous pastel eye shimmer",
+            "luminous",
+            "romantic fantasy freshness",
+            "botanical glow",
+            "premium cinematic",
+            "cinematic travel photoshoot",
+            "photoshoot",
+            "high-end",
+            "photographic polish",
+            "magazine cover",
+            "environmental portrait",
+            "professional travel photography",
+            "8k hdr",
+            "ultra realistic",
+          ].every((term) => !output.forestSpirit.toLowerCase().includes(term.toLowerCase())),
+        forestSpiritUsesAccidentalFantasyDocumentary:
+          output.forestSpirit.toLowerCase().includes("real person accidentally photographed inside a fantasy environment") &&
+          output.forestSpirit.toLowerCase().includes("minimal botanical makeup") &&
+          output.forestSpirit.toLowerCase().includes("no fantasy-eye styling") &&
+          output.forestSpirit.toLowerCase().includes("unretouched facial detail"),
         ancientBoostUnder100Words:
           ((core.match(/const ANCIENT_BOOST = `([\s\S]*?)`;/) || [])[1] || "")
             .split(/\s+/)

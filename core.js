@@ -35,6 +35,8 @@ const CORE_SAFETY = `BEAUTY & ANATOMY SAFETY: Avoid identity drift, AI face temp
 
 const CORE_ELASTICITY = `Natural variation is encouraged: hair movement, candid posing, environmental interaction, photographic imperfection. Facial bone structure, eye shape, nose geometry, and recognizable features remain fixed regardless of pose or scene.`;
 
+const CORE_REAL_PERSON_IN_FANTASY = `REAL-PERSON-IN-FANTASY RULE: The image should read as a real person accidentally photographed inside a fantasy environment. Fantasy elements belong to the forest, architecture, props, costume material, and light around the person. Do not turn the face into a fairy, goddess, fantasy heroine, elf, doll, or archetype face.`;
+
 const CORE_FINAL_OVERRIDE = `FINAL IDENTITY OVERRIDE: If any style, camera, makeup, costume, role, title, quality, or atmosphere instruction conflicts with identity preservation, ignore that style instruction and preserve the uploaded person's real face.`;
 
 const CORE_STRUCTURE = `Render: identity priority → anti-beauty-template override → anatomy and head-body lock → scene → lighting → real-person character context → surface-only makeup → costume → identity-safe action/props → balanced composition → effects → tone → real-person photographic quality → specs. Identity preservation overrides all style direction.`;
@@ -104,6 +106,11 @@ const ANTI_PATTERNS = GOVERNANCE.antiPatterns || {
     'premium world travel',
     'ultra realistic',
     '8K HDR',
+    'flower fairy',
+    'fantasy freshness',
+    'photographic polish',
+    'photoshoot',
+    'high-end',
     'low-key dramatic',
     'ethereal atmosphere',
     'celestial mist',
@@ -463,6 +470,22 @@ function sanitizePromptText(text){
     .replace(/sun-kissed makeup/gi, 'minimal outdoor travel makeup')
     .replace(/soft golden highlights/gi, 'natural daylight highlights')
     .replace(/warm sunlit highlights/gi, 'natural daylight highlights')
+    .replace(/flower fairy makeup/gi, 'minimal botanical makeup')
+    .replace(/flower fairy/gi, 'botanical environment styling')
+    .replace(/fairy makeup/gi, 'minimal botanical makeup')
+    .replace(/luminous pastel eye shimmer/gi, 'subtle botanical surface color around the eyes, no fantasy-eye styling')
+    .replace(/pastel eye shimmer/gi, 'subtle botanical surface color around the eyes')
+    .replace(/delicate botanical glow/gi, 'subtle botanical color tint')
+    .replace(/botanical glow/gi, 'botanical color tint')
+    .replace(/romantic fantasy freshness/gi, 'ordinary real-person forest snapshot naturalness')
+    .replace(/fantasy freshness/gi, 'real-person naturalness')
+    .replace(/professional travel photography/gi, 'ordinary documentary travel photography')
+    .replace(/travel photoshoot/gi, 'travel snapshot')
+    .replace(/photoshoot/gi, 'snapshot')
+    .replace(/photographic polish/gi, 'photographic realism')
+    .replace(/high-end documentary photographic polish/gi, 'plain documentary photographic realism')
+    .replace(/high-end/gi, 'plain')
+    .replace(/polish/gi, 'realism')
     .replace(/perfect beauty reconstruction/gi, 'authentic real-person appearance')
     .replace(/perfect beauty/gi, 'authentic real-person appearance')
     .replace(/perfect skin/gi, 'natural skin texture with real imperfections')
@@ -567,6 +590,11 @@ function sanitizeSurfaceMakeupOnly(text){
     .replace(/golden eye shimmer/gi, 'subtle surface eye color')
     .replace(/delicate pearl-like highlights/gi, 'subtle surface highlights')
     .replace(/international travel documentary freshness/gi, 'real travel snapshot naturalness')
+    .replace(/flower fairy makeup/gi, 'minimal botanical makeup')
+    .replace(/luminous pastel eye shimmer/gi, 'subtle botanical surface color around the eyes, no fantasy-eye styling')
+    .replace(/floral pink or peach lip/gi, 'natural lip color matching the reference person')
+    .replace(/delicate botanical glow/gi, 'subtle botanical color tint')
+    .replace(/romantic fantasy freshness/gi, 'ordinary real-person forest snapshot naturalness')
     .replace(/immaculate ceremonial base/gi, 'controlled ceremonial surface base')
     .replace(/painted high arch brows/gi, 'brow color following the original brow structure')
     .replace(/defined arch brows/gi, 'defined brow color following the original brow structure')
@@ -602,7 +630,9 @@ function sanitizeIdentitySafeQuality(text){
     .replace(/premium epic fantasy art/gi, 'real-person fantasy environment photography')
     .replace(/cinematic production quality/gi, 'documentary photographic quality')
     .replace(/detailed fashion and location texture/gi, 'detailed outfit and location texture')
-    .replace(/natural skin/gi, 'unretouched natural skin texture');
+    .replace(/natural skin/gi, 'unretouched natural skin texture')
+    .replace(/documentary travel snapshot/gi, 'documentary travel snapshot')
+    .replace(/plain documentary photographic realism/gi, 'plain documentary photographic realism');
   return `${cleaned || QUALITY_BASE}, authentic skin texture, unretouched facial detail, documentary-real identity fidelity`;
 }
 
@@ -756,7 +786,7 @@ const MK = [
   {id:'global_sun', name:'環球日光', desc:'minimal global travel makeup: natural outdoor color, natural daylight highlights, natural untouched eye area, natural lip color matching the reference person, real travel snapshot naturalness'},
   {id:'cinematic', name:'電影角色', desc:'story-driven surface makeup: natural complexion, original eye shape preserved with scene-appropriate color only, controlled lip color and believable documentary production realism'},
   {id:'character_pop', name:'動漫角色', desc:'anime or game character-inspired makeup: vivid but realistic eye color accents, clean graphic liner, bright polished lip, expressive cosplay energy without turning the face into a cartoon'},
-  {id:'flower_fairy', name:'花仙柔妝', desc:'flower fairy makeup: soft petal blush, luminous pastel eye shimmer, floral pink or peach lip, delicate botanical glow, romantic fantasy freshness'},
+  {id:'flower_fairy', name:'花草淡妝', desc:'minimal botanical makeup: soft petal blush as surface color only, subtle botanical surface color around the eyes with no fantasy-eye styling, natural lip color matching the reference person, ordinary real-person forest snapshot naturalness'},
   {id:'oracle_gold', name:'神諭金妝', desc:'divine oracle gold makeup: radiant gold eye accents, clean luminous skin, symbolic temple-like shimmer, noble rose-gold lip, sacred mythological authority'},
   {id:'dragon_epic', name:'龍族戰妝', desc:'dragon epic battle makeup: strong brows, bronze or emerald metallic eye accents, restrained warrior contour, deep red or neutral lip, fierce elemental fantasy power'},
   {id:'wedding', name:'鑽光婚紗', desc:'bridal surface makeup: champagne shimmer highlights, soft romantic eye definition, rose or nude glossy lip, elegant tenderness — applied as surface cosmetics respecting original skin texture and facial features'},
@@ -1654,6 +1684,7 @@ function buildPrompt(){
     identity.boost || '',
     CORE_SAFETY,
     CORE_ELASTICITY,
+    CORE_REAL_PERSON_IN_FANTASY,
     proParts.join(' '),
     sanitizedLensGuidance ? `Lens selection guidance: ${sanitizedLensGuidance}.` : '',
     `Camera design: ${sanitizeCreativeField(buildCameraDesignGuidance({entry, ratio, lens, lightSt, atm, camLang, ang}))}`,
