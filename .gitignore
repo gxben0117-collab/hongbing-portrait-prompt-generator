@@ -1,0 +1,37 @@
+# ===== 核心資料（不公開） =====
+核心資料/*
+!核心資料/正式preset/
+!核心資料/正式preset/**
+CLAUDE.md
+目前進度_log.txt
+
+# ===== Python =====
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# ===== Node.js =====
+node_modules/
+
+# ===== 環境變數 =====
+.env
+.env.*
+
+# ===== Build / Output =====
+dist/
+build/
+output/
+temp/
+
+# ===== VS Code =====
+.vscode/settings.json
+
+# ===== 系統檔 =====
+.DS_Store
+Thumbs.db
+
+# ===== HTML 暫存 =====
+index-*.html
