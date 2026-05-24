@@ -163,6 +163,51 @@ for (const test of tests) {
   output[test.name] = buildFor(test.catId, test.entryId);
 }
 
+const generatedPromptBannedTerms = [
+  "magazine cover",
+  "camera language: 雜誌封面",
+  "camera language: 時尚大片",
+  "cinematic glow makeup",
+  "glow makeup",
+  "camera-ready",
+  "premium world travel",
+  "premium travel",
+  "editorial realism",
+  "travel editorial",
+  "environmental portrait",
+  "flower fairy",
+  "fairy makeup",
+  "luminous pastel eye shimmer",
+  "romantic fantasy freshness",
+  "botanical glow",
+  "photoshoot",
+  "photographic polish",
+  "high-end",
+  "professional travel photography",
+  "8k hdr",
+  "ultra realistic",
+  "vivid colors",
+  "crisp clean air",
+];
+
+const allPromptIssues = [];
+setField("faceDesc", "reference face geometry, original eye shape, original nose geometry, natural mouth shape, unretouched skin detail");
+for (const cat of sandbox.CATS) {
+  for (const entry of cat.entries || []) {
+    const prompt = buildFor(cat.id, entry.id);
+    const lower = prompt.toLowerCase();
+    const hits = generatedPromptBannedTerms.filter((term) => lower.includes(term.toLowerCase()));
+    if (hits.length) {
+      allPromptIssues.push({
+        catId: cat.id,
+        entryId: entry.id,
+        name: entry.name,
+        hits,
+      });
+    }
+  }
+}
+
 const baiqianSegments = output.baiqian.split("\n\n").slice(0, 3);
 const tplCharMatches = [...core.matchAll(/char:'([^']+)'/g)].map((match) => match[1].toLowerCase());
 const categoryPoseGuidanceLines = [...core.matchAll(/'([^']+)'/g)]
@@ -178,6 +223,14 @@ fs.mkdirSync(path.join(ROOT, "temp"), { recursive: true });
 fs.writeFileSync(
   path.join(ROOT, "temp", "identity_engine_verification.json"),
   JSON.stringify(output, null, 2),
+  "utf8",
+);
+fs.writeFileSync(
+  path.join(ROOT, "temp", "identity_engine_all_prompt_scan.json"),
+  JSON.stringify({
+    scanned: sandbox.CATS.reduce((sum, cat) => sum + (cat.entries || []).length, 0),
+    issues: allPromptIssues,
+  }, null, 2),
   "utf8",
 );
 
@@ -293,6 +346,8 @@ const checks = {
           output.forestSpirit.toLowerCase().includes("minimal botanical makeup") &&
           output.forestSpirit.toLowerCase().includes("no fantasy-eye styling") &&
           output.forestSpirit.toLowerCase().includes("unretouched facial detail"),
+        allVisiblePromptsNoCommercialOrFantasyBeautyLeakage:
+          allPromptIssues.length === 0,
         ancientBoostUnder100Words:
           ((core.match(/const ANCIENT_BOOST = `([\s\S]*?)`;/) || [])[1] || "")
             .split(/\s+/)
@@ -309,5 +364,8 @@ console.log(JSON.stringify(report, null, 2));
 
 const failed = Object.entries(checks).filter(([, ok]) => !ok).map(([name]) => name);
 if (failed.length) {
+  if (allPromptIssues.length) {
+    console.error(JSON.stringify({ firstPromptIssues: allPromptIssues.slice(0, 20) }, null, 2));
+  }
   throw new Error(`Identity engine verification failed: ${failed.join(", ")}`);
 }
